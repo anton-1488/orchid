@@ -1,4 +1,4 @@
-package com.subgraph.orchid.circuits.guards;
+package com.subgraph.orchid.circuits.bridge;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,7 +13,7 @@ import com.subgraph.orchid.ConnectionCache;
 import com.subgraph.orchid.Directory;
 import com.subgraph.orchid.DirectoryDownloader;
 import com.subgraph.orchid.GuardEntry;
-import com.subgraph.orchid.Router;
+import com.subgraph.orchid.routers.Router;
 import com.subgraph.orchid.Threading;
 import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.circuits.path.CircuitNodeChooser;

@@ -15,7 +15,7 @@ import com.subgraph.orchid.DirectoryCircuit;
 import com.subgraph.orchid.ExitCircuit;
 import com.subgraph.orchid.InternalCircuit;
 import com.subgraph.orchid.circuits.cells.RelayCell;
-import com.subgraph.orchid.Router;
+import com.subgraph.orchid.routers.Router;
 import com.subgraph.orchid.Stream;
 import com.subgraph.orchid.exceptions.StreamConnectFailedException;
 import com.subgraph.orchid.exceptions.TorException;

@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
-import com.subgraph.orchid.Router;
+import com.subgraph.orchid.routers.Router;
 import com.subgraph.orchid.Stream;
 import com.subgraph.orchid.exceptions.DirectoryRequestFailedException;
 

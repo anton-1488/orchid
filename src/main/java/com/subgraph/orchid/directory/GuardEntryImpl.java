@@ -4,7 +4,7 @@ import java.util.Date;
 
 import com.subgraph.orchid.Directory;
 import com.subgraph.orchid.GuardEntry;
-import com.subgraph.orchid.Router;
+import com.subgraph.orchid.routers.Router;
 import com.subgraph.orchid.data.HexDigest;
 
 public class GuardEntryImpl implements GuardEntry {

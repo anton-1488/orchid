@@ -1,7 +1,7 @@
 package com.subgraph.orchid.circuits.path;
 
 import com.subgraph.orchid.ConsensusDocument;
-import com.subgraph.orchid.Router;
+import com.subgraph.orchid.routers.Router;
 
 class CircuitNodeChooserWeightParameters {
 	private final static int VAR_WG = 0;

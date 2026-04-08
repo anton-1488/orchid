@@ -1,31 +1,26 @@
 package com.subgraph.orchid;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import com.subgraph.orchid.circuits.hs.HSDescriptorCookie;
+import com.subgraph.orchid.config.TorConfig;
+import com.subgraph.orchid.config.TorConfigBridgeLine;
+import com.subgraph.orchid.data.HexDigest;
+import com.subgraph.orchid.data.IPv4Address;
+import org.bouncycastle.util.encoders.Hex;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import com.subgraph.orchid.config.TorConfig;
-import org.junit.Before;
-import org.junit.Test;
-
-import com.subgraph.orchid.circuits.hs.HSDescriptorCookie;
-import com.subgraph.orchid.config.TorConfigBridgeLine;
-import com.subgraph.orchid.data.HexDigest;
-import com.subgraph.orchid.data.IPv4Address;
-import com.subgraph.orchid.encoders.Hex;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TorConfigTest {
 
-	private TorConfig config;
+	private static TorConfig config;
 	
-	@Before
-	public void setup() {
+	@BeforeAll
+	public static void setup() {
 		config = Tor.createConfig();
 	}
 
@@ -56,9 +51,9 @@ public class TorConfigTest {
 	
 	@Test
 	public void testEnforceDistinctSubnets() {
-		assertEquals(true, config.getEnforceDistinctSubnets());
+        assertTrue(config.getEnforceDistinctSubnets());
 		config.setEnforceDistinctSubnets(false);
-		assertEquals(false, config.getEnforceDistinctSubnets());
+        assertFalse(config.getEnforceDistinctSubnets());
 	}
 	
 	@Test

@@ -6,6 +6,7 @@ import java.util.concurrent.TimeoutException;
 import com.subgraph.orchid.circuits.Circuit;
 import com.subgraph.orchid.data.IPv4Address;
 import com.subgraph.orchid.exceptions.OpenFailedException;
+import com.subgraph.orchid.routers.Router;
 
 
 public interface CircuitManager {

@@ -5,6 +5,7 @@ import java.util.Set;
 
 import com.subgraph.orchid.data.HexDigest;
 import com.subgraph.orchid.data.Timestamp;
+import com.subgraph.orchid.routers.RouterStatus;
 
 public interface ConsensusDocument extends Document {
 	enum ConsensusFlavor { NS, MICRODESC };

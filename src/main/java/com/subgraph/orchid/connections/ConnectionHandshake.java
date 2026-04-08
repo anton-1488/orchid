@@ -11,11 +11,11 @@ import java.util.logging.Logger;
 
 import javax.net.ssl.SSLSocket;
 
-import com.subgraph.orchid.BridgeRouter;
+import com.subgraph.orchid.circuits.bridge.BridgeRouter;
 import com.subgraph.orchid.circuits.cells.Cell;
 import com.subgraph.orchid.exceptions.ConnectionHandshakeException;
 import com.subgraph.orchid.exceptions.ConnectionIOException;
-import com.subgraph.orchid.Router;
+import com.subgraph.orchid.routers.Router;
 import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.circuits.cells.impls.CellImpl;
 import com.subgraph.orchid.crypto.TorPublicKey;

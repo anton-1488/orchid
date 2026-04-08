@@ -1,5 +1,7 @@
-package com.subgraph.orchid;
+package com.subgraph.orchid.circuits.bridge;
 
+import com.subgraph.orchid.routers.Router;
+import com.subgraph.orchid.routers.RouterDescriptor;
 import com.subgraph.orchid.data.HexDigest;
 
 public interface BridgeRouter extends Router {

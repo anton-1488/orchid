@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.subgraph.orchid.ConsensusDocument;
 import com.subgraph.orchid.Directory;
-import com.subgraph.orchid.Router;
+import com.subgraph.orchid.routers.Router;
 import com.subgraph.orchid.crypto.TorRandom;
 import com.subgraph.orchid.data.HexDigest;
 

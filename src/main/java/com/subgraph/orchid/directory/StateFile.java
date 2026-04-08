@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 import com.subgraph.orchid.Directory;
 import com.subgraph.orchid.DirectoryStore;
 import com.subgraph.orchid.GuardEntry;
-import com.subgraph.orchid.Router;
+import com.subgraph.orchid.routers.Router;
 import com.subgraph.orchid.Tor;
 import com.subgraph.orchid.DirectoryStore.CacheFile;
 import com.subgraph.orchid.crypto.TorRandom;

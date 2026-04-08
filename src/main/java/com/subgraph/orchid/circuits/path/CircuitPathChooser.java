@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Set;
 
 import com.subgraph.orchid.Directory;
-import com.subgraph.orchid.Router;
+import com.subgraph.orchid.routers.Router;
 import com.subgraph.orchid.config.TorConfig;
-import com.subgraph.orchid.circuits.guards.EntryGuards;
+import com.subgraph.orchid.circuits.bridge.EntryGuards;
 import com.subgraph.orchid.circuits.path.CircuitNodeChooser.WeightRule;
 import com.subgraph.orchid.data.IPv4Address;
 import com.subgraph.orchid.data.exitpolicy.ExitTarget;

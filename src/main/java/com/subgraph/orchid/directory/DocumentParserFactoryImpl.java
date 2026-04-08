@@ -4,8 +4,8 @@ import java.nio.ByteBuffer;
 
 import com.subgraph.orchid.ConsensusDocument;
 import com.subgraph.orchid.KeyCertificate;
-import com.subgraph.orchid.RouterDescriptor;
-import com.subgraph.orchid.RouterMicrodescriptor;
+import com.subgraph.orchid.routers.RouterDescriptor;
+import com.subgraph.orchid.routers.RouterMicrodescriptor;
 import com.subgraph.orchid.directory.certificate.KeyCertificateParser;
 import com.subgraph.orchid.directory.consensus.ConsensusDocumentParser;
 import com.subgraph.orchid.directory.parsing.DocumentFieldParser;

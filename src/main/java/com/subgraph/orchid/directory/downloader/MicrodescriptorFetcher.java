@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.subgraph.orchid.RouterMicrodescriptor;
+import com.subgraph.orchid.routers.RouterMicrodescriptor;
 import com.subgraph.orchid.data.HexDigest;
 import com.subgraph.orchid.directory.parsing.DocumentParser;
 

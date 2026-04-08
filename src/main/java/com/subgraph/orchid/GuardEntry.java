@@ -1,5 +1,7 @@
 package com.subgraph.orchid;
 
+import com.subgraph.orchid.routers.Router;
+
 import java.util.Date;
 
 public interface GuardEntry {

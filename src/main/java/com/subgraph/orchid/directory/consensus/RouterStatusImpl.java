@@ -3,7 +3,7 @@ package com.subgraph.orchid.directory.consensus;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.subgraph.orchid.RouterStatus;
+import com.subgraph.orchid.routers.RouterStatus;
 import com.subgraph.orchid.data.HexDigest;
 import com.subgraph.orchid.data.IPv4Address;
 import com.subgraph.orchid.data.Timestamp;

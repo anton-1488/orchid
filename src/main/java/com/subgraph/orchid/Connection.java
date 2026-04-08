@@ -4,6 +4,7 @@ package com.subgraph.orchid;
 import com.subgraph.orchid.circuits.Circuit;
 import com.subgraph.orchid.circuits.cells.Cell;
 import com.subgraph.orchid.exceptions.ConnectionIOException;
+import com.subgraph.orchid.routers.Router;
 
 /**
  * A network connection to a Tor onion router.   

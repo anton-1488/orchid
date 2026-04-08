@@ -8,7 +8,7 @@
     <artifactId>orchid</artifactId>
     <version>2.0.0-BETA</version>
     <name>Orchid Tor Client</name>
-    <description>Pure-Java Tor Client. Forked by PlovDev</description>
+    <description>Pure-Java Tor Client. Forked by PlovDev from subgraph.orchid</description>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

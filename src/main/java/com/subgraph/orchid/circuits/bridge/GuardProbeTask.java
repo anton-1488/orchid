@@ -1,4 +1,4 @@
-package com.subgraph.orchid.circuits.guards;
+package com.subgraph.orchid.circuits.bridge;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 import com.subgraph.orchid.ConnectionCache;
 import com.subgraph.orchid.exceptions.ConnectionIOException;
 import com.subgraph.orchid.GuardEntry;
-import com.subgraph.orchid.Router;
+import com.subgraph.orchid.routers.Router;
 
 public class GuardProbeTask implements Runnable{
 	private final static Logger logger = Logger.getLogger(GuardProbeTask.class.getName());

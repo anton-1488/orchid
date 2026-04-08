@@ -1,5 +1,6 @@
-package com.subgraph.orchid;
+package com.subgraph.orchid.routers;
 
+import com.subgraph.orchid.Descriptor;
 import com.subgraph.orchid.crypto.TorPublicKey;
 import com.subgraph.orchid.data.HexDigest;
 import com.subgraph.orchid.data.Timestamp;

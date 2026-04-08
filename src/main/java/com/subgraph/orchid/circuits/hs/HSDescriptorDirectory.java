@@ -1,6 +1,6 @@
 package com.subgraph.orchid.circuits.hs;
 
-import com.subgraph.orchid.Router;
+import com.subgraph.orchid.routers.Router;
 import com.subgraph.orchid.data.HexDigest;
 
 public class HSDescriptorDirectory {

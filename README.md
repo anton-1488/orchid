@@ -1,8 +1,5 @@
 # Orchid 2.0 (Modern Tor Client for Java)
 
-![Java Version](https://shields.io)
-![License](https://shields.io)
-
 Это современный форк легендарного, но заброшенного проекта **Orchid**.
 Я выкинул всё старое дерьмо, перевел проект на **Java 21**, **Maven** и **Виртуальные потоки (Project Loom)**.
 

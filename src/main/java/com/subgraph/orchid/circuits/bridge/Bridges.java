@@ -1,4 +1,4 @@
-package com.subgraph.orchid.circuits.guards;
+package com.subgraph.orchid.circuits.bridge;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,10 +8,9 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
-import com.subgraph.orchid.BridgeRouter;
 import com.subgraph.orchid.DirectoryDownloader;
-import com.subgraph.orchid.Router;
-import com.subgraph.orchid.RouterDescriptor;
+import com.subgraph.orchid.routers.Router;
+import com.subgraph.orchid.routers.RouterDescriptor;
 import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.config.TorConfigBridgeLine;
 import com.subgraph.orchid.crypto.TorRandom;

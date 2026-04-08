@@ -9,7 +9,7 @@ import com.subgraph.orchid.ConnectionCache;
 import com.subgraph.orchid.exceptions.ConnectionFailedException;
 import com.subgraph.orchid.exceptions.ConnectionHandshakeException;
 import com.subgraph.orchid.exceptions.ConnectionTimeoutException;
-import com.subgraph.orchid.Router;
+import com.subgraph.orchid.routers.Router;
 import com.subgraph.orchid.Tor;
 import com.subgraph.orchid.exceptions.TorException;
 import com.subgraph.orchid.exceptions.PathSelectionFailedException;

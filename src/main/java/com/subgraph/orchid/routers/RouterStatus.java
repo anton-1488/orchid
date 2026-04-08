@@ -1,4 +1,4 @@
-package com.subgraph.orchid;
+package com.subgraph.orchid.routers;
 
 import com.subgraph.orchid.data.HexDigest;
 import com.subgraph.orchid.data.IPv4Address;

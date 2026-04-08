@@ -23,7 +23,7 @@ import com.subgraph.orchid.ConnectionCache;
 import com.subgraph.orchid.exceptions.ConnectionFailedException;
 import com.subgraph.orchid.exceptions.ConnectionHandshakeException;
 import com.subgraph.orchid.exceptions.ConnectionTimeoutException;
-import com.subgraph.orchid.Router;
+import com.subgraph.orchid.routers.Router;
 import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.circuits.TorInitializationTracker;
 import com.subgraph.orchid.dashboard.DashboardRenderable;

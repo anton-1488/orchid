@@ -1,11 +1,11 @@
 package com.subgraph.orchid;
 
-import java.lang.reflect.Proxy;
 import java.nio.charset.Charset;
 import java.util.logging.Logger;
 
 import com.subgraph.orchid.circuits.CircuitManagerImpl;
 import com.subgraph.orchid.circuits.TorInitializationTracker;
+import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.config.TorConfigImpl;
 import com.subgraph.orchid.connections.ConnectionCacheImpl;
 import com.subgraph.orchid.directory.DirectoryImpl;

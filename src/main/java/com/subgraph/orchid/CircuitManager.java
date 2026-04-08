@@ -3,7 +3,9 @@ package com.subgraph.orchid;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
+import com.subgraph.orchid.circuits.Circuit;
 import com.subgraph.orchid.data.IPv4Address;
+import com.subgraph.orchid.exceptions.OpenFailedException;
 
 
 public interface CircuitManager {

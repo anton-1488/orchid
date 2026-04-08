@@ -3,16 +3,15 @@ package com.subgraph.orchid.circuits;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-import com.subgraph.orchid.Circuit;
 import com.subgraph.orchid.CircuitNode;
 import com.subgraph.orchid.DirectoryCircuit;
 import com.subgraph.orchid.HiddenServiceCircuit;
 import com.subgraph.orchid.InternalCircuit;
 import com.subgraph.orchid.Router;
 import com.subgraph.orchid.Stream;
-import com.subgraph.orchid.StreamConnectFailedException;
+import com.subgraph.orchid.exceptions.StreamConnectFailedException;
 import com.subgraph.orchid.circuits.path.CircuitPathChooser;
-import com.subgraph.orchid.circuits.path.PathSelectionFailedException;
+import com.subgraph.orchid.exceptions.PathSelectionFailedException;
 
 public class InternalCircuitImpl extends CircuitImpl implements InternalCircuit, DirectoryCircuit, HiddenServiceCircuit {
 

@@ -1,6 +1,6 @@
 package com.subgraph.orchid.sockets;
 
-import com.subgraph.orchid.OpenFailedException;
+import com.subgraph.orchid.exceptions.OpenFailedException;
 import com.subgraph.orchid.Stream;
 import com.subgraph.orchid.Threading;
 import com.subgraph.orchid.TorClient;

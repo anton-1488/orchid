@@ -1,7 +1,7 @@
 package com.subgraph.orchid.data.exitpolicy;
 
-import com.subgraph.orchid.TorException;
-import com.subgraph.orchid.TorParsingException;
+import com.subgraph.orchid.exceptions.TorException;
+import com.subgraph.orchid.exceptions.TorParsingException;
 
 public class PortRange {
 	

@@ -8,7 +8,7 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-import com.subgraph.orchid.TorException;
+import com.subgraph.orchid.exceptions.TorException;
 
 /**
  * The <code>HybridEncryption</code> class implements the "hybrid encryption" scheme

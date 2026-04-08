@@ -1,7 +1,7 @@
 package com.subgraph.orchid.directory.certificate;
 
 import com.subgraph.orchid.KeyCertificate;
-import com.subgraph.orchid.TorParsingException;
+import com.subgraph.orchid.exceptions.TorParsingException;
 import com.subgraph.orchid.crypto.TorPublicKey;
 import com.subgraph.orchid.crypto.TorSignature;
 import com.subgraph.orchid.data.IPv4Address;

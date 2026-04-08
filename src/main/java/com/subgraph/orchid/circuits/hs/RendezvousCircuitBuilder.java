@@ -3,12 +3,12 @@ package com.subgraph.orchid.circuits.hs;
 import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 
-import com.subgraph.orchid.Circuit;
+import com.subgraph.orchid.circuits.Circuit;
 import com.subgraph.orchid.Directory;
 import com.subgraph.orchid.HiddenServiceCircuit;
 import com.subgraph.orchid.InternalCircuit;
 import com.subgraph.orchid.Router;
-import com.subgraph.orchid.TorException;
+import com.subgraph.orchid.exceptions.TorException;
 import com.subgraph.orchid.circuits.CircuitManagerImpl;
 import com.subgraph.orchid.crypto.TorTapKeyAgreement;
 

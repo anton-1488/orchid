@@ -3,9 +3,9 @@ package com.subgraph.orchid.circuits.hs;
 import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
-import com.subgraph.orchid.Cell;
-import com.subgraph.orchid.Circuit;
-import com.subgraph.orchid.RelayCell;
+import com.subgraph.orchid.circuits.cells.Cell;
+import com.subgraph.orchid.circuits.Circuit;
+import com.subgraph.orchid.circuits.cells.RelayCell;
 import com.subgraph.orchid.Router;
 import com.subgraph.orchid.crypto.HybridEncryption;
 import com.subgraph.orchid.crypto.TorPublicKey;

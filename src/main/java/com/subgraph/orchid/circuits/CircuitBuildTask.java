@@ -6,13 +6,13 @@ import java.util.logging.Logger;
 import com.subgraph.orchid.CircuitNode;
 import com.subgraph.orchid.Connection;
 import com.subgraph.orchid.ConnectionCache;
-import com.subgraph.orchid.ConnectionFailedException;
-import com.subgraph.orchid.ConnectionHandshakeException;
-import com.subgraph.orchid.ConnectionTimeoutException;
+import com.subgraph.orchid.exceptions.ConnectionFailedException;
+import com.subgraph.orchid.exceptions.ConnectionHandshakeException;
+import com.subgraph.orchid.exceptions.ConnectionTimeoutException;
 import com.subgraph.orchid.Router;
 import com.subgraph.orchid.Tor;
-import com.subgraph.orchid.TorException;
-import com.subgraph.orchid.circuits.path.PathSelectionFailedException;
+import com.subgraph.orchid.exceptions.TorException;
+import com.subgraph.orchid.exceptions.PathSelectionFailedException;
 
 public class CircuitBuildTask implements Runnable {
 	private final static Logger logger = Logger.getLogger(CircuitBuildTask.class.getName());

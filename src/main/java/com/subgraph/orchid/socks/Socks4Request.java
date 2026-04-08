@@ -2,7 +2,8 @@ package com.subgraph.orchid.socks;
 
 import java.net.Socket;
 
-import com.subgraph.orchid.TorConfig;
+import com.subgraph.orchid.config.TorConfig;
+import com.subgraph.orchid.exceptions.SocksRequestException;
 
 public class Socks4Request extends SocksRequest {
 	final static int SOCKS_COMMAND_CONNECT = 1;

@@ -11,9 +11,12 @@ import javax.crypto.Cipher;
 import javax.net.SocketFactory;
 
 import com.subgraph.orchid.circuits.TorInitializationTracker;
+import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.crypto.PRNGFixes;
 import com.subgraph.orchid.dashboard.Dashboard;
 import com.subgraph.orchid.directory.downloader.DirectoryDownloaderImpl;
+import com.subgraph.orchid.exceptions.OpenFailedException;
+import com.subgraph.orchid.exceptions.TorException;
 import com.subgraph.orchid.sockets.OrchidSocketFactory;
 
 /**

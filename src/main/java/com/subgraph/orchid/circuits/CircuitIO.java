@@ -13,16 +13,16 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.subgraph.orchid.Cell;
+import com.subgraph.orchid.circuits.cells.Cell;
 import com.subgraph.orchid.CircuitNode;
 import com.subgraph.orchid.Connection;
-import com.subgraph.orchid.ConnectionIOException;
-import com.subgraph.orchid.RelayCell;
+import com.subgraph.orchid.exceptions.ConnectionIOException;
+import com.subgraph.orchid.circuits.cells.RelayCell;
 import com.subgraph.orchid.Stream;
 import com.subgraph.orchid.Threading;
-import com.subgraph.orchid.TorException;
-import com.subgraph.orchid.circuits.cells.CellImpl;
-import com.subgraph.orchid.circuits.cells.RelayCellImpl;
+import com.subgraph.orchid.exceptions.TorException;
+import com.subgraph.orchid.circuits.cells.impls.CellImpl;
+import com.subgraph.orchid.circuits.cells.impls.RelayCellImpl;
 import com.subgraph.orchid.dashboard.DashboardRenderable;
 import com.subgraph.orchid.dashboard.DashboardRenderer;
 

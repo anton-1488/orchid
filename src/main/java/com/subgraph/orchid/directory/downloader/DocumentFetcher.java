@@ -9,6 +9,7 @@ import com.subgraph.orchid.directory.DocumentParserFactoryImpl;
 import com.subgraph.orchid.directory.parsing.BasicDocumentParsingResult;
 import com.subgraph.orchid.directory.parsing.DocumentParser;
 import com.subgraph.orchid.directory.parsing.DocumentParserFactory;
+import com.subgraph.orchid.exceptions.DirectoryRequestFailedException;
 
 public abstract class DocumentFetcher<T> {
 	protected final static DocumentParserFactory PARSER_FACTORY = new DocumentParserFactoryImpl();

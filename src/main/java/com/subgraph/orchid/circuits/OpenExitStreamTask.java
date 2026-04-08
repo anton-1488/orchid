@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 
 import com.subgraph.orchid.ExitCircuit;
 import com.subgraph.orchid.Stream;
-import com.subgraph.orchid.StreamConnectFailedException;
+import com.subgraph.orchid.exceptions.StreamConnectFailedException;
 
 public class OpenExitStreamTask implements Runnable {
 	private final static Logger logger = Logger.getLogger(OpenExitStreamTask.class.getName());

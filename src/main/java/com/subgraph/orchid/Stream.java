@@ -1,5 +1,7 @@
 package com.subgraph.orchid;
 
+import com.subgraph.orchid.circuits.Circuit;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 

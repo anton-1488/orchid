@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import com.subgraph.orchid.Document;
-import com.subgraph.orchid.TorConfig;
+import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.crypto.TorRandom;
 
 public class DirectoryStoreFile {

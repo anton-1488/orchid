@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
-import com.subgraph.orchid.OpenFailedException;
+import com.subgraph.orchid.exceptions.OpenFailedException;
 import com.subgraph.orchid.Stream;
-import com.subgraph.orchid.StreamConnectFailedException;
-import com.subgraph.orchid.TorConfig;
+import com.subgraph.orchid.exceptions.StreamConnectFailedException;
+import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.data.IPv4Address;
 
 public class PendingExitStreams {

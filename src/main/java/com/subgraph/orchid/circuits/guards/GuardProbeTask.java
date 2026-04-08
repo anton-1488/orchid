@@ -4,7 +4,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.subgraph.orchid.ConnectionCache;
-import com.subgraph.orchid.ConnectionIOException;
+import com.subgraph.orchid.exceptions.ConnectionIOException;
 import com.subgraph.orchid.GuardEntry;
 import com.subgraph.orchid.Router;
 

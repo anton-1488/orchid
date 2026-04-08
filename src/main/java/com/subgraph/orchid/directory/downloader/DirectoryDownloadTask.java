@@ -14,11 +14,12 @@ import com.subgraph.orchid.Directory;
 import com.subgraph.orchid.DirectoryDownloader;
 import com.subgraph.orchid.KeyCertificate;
 import com.subgraph.orchid.Threading;
-import com.subgraph.orchid.TorConfig;
-import com.subgraph.orchid.TorConfig.AutoBoolValue;
+import com.subgraph.orchid.config.TorConfig;
+import com.subgraph.orchid.config.TorConfig.AutoBoolValue;
 import com.subgraph.orchid.crypto.TorRandom;
 import com.subgraph.orchid.data.HexDigest;
 import com.subgraph.orchid.data.Timestamp;
+import com.subgraph.orchid.exceptions.DirectoryRequestFailedException;
 
 public class DirectoryDownloadTask implements Runnable {
 	private final static Logger logger = Logger.getLogger(DirectoryDownloadTask.class.getName());

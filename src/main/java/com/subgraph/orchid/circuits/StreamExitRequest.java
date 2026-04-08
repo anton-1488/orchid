@@ -2,9 +2,9 @@ package com.subgraph.orchid.circuits;
  
 import java.util.concurrent.TimeoutException;
 
-import com.subgraph.orchid.OpenFailedException;
+import com.subgraph.orchid.exceptions.OpenFailedException;
 import com.subgraph.orchid.Stream;
-import com.subgraph.orchid.StreamConnectFailedException;
+import com.subgraph.orchid.exceptions.StreamConnectFailedException;
 import com.subgraph.orchid.data.IPv4Address;
 import com.subgraph.orchid.data.exitpolicy.ExitTarget;
 import com.subgraph.orchid.misc.GuardedBy;

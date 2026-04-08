@@ -3,7 +3,8 @@ package com.subgraph.orchid.circuits.hs;
 import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
-import com.subgraph.orchid.TorParsingException;
+import com.subgraph.orchid.exceptions.HSAuthenticationException;
+import com.subgraph.orchid.exceptions.TorParsingException;
 import com.subgraph.orchid.crypto.TorSignature;
 import com.subgraph.orchid.directory.DocumentFieldParserImpl;
 import com.subgraph.orchid.directory.parsing.BasicDocumentParsingResult;

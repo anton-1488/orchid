@@ -6,7 +6,7 @@ import java.util.Set;
 
 import com.subgraph.orchid.ConsensusDocument.RequiredCertificate;
 import com.subgraph.orchid.data.HexDigest;
-import com.subgraph.orchid.events.EventHandler;
+import com.subgraph.orchid.directory.events.EventHandler;
 
 /**
  * 

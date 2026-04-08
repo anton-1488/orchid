@@ -6,9 +6,9 @@ import java.util.concurrent.TimeoutException;
 import com.subgraph.orchid.DirectoryCircuit;
 import com.subgraph.orchid.Router;
 import com.subgraph.orchid.Stream;
-import com.subgraph.orchid.StreamConnectFailedException;
+import com.subgraph.orchid.exceptions.StreamConnectFailedException;
 import com.subgraph.orchid.circuits.path.CircuitPathChooser;
-import com.subgraph.orchid.circuits.path.PathSelectionFailedException;
+import com.subgraph.orchid.exceptions.PathSelectionFailedException;
 
 public class DirectoryCircuitImpl extends CircuitImpl implements DirectoryCircuit {
 	

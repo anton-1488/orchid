@@ -1,6 +1,6 @@
 package com.subgraph.orchid.circuits.hs;
 
-import com.subgraph.orchid.TorParsingException;
+import com.subgraph.orchid.exceptions.TorParsingException;
 import com.subgraph.orchid.data.HexDigest;
 import com.subgraph.orchid.directory.parsing.BasicDocumentParsingResult;
 import com.subgraph.orchid.directory.parsing.DocumentFieldParser;

@@ -1,6 +1,5 @@
 package com.subgraph.orchid.config;
 
-import com.subgraph.orchid.TorConfig;
 import com.subgraph.orchid.circuits.hs.HSDescriptorCookie;
 import com.subgraph.orchid.data.HexDigest;
 import com.subgraph.orchid.data.IPv4Address;

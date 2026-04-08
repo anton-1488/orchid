@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.subgraph.orchid.ConsensusDocument.ConsensusFlavor;
-import com.subgraph.orchid.TorParsingException;
+import com.subgraph.orchid.exceptions.TorParsingException;
 import com.subgraph.orchid.directory.consensus.ConsensusDocumentParser.DocumentSection;
 import com.subgraph.orchid.directory.parsing.DocumentFieldParser;
 import com.subgraph.orchid.directory.parsing.NameIntegerParameter;

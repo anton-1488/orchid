@@ -12,10 +12,10 @@ import com.subgraph.orchid.BridgeRouter;
 import com.subgraph.orchid.DirectoryDownloader;
 import com.subgraph.orchid.Router;
 import com.subgraph.orchid.RouterDescriptor;
-import com.subgraph.orchid.TorConfig;
+import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.config.TorConfigBridgeLine;
 import com.subgraph.orchid.crypto.TorRandom;
-import com.subgraph.orchid.directory.downloader.DirectoryRequestFailedException;
+import com.subgraph.orchid.exceptions.DirectoryRequestFailedException;
 
 public class Bridges {
 	private static final Logger logger = Logger.getLogger(Bridges.class.getName());

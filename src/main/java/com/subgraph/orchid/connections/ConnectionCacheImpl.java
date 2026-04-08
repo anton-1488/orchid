@@ -20,11 +20,11 @@ import javax.net.ssl.SSLSocket;
 
 import com.subgraph.orchid.Connection;
 import com.subgraph.orchid.ConnectionCache;
-import com.subgraph.orchid.ConnectionFailedException;
-import com.subgraph.orchid.ConnectionHandshakeException;
-import com.subgraph.orchid.ConnectionTimeoutException;
+import com.subgraph.orchid.exceptions.ConnectionFailedException;
+import com.subgraph.orchid.exceptions.ConnectionHandshakeException;
+import com.subgraph.orchid.exceptions.ConnectionTimeoutException;
 import com.subgraph.orchid.Router;
-import com.subgraph.orchid.TorConfig;
+import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.circuits.TorInitializationTracker;
 import com.subgraph.orchid.dashboard.DashboardRenderable;
 import com.subgraph.orchid.dashboard.DashboardRenderer;

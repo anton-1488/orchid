@@ -15,7 +15,7 @@ import com.subgraph.orchid.DirectoryDownloader;
 import com.subgraph.orchid.GuardEntry;
 import com.subgraph.orchid.Router;
 import com.subgraph.orchid.Threading;
-import com.subgraph.orchid.TorConfig;
+import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.circuits.path.CircuitNodeChooser;
 import com.subgraph.orchid.circuits.path.CircuitNodeChooser.WeightRule;
 import com.subgraph.orchid.circuits.path.RouterFilter;

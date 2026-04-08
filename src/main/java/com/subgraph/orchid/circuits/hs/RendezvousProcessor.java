@@ -3,10 +3,10 @@ package com.subgraph.orchid.circuits.hs;
 import java.math.BigInteger;
 import java.util.logging.Logger;
 
-import com.subgraph.orchid.Cell;
+import com.subgraph.orchid.circuits.cells.Cell;
 import com.subgraph.orchid.HiddenServiceCircuit;
 import com.subgraph.orchid.InternalCircuit;
-import com.subgraph.orchid.RelayCell;
+import com.subgraph.orchid.circuits.cells.RelayCell;
 import com.subgraph.orchid.Router;
 import com.subgraph.orchid.circuits.CircuitNodeCryptoState;
 import com.subgraph.orchid.circuits.CircuitNodeImpl;

@@ -2,8 +2,9 @@ package com.subgraph.orchid.socks;
 
 import java.net.Socket;
 
-import com.subgraph.orchid.TorConfig;
-import com.subgraph.orchid.TorException;
+import com.subgraph.orchid.config.TorConfig;
+import com.subgraph.orchid.exceptions.SocksRequestException;
+import com.subgraph.orchid.exceptions.TorException;
 
 public class Socks5Request extends SocksRequest {
 	final static int SOCKS5_VERSION = 5;

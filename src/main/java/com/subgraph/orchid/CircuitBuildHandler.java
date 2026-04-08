@@ -1,9 +1,11 @@
 package com.subgraph.orchid;
 
+import com.subgraph.orchid.circuits.Circuit;
+
 /**
  * This callback interface is used for reporting progress when
  * opening a new circuit.  An instance of this interface is passed
- * to the {@link Circuit#openCircuit(java.util.List, CircuitBuildHandler)} 
+ * to the {@link Circuit#openCircuit(java.util.List, CircuitBuildHandler)}
  * method.
  * 
  * The normal sequence of callbacks which are fired when a circuit is opened

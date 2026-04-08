@@ -7,7 +7,7 @@ import java.security.SecureRandom;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
-import com.subgraph.orchid.TorException;
+import com.subgraph.orchid.exceptions.TorException;
 
 public class TorPrivateKey {
 

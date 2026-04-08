@@ -1,7 +1,7 @@
 package com.subgraph.orchid.directory.router;
 
 import com.subgraph.orchid.RouterDescriptor;
-import com.subgraph.orchid.TorParsingException;
+import com.subgraph.orchid.exceptions.TorParsingException;
 import com.subgraph.orchid.crypto.TorSignature;
 import com.subgraph.orchid.data.BandwidthHistory;
 import com.subgraph.orchid.data.Timestamp;

@@ -3,8 +3,8 @@ package com.subgraph.orchid.data;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import com.subgraph.orchid.TorException;
-import com.subgraph.orchid.TorParsingException;
+import com.subgraph.orchid.exceptions.TorException;
+import com.subgraph.orchid.exceptions.TorParsingException;
 
 public class IPv4Address {
 	

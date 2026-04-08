@@ -4,7 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import com.subgraph.orchid.TorException;
+import com.subgraph.orchid.exceptions.TorException;
 import com.subgraph.orchid.data.HexDigest;
 
 /**

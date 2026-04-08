@@ -11,7 +11,7 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-import com.subgraph.orchid.TorException;
+import com.subgraph.orchid.exceptions.TorException;
 import com.subgraph.orchid.data.HexDigest;
 import com.subgraph.orchid.misc.Utils;
 

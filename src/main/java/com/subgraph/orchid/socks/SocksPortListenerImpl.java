@@ -13,8 +13,8 @@ import java.util.logging.Logger;
 
 import com.subgraph.orchid.CircuitManager;
 import com.subgraph.orchid.SocksPortListener;
-import com.subgraph.orchid.TorConfig;
-import com.subgraph.orchid.TorException;
+import com.subgraph.orchid.config.TorConfig;
+import com.subgraph.orchid.exceptions.TorException;
 
 public class SocksPortListenerImpl implements SocksPortListener {
 	private final static Logger logger = Logger.getLogger(SocksPortListenerImpl.class.getName());

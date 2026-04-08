@@ -14,11 +14,12 @@ import com.subgraph.orchid.Directory;
 import com.subgraph.orchid.DirectoryCircuit;
 import com.subgraph.orchid.DirectoryDownloader;
 import com.subgraph.orchid.KeyCertificate;
-import com.subgraph.orchid.OpenFailedException;
+import com.subgraph.orchid.exceptions.DirectoryRequestFailedException;
+import com.subgraph.orchid.exceptions.OpenFailedException;
 import com.subgraph.orchid.Router;
 import com.subgraph.orchid.RouterDescriptor;
 import com.subgraph.orchid.RouterMicrodescriptor;
-import com.subgraph.orchid.TorConfig;
+import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.circuits.TorInitializationTracker;
 import com.subgraph.orchid.data.HexDigest;
 

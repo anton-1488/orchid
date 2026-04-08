@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.subgraph.orchid.TorException;
+import com.subgraph.orchid.exceptions.TorException;
 
 public class RandomSet<E> {
 	
@@ -16,12 +16,12 @@ public class RandomSet<E> {
 	private final SecureRandom random;
 	
 	public RandomSet() {
-		set = new HashSet<E>();
-		list = new ArrayList<E>();
+		set = new HashSet<>();
+		list = new ArrayList<>();
 		random = createRandom();
 	}
 	
-	private static SecureRandom createRandom() {
+	private SecureRandom createRandom() {
 		try {
 			return SecureRandom.getInstance("SHA1PRNG");
 		} catch (NoSuchAlgorithmException e) {
@@ -38,7 +38,7 @@ public class RandomSet<E> {
 		}
 	}
 	
-	public boolean contains(Object o) {
+	public boolean contains(E o) {
 		return set.contains(o);
 	}
 	
@@ -51,7 +51,7 @@ public class RandomSet<E> {
 		list.clear();
 	}
 	
-	public boolean remove(Object o) {
+	public boolean remove(E o) {
 		if(set.remove(o)) {
 			list.remove(o);
 			return true;
@@ -68,5 +68,4 @@ public class RandomSet<E> {
 		int idx = random.nextInt(list.size());
 		return list.get(idx);
 	}
-
 }

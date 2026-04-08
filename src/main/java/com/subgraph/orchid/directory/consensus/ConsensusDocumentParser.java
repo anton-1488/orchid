@@ -1,7 +1,7 @@
 package com.subgraph.orchid.directory.consensus;
 
 import com.subgraph.orchid.ConsensusDocument;
-import com.subgraph.orchid.TorParsingException;
+import com.subgraph.orchid.exceptions.TorParsingException;
 import com.subgraph.orchid.directory.parsing.BasicDocumentParsingResult;
 import com.subgraph.orchid.directory.parsing.DocumentFieldParser;
 import com.subgraph.orchid.directory.parsing.DocumentParser;

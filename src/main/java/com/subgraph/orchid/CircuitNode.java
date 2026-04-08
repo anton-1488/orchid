@@ -1,6 +1,9 @@
 package com.subgraph.orchid;
 
 
+import com.subgraph.orchid.circuits.Circuit;
+import com.subgraph.orchid.circuits.cells.Cell;
+import com.subgraph.orchid.circuits.cells.RelayCell;
 
 /**
  * Represents the state of a single onion router hop in a connected or connecting {@link Circuit}

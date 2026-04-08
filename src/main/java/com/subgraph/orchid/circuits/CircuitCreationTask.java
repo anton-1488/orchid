@@ -9,7 +9,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.subgraph.orchid.Circuit;
 import com.subgraph.orchid.CircuitBuildHandler;
 import com.subgraph.orchid.CircuitNode;
 import com.subgraph.orchid.Connection;
@@ -19,7 +18,7 @@ import com.subgraph.orchid.ExitCircuit;
 import com.subgraph.orchid.InternalCircuit;
 import com.subgraph.orchid.Router;
 import com.subgraph.orchid.Threading;
-import com.subgraph.orchid.TorConfig;
+import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.circuits.CircuitManagerImpl.CircuitFilter;
 import com.subgraph.orchid.circuits.path.CircuitPathChooser;
 import com.subgraph.orchid.data.exitpolicy.ExitTarget;

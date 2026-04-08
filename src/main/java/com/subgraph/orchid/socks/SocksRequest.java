@@ -4,8 +4,9 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.logging.Logger;
 
-import com.subgraph.orchid.TorConfig;
+import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.data.IPv4Address;
+import com.subgraph.orchid.exceptions.SocksRequestException;
 
 public abstract class SocksRequest {
 	private final static Logger logger = Logger.getLogger(SocksRequest.class.getName());

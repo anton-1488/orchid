@@ -25,18 +25,18 @@ import com.subgraph.orchid.Router;
 import com.subgraph.orchid.RouterDescriptor;
 import com.subgraph.orchid.RouterMicrodescriptor;
 import com.subgraph.orchid.RouterStatus;
-import com.subgraph.orchid.TorConfig;
-import com.subgraph.orchid.TorConfig.AutoBoolValue;
-import com.subgraph.orchid.TorException;
+import com.subgraph.orchid.config.TorConfig;
+import com.subgraph.orchid.config.TorConfig.AutoBoolValue;
+import com.subgraph.orchid.exceptions.TorException;
 import com.subgraph.orchid.crypto.TorRandom;
 import com.subgraph.orchid.data.HexDigest;
 import com.subgraph.orchid.data.RandomSet;
 import com.subgraph.orchid.directory.parsing.DocumentParser;
 import com.subgraph.orchid.directory.parsing.DocumentParserFactory;
 import com.subgraph.orchid.directory.parsing.DocumentParsingResult;
-import com.subgraph.orchid.events.Event;
-import com.subgraph.orchid.events.EventHandler;
-import com.subgraph.orchid.events.EventManager;
+import com.subgraph.orchid.directory.events.Event;
+import com.subgraph.orchid.directory.events.EventHandler;
+import com.subgraph.orchid.directory.events.EventManager;
 
 public class DirectoryImpl implements Directory {
 	private final static Logger logger = Logger.getLogger(DirectoryImpl.class.getName());

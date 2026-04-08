@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import com.subgraph.orchid.config.TorConfig;
 import org.junit.Before;
 import org.junit.Test;
 

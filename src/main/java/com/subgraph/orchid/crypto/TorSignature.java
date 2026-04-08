@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Arrays;
 
-import com.subgraph.orchid.TorException;
-import com.subgraph.orchid.TorParsingException;
+import com.subgraph.orchid.exceptions.TorException;
+import com.subgraph.orchid.exceptions.TorParsingException;
 import com.subgraph.orchid.encoders.Base64;
 import com.subgraph.orchid.encoders.Hex;
 

@@ -3,8 +3,8 @@ package com.subgraph.orchid.circuits;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import com.subgraph.orchid.RelayCell;
-import com.subgraph.orchid.circuits.cells.RelayCellImpl;
+import com.subgraph.orchid.circuits.cells.RelayCell;
+import com.subgraph.orchid.circuits.cells.impls.RelayCellImpl;
 
 public class TorOutputStream extends OutputStream {
 

@@ -8,11 +8,11 @@ import java.util.logging.Logger;
 
 import com.subgraph.orchid.Directory;
 import com.subgraph.orchid.HiddenServiceCircuit;
-import com.subgraph.orchid.OpenFailedException;
+import com.subgraph.orchid.exceptions.OpenFailedException;
 import com.subgraph.orchid.Stream;
-import com.subgraph.orchid.StreamConnectFailedException;
-import com.subgraph.orchid.TorConfig;
-import com.subgraph.orchid.TorException;
+import com.subgraph.orchid.exceptions.StreamConnectFailedException;
+import com.subgraph.orchid.config.TorConfig;
+import com.subgraph.orchid.exceptions.TorException;
 import com.subgraph.orchid.circuits.CircuitManagerImpl;
 
 public class HiddenServiceManager {

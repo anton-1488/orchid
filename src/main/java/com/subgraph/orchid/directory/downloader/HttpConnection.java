@@ -15,6 +15,7 @@ import java.util.zip.Inflater;
 
 import com.subgraph.orchid.Router;
 import com.subgraph.orchid.Stream;
+import com.subgraph.orchid.exceptions.DirectoryRequestFailedException;
 
 public class HttpConnection {
 	private final static Charset CHARSET = Charset.forName("ISO-8859-1");

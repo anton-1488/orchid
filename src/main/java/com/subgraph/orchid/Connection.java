@@ -1,6 +1,10 @@
 package com.subgraph.orchid;
 
 
+import com.subgraph.orchid.circuits.Circuit;
+import com.subgraph.orchid.circuits.cells.Cell;
+import com.subgraph.orchid.exceptions.ConnectionIOException;
+
 /**
  * A network connection to a Tor onion router.   
  */
@@ -28,7 +32,7 @@ public interface Connection {
 	void sendCell(Cell cell) throws ConnectionIOException;
 	
 	/**
-	 * Remove a Circuit which has been bound to this Connection by a previous call to {@link #bindCircuit(Circuit) bindCircuit}.  
+	 * Remove a Circuit which has been bound to this Connection by a previous call to {@link #bindCircuit(Circuit) bindCircuit}.
 	 * After removing a Circuit, any further received incoming cells for the Circuit will be discarded.
 	 * 
 	 * @param circuit The Circuit to remove.

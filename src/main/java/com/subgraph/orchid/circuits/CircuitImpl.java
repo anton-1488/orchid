@@ -8,20 +8,19 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
 
-import com.subgraph.orchid.Cell;
-import com.subgraph.orchid.Circuit;
+import com.subgraph.orchid.circuits.cells.Cell;
 import com.subgraph.orchid.CircuitNode;
 import com.subgraph.orchid.Connection;
 import com.subgraph.orchid.DirectoryCircuit;
 import com.subgraph.orchid.ExitCircuit;
 import com.subgraph.orchid.InternalCircuit;
-import com.subgraph.orchid.RelayCell;
+import com.subgraph.orchid.circuits.cells.RelayCell;
 import com.subgraph.orchid.Router;
 import com.subgraph.orchid.Stream;
-import com.subgraph.orchid.StreamConnectFailedException;
-import com.subgraph.orchid.TorException;
+import com.subgraph.orchid.exceptions.StreamConnectFailedException;
+import com.subgraph.orchid.exceptions.TorException;
 import com.subgraph.orchid.circuits.path.CircuitPathChooser;
-import com.subgraph.orchid.circuits.path.PathSelectionFailedException;
+import com.subgraph.orchid.exceptions.PathSelectionFailedException;
 import com.subgraph.orchid.dashboard.DashboardRenderable;
 import com.subgraph.orchid.dashboard.DashboardRenderer;
 

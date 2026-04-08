@@ -1,6 +1,6 @@
 package com.subgraph.orchid.directory.parsing;
 
-import com.subgraph.orchid.TorParsingException;
+import com.subgraph.orchid.exceptions.TorParsingException;
 import com.subgraph.orchid.crypto.TorMessageDigest;
 import com.subgraph.orchid.crypto.TorPublicKey;
 import com.subgraph.orchid.crypto.TorSignature;

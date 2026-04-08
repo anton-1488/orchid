@@ -1,7 +1,7 @@
 package com.subgraph.orchid.directory.router;
 
 import com.subgraph.orchid.RouterMicrodescriptor;
-import com.subgraph.orchid.TorParsingException;
+import com.subgraph.orchid.exceptions.TorParsingException;
 import com.subgraph.orchid.crypto.TorMessageDigest;
 import com.subgraph.orchid.directory.parsing.BasicDocumentParsingResult;
 import com.subgraph.orchid.directory.parsing.DocumentFieldParser;

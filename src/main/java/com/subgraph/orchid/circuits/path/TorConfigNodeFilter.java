@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.subgraph.orchid.Router;
-import com.subgraph.orchid.TorConfig;
+import com.subgraph.orchid.config.TorConfig;
 
 public class TorConfigNodeFilter {
 	

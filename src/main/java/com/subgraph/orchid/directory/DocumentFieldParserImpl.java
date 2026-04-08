@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.logging.Logger;
 
-import com.subgraph.orchid.TorException;
-import com.subgraph.orchid.TorParsingException;
+import com.subgraph.orchid.exceptions.TorException;
+import com.subgraph.orchid.exceptions.TorParsingException;
 import com.subgraph.orchid.crypto.TorMessageDigest;
 import com.subgraph.orchid.crypto.TorNTorKeyAgreement;
 import com.subgraph.orchid.crypto.TorPublicKey;

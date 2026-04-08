@@ -3,7 +3,7 @@ package com.subgraph.orchid.crypto;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
-import com.subgraph.orchid.TorException;
+import com.subgraph.orchid.exceptions.TorException;
 
 public class TorRandom {
 

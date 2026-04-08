@@ -8,8 +8,8 @@ import java.util.List;
 import com.subgraph.orchid.ConsensusDocument;
 import com.subgraph.orchid.Directory;
 import com.subgraph.orchid.Router;
-import com.subgraph.orchid.TorConfig;
-import com.subgraph.orchid.TorConfig.AutoBoolValue;
+import com.subgraph.orchid.config.TorConfig;
+import com.subgraph.orchid.config.TorConfig.AutoBoolValue;
 import com.subgraph.orchid.data.HexDigest;
 
 public class DescriptorProcessor {

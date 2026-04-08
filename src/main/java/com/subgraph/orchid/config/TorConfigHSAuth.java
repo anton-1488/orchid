@@ -3,7 +3,7 @@ package com.subgraph.orchid.config;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.subgraph.orchid.TorException;
+import com.subgraph.orchid.exceptions.TorException;
 import com.subgraph.orchid.circuits.hs.HSDescriptorCookie;
 import com.subgraph.orchid.circuits.hs.HSDescriptorCookie.CookieType;
 import com.subgraph.orchid.data.Base32;

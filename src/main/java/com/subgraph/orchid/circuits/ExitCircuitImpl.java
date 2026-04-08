@@ -8,9 +8,9 @@ import java.util.concurrent.TimeoutException;
 import com.subgraph.orchid.ExitCircuit;
 import com.subgraph.orchid.Router;
 import com.subgraph.orchid.Stream;
-import com.subgraph.orchid.StreamConnectFailedException;
+import com.subgraph.orchid.exceptions.StreamConnectFailedException;
 import com.subgraph.orchid.circuits.path.CircuitPathChooser;
-import com.subgraph.orchid.circuits.path.PathSelectionFailedException;
+import com.subgraph.orchid.exceptions.PathSelectionFailedException;
 import com.subgraph.orchid.data.IPv4Address;
 import com.subgraph.orchid.data.exitpolicy.ExitTarget;
 

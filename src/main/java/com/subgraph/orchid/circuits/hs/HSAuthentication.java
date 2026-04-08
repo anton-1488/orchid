@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.subgraph.orchid.TorParsingException;
+import com.subgraph.orchid.exceptions.HSAuthenticationException;
+import com.subgraph.orchid.exceptions.TorParsingException;
 import com.subgraph.orchid.circuits.hs.HSDescriptorCookie.CookieType;
 import com.subgraph.orchid.crypto.TorMessageDigest;
 import com.subgraph.orchid.crypto.TorStreamCipher;

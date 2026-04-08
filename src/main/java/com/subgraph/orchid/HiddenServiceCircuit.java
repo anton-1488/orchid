@@ -1,5 +1,8 @@
 package com.subgraph.orchid;
 
+import com.subgraph.orchid.circuits.Circuit;
+import com.subgraph.orchid.exceptions.StreamConnectFailedException;
+
 import java.util.concurrent.TimeoutException;
 
 

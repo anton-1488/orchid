@@ -8,7 +8,7 @@ import com.subgraph.orchid.Directory;
 import com.subgraph.orchid.Router;
 import com.subgraph.orchid.RouterDescriptor;
 import com.subgraph.orchid.RouterStatus;
-import com.subgraph.orchid.TorException;
+import com.subgraph.orchid.exceptions.TorException;
 import com.subgraph.orchid.crypto.TorPublicKey;
 import com.subgraph.orchid.data.HexDigest;
 import com.subgraph.orchid.data.IPv4Address;

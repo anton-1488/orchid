@@ -15,9 +15,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.subgraph.orchid.RelayCell;
+import com.subgraph.orchid.circuits.cells.RelayCell;
 import com.subgraph.orchid.Stream;
-import com.subgraph.orchid.circuits.TorInputStream;
 
 public class TorInputStreamTest {
 

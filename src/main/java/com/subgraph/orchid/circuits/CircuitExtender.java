@@ -2,13 +2,13 @@ package com.subgraph.orchid.circuits;
 
 import java.util.logging.Logger;
 
-import com.subgraph.orchid.Cell;
+import com.subgraph.orchid.circuits.cells.Cell;
 import com.subgraph.orchid.CircuitNode;
-import com.subgraph.orchid.RelayCell;
+import com.subgraph.orchid.circuits.cells.RelayCell;
 import com.subgraph.orchid.Router;
-import com.subgraph.orchid.TorException;
-import com.subgraph.orchid.circuits.cells.CellImpl;
-import com.subgraph.orchid.circuits.cells.RelayCellImpl;
+import com.subgraph.orchid.exceptions.TorException;
+import com.subgraph.orchid.circuits.cells.impls.CellImpl;
+import com.subgraph.orchid.circuits.cells.impls.RelayCellImpl;
 import com.subgraph.orchid.crypto.TorCreateFastKeyAgreement;
 import com.subgraph.orchid.crypto.TorKeyAgreement;
 import com.subgraph.orchid.crypto.TorMessageDigest;

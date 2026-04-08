@@ -7,13 +7,12 @@ import java.io.PrintWriter;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
 
-import com.subgraph.orchid.Circuit;
 import com.subgraph.orchid.CircuitNode;
-import com.subgraph.orchid.RelayCell;
+import com.subgraph.orchid.circuits.cells.RelayCell;
 import com.subgraph.orchid.Stream;
-import com.subgraph.orchid.StreamConnectFailedException;
-import com.subgraph.orchid.TorException;
-import com.subgraph.orchid.circuits.cells.RelayCellImpl;
+import com.subgraph.orchid.exceptions.StreamConnectFailedException;
+import com.subgraph.orchid.exceptions.TorException;
+import com.subgraph.orchid.circuits.cells.impls.RelayCellImpl;
 import com.subgraph.orchid.dashboard.DashboardRenderable;
 import com.subgraph.orchid.dashboard.DashboardRenderer;
 

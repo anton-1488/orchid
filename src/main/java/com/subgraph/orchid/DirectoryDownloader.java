@@ -5,7 +5,7 @@ import java.util.Set;
 
 import com.subgraph.orchid.ConsensusDocument.RequiredCertificate;
 import com.subgraph.orchid.data.HexDigest;
-import com.subgraph.orchid.directory.downloader.DirectoryRequestFailedException;
+import com.subgraph.orchid.exceptions.DirectoryRequestFailedException;
 
 public interface DirectoryDownloader {
 	void start(Directory directory);

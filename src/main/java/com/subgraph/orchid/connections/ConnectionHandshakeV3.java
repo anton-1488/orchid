@@ -15,9 +15,9 @@ import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 
-import com.subgraph.orchid.Cell;
-import com.subgraph.orchid.ConnectionHandshakeException;
-import com.subgraph.orchid.ConnectionIOException;
+import com.subgraph.orchid.circuits.cells.Cell;
+import com.subgraph.orchid.exceptions.ConnectionHandshakeException;
+import com.subgraph.orchid.exceptions.ConnectionIOException;
 
 public class ConnectionHandshakeV3 extends ConnectionHandshake {
 

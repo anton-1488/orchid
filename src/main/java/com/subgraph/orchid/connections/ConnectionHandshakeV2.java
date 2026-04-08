@@ -12,8 +12,8 @@ import javax.net.ssl.SSLSocket;
 import javax.security.cert.CertificateException;
 import javax.security.cert.X509Certificate;
 
-import com.subgraph.orchid.ConnectionHandshakeException;
-import com.subgraph.orchid.ConnectionIOException;
+import com.subgraph.orchid.exceptions.ConnectionHandshakeException;
+import com.subgraph.orchid.exceptions.ConnectionIOException;
 
 /**
  * This class performs a Version 2 handshake as described in section 2 of

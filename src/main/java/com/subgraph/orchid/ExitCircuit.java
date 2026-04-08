@@ -2,8 +2,10 @@ package com.subgraph.orchid;
 
 import java.util.concurrent.TimeoutException;
 
+import com.subgraph.orchid.circuits.Circuit;
 import com.subgraph.orchid.data.IPv4Address;
 import com.subgraph.orchid.data.exitpolicy.ExitTarget;
+import com.subgraph.orchid.exceptions.StreamConnectFailedException;
 
 public interface ExitCircuit extends Circuit {
 	

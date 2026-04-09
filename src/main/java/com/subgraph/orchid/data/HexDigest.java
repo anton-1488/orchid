@@ -1,13 +1,13 @@
 package com.subgraph.orchid.data;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.subgraph.orchid.Tor;
-import com.subgraph.orchid.exceptions.TorException;
 import com.subgraph.orchid.crypto.TorMessageDigest;
-import com.subgraph.orchid.encoders.Base64;
-import com.subgraph.orchid.encoders.Hex;
+import com.subgraph.orchid.exceptions.TorException;
+import org.bouncycastle.util.encoders.Base32;
+import org.bouncycastle.util.encoders.Base64;
+
+import java.util.Arrays;
+import java.util.HexFormat;
 
 /**
  * This class represents both digests and fingerprints that appear in directory
@@ -27,23 +27,20 @@ import com.subgraph.orchid.encoders.Hex;
  *
  */
 public class HexDigest {
-    public static HexDigest createFromStringList(List<String> strings) {
-        StringBuilder builder = new StringBuilder();
-        for (String chunk : strings)
-            builder.append(chunk);
-        return createFromString(builder.toString());
-    }
+    private static final HexFormat HEX = HexFormat.of().withLowerCase();
 
     public static HexDigest createFromBase32String(String b32) {
-        return new HexDigest(Base32.base32Decode(b32));
+        return new HexDigest(Base32.decode(b32));
     }
 
     public static HexDigest createFromString(String fingerprint) {
-        final String[] parts = fingerprint.split(" ");
-        if (parts.length > 1)
-            return createFromStringList(Arrays.asList(parts));
-        final byte[] digestData = Hex.decode(fingerprint);
-        return new HexDigest(digestData);
+        try {
+            String clean = fingerprint.replaceAll("\\s+", "");
+            byte[] digestData = HEX.parseHex(clean);
+            return new HexDigest(digestData);
+        } catch (IllegalArgumentException e) {
+            throw new TorException("Invalid hex string: " + fingerprint, e);
+        }
     }
 
     public static HexDigest createFromDigestBytes(byte[] data) {
@@ -63,9 +60,8 @@ public class HexDigest {
         if (data.length != TorMessageDigest.TOR_DIGEST_SIZE && data.length != TorMessageDigest.TOR_DIGEST256_SIZE) {
             throw new TorException("Digest data is not the correct length " + data.length + " != (" + TorMessageDigest.TOR_DIGEST_SIZE + " or " + TorMessageDigest.TOR_DIGEST256_SIZE + ")");
         }
-        digestBytes = new byte[data.length];
+        digestBytes = data.clone();
         isDigest256 = digestBytes.length == TorMessageDigest.TOR_DIGEST256_SIZE;
-        System.arraycopy(data, 0, digestBytes, 0, data.length);
     }
 
     public boolean isDigest256() {
@@ -73,39 +69,33 @@ public class HexDigest {
     }
 
     public byte[] getRawBytes() {
-        return Arrays.copyOf(digestBytes, digestBytes.length);
+        return digestBytes.clone();
     }
 
     public String toString() {
-        return new String(Hex.encode(digestBytes));
+        return HEX.formatHex(digestBytes);
     }
 
     /**
      * Return a spaced fingerprint representation of this HexDigest.
      * <p>
      * ex:
-     * <p>
      * 1E0F 5874 2268 E82F C600 D81D 9064 07C5 7CC2 C3A7
+     * <p>
      *
      * @return A string representation of this HexDigest in the spaced fingerprint format.
      */
     public String toSpacedString() {
-        final String original = toString();
-        final StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < original.length(); i++) {
-            if (i > 0 && (i % 4) == 0)
-                builder.append(' ');
-            builder.append(original.charAt(i));
-        }
-        return builder.toString();
+        return toString().replaceAll("(.{4})(?!$)", "$1 ").toUpperCase();
     }
 
     public String toBase32() {
-        return Base32.base32Encode(digestBytes);
+        return new String(Base32.encode(digestBytes));
     }
 
     public String toBase64(boolean stripTrailingEquals) {
-        final String b64 = new String(Base64.encode(digestBytes), Tor.getDefaultCharset());
+        String b64 = new String(Base64.encode(digestBytes), Tor.getDefaultCharset());
+
         if (stripTrailingEquals) {
             return stripTrailingEquals(b64);
         } else {
@@ -113,28 +103,16 @@ public class HexDigest {
         }
     }
 
-    private String stripTrailingEquals(String s) {
-        int idx = s.length();
-        while (idx > 0 && s.charAt(idx - 1) == '=') {
-            idx -= 1;
-        }
-        return s.substring(0, idx);
+    private static String stripTrailingEquals(String s) {
+        return s.replaceAll("=+$", "");
     }
 
     public boolean equals(Object o) {
-        if (!(o instanceof HexDigest))
-            return false;
-        final HexDigest other = (HexDigest) o;
+        if (!(o instanceof HexDigest other)) return false;
         return Arrays.equals(other.digestBytes, this.digestBytes);
     }
 
     public int hashCode() {
-        int hash = 0;
-        for (int i = 0; i < 4; i++) {
-            hash <<= 8;
-            hash |= (digestBytes[i] & 0xFF);
-        }
-        return hash;
+        return Arrays.hashCode(digestBytes);
     }
-
 }

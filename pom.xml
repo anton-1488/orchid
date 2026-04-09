@@ -18,6 +18,7 @@
         <junit.version>5.11.4</junit.version>
         <logback.version>1.5.26</logback.version>
         <bc.version>1.83</bc.version>
+        <geoip.version>5.0.2</geoip.version>
     </properties>
 
     <dependencies>
@@ -32,6 +33,14 @@
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
         </dependency>
+
+        <!-- GeoIP dependencies !-->
+        <dependency>
+            <groupId>com.maxmind.geoip2</groupId>
+            <artifactId>geoip2</artifactId>
+            <version>${geoip.version}</version>
+        </dependency>
+
 
         <!-- Bouncy Castle dependencies !-->
         <dependency>

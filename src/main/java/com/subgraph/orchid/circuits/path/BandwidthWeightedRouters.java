@@ -120,7 +120,7 @@ public class BandwidthWeightedRouters {
 			final int idx = random.nextInt(weightedRouters.size());
 			return weightedRouters.get(idx).router;
 		}
-		return chooseFirstElementAboveRandom(random.nextLong(total));
+		return chooseFirstElementAboveRandom(TorRandom.nextLong(total));
 	}
 	
 	void adjustWeights(double exitWeight, double guardWeight) {

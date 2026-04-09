@@ -1,6 +1,7 @@
 package com.subgraph.orchid.circuits.cells;
 
 import com.subgraph.orchid.CircuitNode;
+import com.subgraph.orchid.circuits.cells.enums.CellCommand;
 import com.subgraph.orchid.circuits.cells.enums.RelayCellCommand;
 
 import java.nio.ByteBuffer;
@@ -22,6 +23,18 @@ public interface RelayCell extends Cell {
     CircuitNode getCircuitNode();
 
     ByteBuffer getPayloadBuffer();
+
+    /**
+     * Check if this is a relay early cell
+     */
+    default boolean isRelayEarly() {
+        return getCommand() == CellCommand.RELAY_EARLY;
+    }
+
+    /**
+     * Check if this cell is outgoing (being sent) or incoming (received)
+     */
+    boolean isOutgoing();
 
     void setLength();
 

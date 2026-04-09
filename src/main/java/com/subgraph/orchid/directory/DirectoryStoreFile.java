@@ -177,7 +177,7 @@ public class DirectoryStoreFile {
 	}
 
 	private File createTempFile() {
-		final long n = random.nextLong();
+		final long n = TorRandom.nextLong();
 		final File f = new File(config.getDataDirectory(), cacheFilename + Long.toString(n));
 		f.deleteOnExit();
 		return f;

@@ -53,11 +53,12 @@ public class RelayCellImpl extends CellImpl implements RelayCell {
         this.isOutgoing = false;
         reader.getInt();
         int payloadLength = reader.getShort();
+
         cellBuffer.mark(); // End of header
+        cellBuffer.limit(RelayCell.HEADER_SIZE + payloadLength);
         if (RelayCell.HEADER_SIZE + payloadLength > rawCell.length) {
             throw new TorException("Header length field exceeds total size of cell");
         }
-        cellBuffer.limit(RelayCell.HEADER_SIZE + payloadLength);
     }
 
     public int getStreamId() {
@@ -82,6 +83,11 @@ public class RelayCellImpl extends CellImpl implements RelayCell {
 
     public CircuitNode getCircuitNode() {
         return circuitNode;
+    }
+
+    @Override
+    public boolean isOutgoing() {
+        return isOutgoing;
     }
 
     @Override

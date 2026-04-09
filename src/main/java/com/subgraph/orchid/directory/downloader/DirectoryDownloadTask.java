@@ -121,7 +121,7 @@ public class DirectoryDownloadTask implements Runnable {
 		final long i1 = fu - va;
 		final long start = fu + ((i1 * 3) / 4);
 		final long i2 = ((vu - start) * 7) / 8;
-		final long r = random.nextLong(i2);
+		final long r = TorRandom.nextLong(i2);
 		final long download = start + r;
 		return new Date(download);
 	}

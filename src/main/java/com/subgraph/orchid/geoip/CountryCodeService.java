@@ -1,19 +1,20 @@
 package com.subgraph.orchid.geoip;
 
+import com.maxmind.geoip2.DatabaseReader;
+import com.maxmind.geoip2.exception.AddressNotFoundException;
+import com.maxmind.geoip2.model.CountryResponse;
+import com.maxmind.geoip2.record.Country;
 import com.subgraph.orchid.data.IPv4Address;
+import com.subgraph.orchid.exceptions.TorException;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.util.List;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.InetAddress;
 import java.util.Objects;
 
 public class CountryCodeService {
-    private final static String DATABASE_FILENAME = "data/GeoIP.dat";
-    private final static int COUNTRY_BEGIN = 16776960;
-    private final static int STANDARD_RECORD_LENGTH = 3;
-    private final static int MAX_RECORD_LENGTH = 4;
-    private final static List<String> COUNTRY_CODES = CountryCodesParser.parseCountryCodes();
-
+    private final static String DATABASE_FILENAME = "/data/GeoLite2-Country.mmdb";
     private final static CountryCodeService DEFAULT_INSTANCE = new CountryCodeService();
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(CountryCodeService.class);
 
@@ -21,78 +22,41 @@ public class CountryCodeService {
         return DEFAULT_INSTANCE;
     }
 
-    private final byte[] database;
+    private final DatabaseReader reader;
 
     public CountryCodeService() {
-        this.database = loadDatabase();
+        this.reader = loadDatabase();
     }
 
-    private static byte[] loadDatabase() {
-        try (InputStream input = CountryCodeService.class.getResourceAsStream("/data/" + DATABASE_FILENAME)) {
+    private DatabaseReader loadDatabase() {
+        try (InputStream input = CountryCodeService.class.getResourceAsStream(DATABASE_FILENAME)) {
             Objects.requireNonNull(input);
-            return loadEntireStream(input);
+            return new DatabaseReader.Builder(input).build();
         } catch (IOException e) {
-            log.warn("IO error reading database file for country code lookups");
-            return null;
+            throw new TorException(e);
         }
-    }
-
-    private static byte[] loadEntireStream(InputStream input) throws IOException {
-        ByteArrayOutputStream output = new ByteArrayOutputStream(4096);
-        input.transferTo(output);
-        return output.toByteArray();
     }
 
     public String getCountryCodeForAddress(IPv4Address address) {
-        return COUNTRY_CODES.get(seekCountry(address));
-    }
-
-    private int seekCountry(IPv4Address address) {
-        if (database == null) {
-            return 0;
+        if (reader == null) {
+            return "??";
         }
-        final byte[] record = new byte[2 * MAX_RECORD_LENGTH];
-        final int[] x = new int[2];
-        final long ip = address.getAddressData() & 0xFFFFFFFFL;
 
-        int offset = 0;
-        for (int depth = 31; depth >= 0; depth--) {
-            loadRecord(offset, record);
+        try {
+            byte[] bytes = new byte[4];
+            int addr = address.getAddressData();
+            bytes[0] = (byte) ((addr >>> 24) & 0xFF);
+            bytes[1] = (byte) ((addr >>> 16) & 0xFF);
+            bytes[2] = (byte) ((addr >>> 8) & 0xFF);
+            bytes[3] = (byte) (addr & 0xFF);
 
-            x[0] = unpackRecordValue(record, 0);
-            x[1] = unpackRecordValue(record, 1);
-
-            int xx = ((ip & (1L << depth)) > 0) ? (x[1]) : (x[0]);
-
-            if (xx >= COUNTRY_BEGIN) {
-                final int idx = xx - COUNTRY_BEGIN;
-                if (idx > COUNTRY_CODES.size()) {
-                    log.warn("Invalid index calculated looking up country code record for ({}) idx = {}", address, idx);
-                    return 0;
-                } else {
-                    return idx;
-                }
-            } else {
-                offset = xx;
-            }
-
+            InetAddress inetAddress = InetAddress.getByAddress(bytes);
+            return reader.tryCountry(inetAddress).map(CountryResponse::country).map(Country::isoCode).orElse("??");
+        } catch (AddressNotFoundException e) {
+            return "??";
+        } catch (Exception e) {
+            log.debug("Country lookup failed for {}: {}", address, e.getMessage());
+            return "??";
         }
-        log.warn("No record found looking up country code record for ({})", address);
-        return 0;
-    }
-
-    private void loadRecord(int offset, byte[] recordBuffer) {
-        final int dbOffset = 2 * STANDARD_RECORD_LENGTH * offset;
-        System.arraycopy(database, dbOffset, recordBuffer, 0, recordBuffer.length);
-    }
-
-    private int unpackRecordValue(byte[] record, int idx) {
-        final int valueOffset = idx * STANDARD_RECORD_LENGTH;
-        int value = 0;
-        for (int i = 0; i < STANDARD_RECORD_LENGTH; i++) {
-            int octet = record[valueOffset + i] & 0xFF;
-            value += (octet << (i * 8));
-        }
-        return value;
     }
 }

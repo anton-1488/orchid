@@ -11,215 +11,212 @@ import com.subgraph.orchid.data.IPv4Address;
 import com.subgraph.orchid.geoip.CountryCodeService;
 
 public class BridgeRouterImpl implements BridgeRouter {
-	private final IPv4Address address;
-	private final int port;
-	
-	private HexDigest identity;
-	private Descriptor descriptor;
-	
-	private volatile String cachedCountryCode;
-	
-	BridgeRouterImpl(IPv4Address address, int port) {
-		this.address = address;
-		this.port = port;
-	}
-	
-	public IPv4Address getAddress() {
-		return address;
-	}
+    private final IPv4Address address;
+    private final int port;
 
-	public HexDigest getIdentity() {
-		return identity;
-	}
-	
-	public void setIdentity(HexDigest identity) {
-		this.identity = identity;
-	}
+    private HexDigest identity;
+    private RouterDescriptor descriptor;
 
-	public void setDescriptor(RouterDescriptor descriptor) {
-		this.descriptor = descriptor;
-	}
+    private volatile String cachedCountryCode;
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((address == null) ? 0 : address.hashCode());
-		result = prime * result + port;
-		return result;
-	}
+    BridgeRouterImpl(IPv4Address address, int port) {
+        this.address = address;
+        this.port = port;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		BridgeRouterImpl other = (BridgeRouterImpl) obj;
-		if (address == null) {
-			if (other.address != null) {
-				return false;
-			}
-		} else if (!address.equals(other.address)) {
-			return false;
-		}
-		if (port != other.port) {
-			return false;
-		}
-		return true;
-	}
+    @Override
+    public IPv4Address getAddress() {
+        return address;
+    }
 
-	public String getNickname() {
-		return toString();
-	}
+    @Override
+    public HexDigest getIdentity() {
+        return identity;
+    }
 
-	public String getCountryCode() {
-		String cc = cachedCountryCode;
-		if(cc == null) {
-			cc = CountryCodeService.getInstance().getCountryCodeForAddress(getAddress());
-			cachedCountryCode = cc;
-		}
-		return cc;
-	}
+    @Override
+    public void setIdentity(HexDigest identity) {
+        this.identity = identity;
+    }
 
-	public int getOnionPort() {
-		return port;
-	}
+    @Override
+    public void setDescriptor(RouterDescriptor descriptor) {
+        this.descriptor = descriptor;
+    }
 
-	public int getDirectoryPort() {
-		return 0;
-	}
+    @Override
+    public RouterDescriptor getDescriptor() {
+        return descriptor;
+    }
 
-	public TorPublicKey getIdentityKey() {
-		return null;
-	}
+    @Override
+    public String getNickname() {
+        return toString();
+    }
 
-	public HexDigest getIdentityHash() {
-		return identity;
-	}
+    @Override
+    public String getCountryCode() {
+        return CountryCodeService.getInstance().getCountryCodeForAddress(getAddress());
+    }
 
-	public boolean isDescriptorDownloadable() {
-		return false;
-	}
+    @Override
+    public int getOnionPort() {
+        return port;
+    }
 
-	public String getVersion() {
-		return "";
-	}
+    @Override
+    public int getDirectoryPort() {
+        return 0;
+    }
 
-	public Descriptor getCurrentDescriptor() {
-		return descriptor;
-	}
+    @Override
+    public TorPublicKey getIdentityKey() {
+        return descriptor != null ? descriptor.getIdentityKey() : null;
+    }
 
-	public HexDigest getDescriptorDigest() {
-		return null;
-	}
+    @Override
+    public HexDigest getIdentityHash() {
+        return identity;
+    }
 
-	public HexDigest getMicrodescriptorDigest() {
-		return null;
-	}
+    @Override
+    public boolean isDescriptorDownloadable() {
+        return false;
+    }
 
-	public TorPublicKey getOnionKey() {
-		if(descriptor != null) {
-			return descriptor.getOnionKey();
-		} else {
-			return null;
-		}
-	}
+    @Override
+    public String getVersion() {
+        return descriptor != null ? descriptor.getVersion() : "";
+    }
 
-	public byte[] getNTorOnionKey() {
-		if(descriptor != null) {
-			return descriptor.getNTorOnionKey();
-		} else {
-			return null;
-		}
-	}
+    @Override
+    public Descriptor getCurrentDescriptor() {
+        return descriptor;
+    }
 
-	public boolean hasBandwidth() {
-		return false;
-	}
+    @Override
+    public HexDigest getDescriptorDigest() {
+        return descriptor != null ? descriptor.getDescriptorDigest() : null;
+    }
 
-	public int getEstimatedBandwidth() {
-		return 0;
-	}
+    @Override
+    public HexDigest getMicrodescriptorDigest() {
+        return null;
+    }
 
-	public int getMeasuredBandwidth() {
-		return 0;
-	}
+    @Override
+    public TorPublicKey getOnionKey() {
+        return descriptor != null ? descriptor.getOnionKey() : null;
+    }
 
-	public Set<String> getFamilyMembers() {
-		if(descriptor != null) {
-			return descriptor.getFamilyMembers();
-		} else {
-			return Collections.emptySet();
-		}
-	}
+    @Override
+    public byte[] getNTorOnionKey() {
+        return descriptor != null ? descriptor.getNTorOnionKey() : null;
+    }
 
-	public int getAverageBandwidth() {
-		return 0;
-	}
+    @Override
+    public boolean hasBandwidth() {
+        return false;
+    }
 
-	public int getBurstBandwidth() {
-		return 0;
-	}
+    @Override
+    public int getEstimatedBandwidth() {
+        return 0;
+    }
 
-	public int getObservedBandwidth() {
-		return 0;
-	}
+    @Override
+    public int getMeasuredBandwidth() {
+        return 0;
+    }
 
-	public boolean isHibernating() {
-		if(descriptor instanceof RouterDescriptor) {
-			return ((RouterDescriptor)descriptor).isHibernating();
-		} else {
-			return false;
-		}
-	}
+    @Override
+    public Set<String> getFamilyMembers() {
+        return descriptor != null ? descriptor.getFamilyMembers() : Collections.emptySet();
+    }
 
-	public boolean isRunning() {
-		return true;
-	}
+    @Override
+    public int getAverageBandwidth() {
+        return 0;
+    }
 
-	public boolean isValid() {
-		return true;
-	}
+    @Override
+    public int getBurstBandwidth() {
+        return 0;
+    }
 
-	public boolean isBadExit() {
-		return false;
-	}
+    @Override
+    public int getObservedBandwidth() {
+        return 0;
+    }
 
-	public boolean isPossibleGuard() {
-		return true;
-	}
+    @Override
+    public boolean isHibernating() {
+        return descriptor != null && descriptor.isHibernating();
+    }
 
-	public boolean isExit() {
-		return false;
-	}
+    @Override
+    public boolean isRunning() {
+        return true;
+    }
 
-	public boolean isFast() {
-		return true;
-	}
+    @Override
+    public boolean isValid() {
+        return true;
+    }
 
-	public boolean isStable() {
-		return true;
-	}
+    @Override
+    public boolean isBadExit() {
+        return false;
+    }
 
-	public boolean isHSDirectory() {
-		return false;
-	}
+    @Override
+    public boolean isPossibleGuard() {
+        return true;
+    }
 
-	public boolean exitPolicyAccepts(IPv4Address address, int port) {
-		return false;
-	}
+    @Override
+    public boolean isExit() {
+        return false;
+    }
 
-	public boolean exitPolicyAccepts(int port) {
-		return false;
-	}
+    @Override
+    public boolean isFast() {
+        return true;
+    }
 
-	public String toString() {
-		return "[Bridge "+ address + ":"+ port + "]";
-	}
+    @Override
+    public boolean isStable() {
+        return true;
+    }
+
+    @Override
+    public boolean isHSDirectory() {
+        return false;
+    }
+
+    @Override
+    public boolean exitPolicyAccepts(IPv4Address address, int port) {
+        return false;
+    }
+
+    @Override
+    public boolean exitPolicyAccepts(int port) {
+        return false;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof BridgeRouterImpl other)) return false;
+        return port == other.port && address.equals(other.address);
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * address.hashCode() + port;
+    }
+
+    public String toString() {
+        return String.format("[Bridge %s:%d]", address, port);
+    }
 }

@@ -1,14 +1,22 @@
 package com.subgraph.orchid.exceptions;
 
-public class HSAuthenticationException extends Exception {
+public class HSAuthenticationException extends TorException {
+	public HSAuthenticationException() {
+	}
 
-	private static final long serialVersionUID = 1L;
-	
-	HSAuthenticationException(String message) {
+	public HSAuthenticationException(String message) {
 		super(message);
 	}
-	
-	HSAuthenticationException(String message, Throwable cause) {
+
+	public HSAuthenticationException(String message, Throwable cause) {
 		super(message, cause);
+	}
+
+	public HSAuthenticationException(Throwable cause) {
+		super(cause);
+	}
+
+	public HSAuthenticationException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+		super(message, cause, enableSuppression, writableStackTrace);
 	}
 }

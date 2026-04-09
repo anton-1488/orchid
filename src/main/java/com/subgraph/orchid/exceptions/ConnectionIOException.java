@@ -1,14 +1,22 @@
 package com.subgraph.orchid.exceptions;
 
-public class ConnectionIOException extends Exception {
-
-	private static final long serialVersionUID = -5537650738995969203L;
-	
+public class ConnectionIOException extends TorException {
 	public ConnectionIOException() {
-		super();
 	}
 
 	public ConnectionIOException(String message) {
 		super(message);
+	}
+
+	public ConnectionIOException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public ConnectionIOException(Throwable cause) {
+		super(cause);
+	}
+
+	public ConnectionIOException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+		super(message, cause, enableSuppression, writableStackTrace);
 	}
 }

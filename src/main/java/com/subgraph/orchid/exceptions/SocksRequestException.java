@@ -1,15 +1,22 @@
 package com.subgraph.orchid.exceptions;
 
-public class SocksRequestException extends Exception {
-	
-	private static final long serialVersionUID = 844055056337565049L;
-	
-	SocksRequestException() {}
-	SocksRequestException(String msg) {
-		super(msg);
+public class SocksRequestException extends TorException {
+	public SocksRequestException() {
 	}
-	
-	SocksRequestException(Throwable ex) {
-		super(ex);
+
+	public SocksRequestException(String message) {
+		super(message);
+	}
+
+	public SocksRequestException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public SocksRequestException(Throwable cause) {
+		super(cause);
+	}
+
+	public SocksRequestException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+		super(message, cause, enableSuppression, writableStackTrace);
 	}
 }

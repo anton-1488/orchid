@@ -1,37 +1,23 @@
 package com.subgraph.orchid.exceptions;
 
 
-import com.subgraph.orchid.circuits.cells.RelayCell;
-
-public class StreamConnectFailedException extends Exception {
-
-	private static final long serialVersionUID = 8103571310659595097L;
-	private final int reason;
-	
-	public StreamConnectFailedException(int reason) {
-		this.reason = reason;
-	}
-	
-	public int getReason() {
-		return reason;
-	}
-	
-	public boolean isReasonRetryable() {
-		return isRetryableReason(reason);
+public class StreamConnectFailedException extends TorException {
+	public StreamConnectFailedException() {
 	}
 
-	/* Copied from edge_reason_is_retriable() since this is not specified */
-	private static boolean isRetryableReason(int reasonCode) {
-		switch(reasonCode) {
-		case RelayCell.REASON_HIBERNATING:
-		case RelayCell.REASON_RESOURCELIMIT:
-		case RelayCell.REASON_RESOLVEFAILED:
-		case RelayCell.REASON_EXITPOLICY:
-		case RelayCell.REASON_MISC:
-		case RelayCell.REASON_NOROUTE:
-			return true;
-		default:
-			return false;
-		}
+	public StreamConnectFailedException(String message) {
+		super(message);
+	}
+
+	public StreamConnectFailedException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public StreamConnectFailedException(Throwable cause) {
+		super(cause);
+	}
+
+	public StreamConnectFailedException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+		super(message, cause, enableSuppression, writableStackTrace);
 	}
 }

@@ -1,3 +1,7 @@
+![Java Version](https://img.shields.io/badge/Java-21%2B-blue)
+![License](https://img.shields.io/badge/License-Public%20Domain-blue)
+![Build Status](https://github.com/anton-1488/orchid/actions/workflows/build.yml/badge.svg) <!-- Если добавишь CI -->
+
 # Orchid 2.0 (Modern Tor Client for Java)
 
 Это современный форк легендарного, но заброшенного проекта **Orchid**.

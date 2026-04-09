@@ -2,13 +2,22 @@ package com.subgraph.orchid.exceptions;
 
 
 public class TorParsingException extends TorException {
-	public TorParsingException(String string) {
-		super(string);
+	public TorParsingException() {
 	}
 
-	public TorParsingException(String string, Throwable ex) {
-		super(string, ex);
+	public TorParsingException(String message) {
+		super(message);
 	}
 
-	private static final long serialVersionUID = -4997757416476363399L;
+	public TorParsingException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public TorParsingException(Throwable cause) {
+		super(cause);
+	}
+
+	public TorParsingException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+		super(message, cause, enableSuppression, writableStackTrace);
+	}
 }

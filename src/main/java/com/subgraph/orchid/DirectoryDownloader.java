@@ -6,9 +6,9 @@ import java.util.Set;
 import com.subgraph.orchid.ConsensusDocument.RequiredCertificate;
 import com.subgraph.orchid.data.HexDigest;
 import com.subgraph.orchid.exceptions.DirectoryRequestFailedException;
-import com.subgraph.orchid.routers.Router;
-import com.subgraph.orchid.routers.RouterDescriptor;
-import com.subgraph.orchid.routers.RouterMicrodescriptor;
+import com.subgraph.orchid.directory.router.Router;
+import com.subgraph.orchid.directory.router.RouterDescriptor;
+import com.subgraph.orchid.directory.router.RouterMicrodescriptor;
 
 public interface DirectoryDownloader {
 	void start(Directory directory);

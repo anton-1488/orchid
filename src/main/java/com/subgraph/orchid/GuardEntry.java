@@ -1,6 +1,6 @@
 package com.subgraph.orchid;
 
-import com.subgraph.orchid.routers.Router;
+import com.subgraph.orchid.directory.router.Router;
 
 import java.util.Date;
 

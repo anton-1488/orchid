@@ -2,7 +2,7 @@ package com.subgraph.orchid.directory.downloader;
 
 import java.nio.ByteBuffer;
 
-import com.subgraph.orchid.routers.RouterDescriptor;
+import com.subgraph.orchid.directory.router.RouterDescriptor;
 import com.subgraph.orchid.directory.parsing.DocumentParser;
 
 public class BridgeDescriptorFetcher extends DocumentFetcher<RouterDescriptor>{

@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.subgraph.orchid.routers.RouterDescriptor;
 import com.subgraph.orchid.Tor;
 import com.subgraph.orchid.crypto.TorPublicKey;
 import com.subgraph.orchid.data.BandwidthHistory;

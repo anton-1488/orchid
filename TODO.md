@@ -6,16 +6,10 @@ com.subgraph.orhid.circuits
 
 com.subgraph.orhid.connections
 com.subgraph.orhid.crypto
-
-com.subgraph.orhid.data.exitpolicy
 com.subgraph.orhid.sockets
 com.subgraph.orhid.directory.*
 
 com.subgraph.orhid
 
-
 # Сделать сейчас:
-
-com.subgraph.orhid.data
-com.subgraph.orhid.routers
-com.subgraph.orhid.socks
+(пока пусто)

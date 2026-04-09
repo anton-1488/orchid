@@ -1,146 +1,176 @@
 package com.subgraph.orchid.socks;
 
-import java.net.Socket;
-
 import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.exceptions.SocksRequestException;
-import com.subgraph.orchid.exceptions.TorException;
+import com.subgraph.orchid.socks.enums.SOCKS5AddressType;
+import com.subgraph.orchid.socks.enums.SOCKS5Command;
+import com.subgraph.orchid.socks.enums.SOCKS5Status;
+
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 public class Socks5Request extends SocksRequest {
-	final static int SOCKS5_VERSION = 5;
-	final static int SOCKS5_AUTH_NONE = 0;
-	final static int SOCKS5_COMMAND_CONNECT = 1;
-	final static int SOCKS5_COMMAND_RESOLV = 0xF0;
-	final static int SOCKS5_COMMAND_RESOLV_PTR = 0xF1;
-	final static int SOCKS5_ADDRESS_IPV4 = 1;
-	final static int SOCKS5_ADDRESS_HOSTNAME = 3;
-	final static int SOCKS5_ADDRESS_IPV6 = 4;
-	final static int SOCKS5_STATUS_SUCCESS = 0;
-	final static int SOCKS5_STATUS_FAILURE = 1;
-	final static int SOCKS5_STATUS_CONNECTION_REFUSED = 5;
-	final static int SOCKS5_STATUS_COMMAND_NOT_SUPPORTED = 7;
-	
-	private int command;
-	private int addressType;
-	private byte[] addressBytes = new byte[0];
-	private byte[] portBytes = new byte[0];
-	
-	Socks5Request(TorConfig config, Socket socket) {
-		super(config, socket);
-	}
-	
-	public boolean isConnectRequest() {
-		return command == SOCKS5_COMMAND_CONNECT;
-	}
-	
-	public int getCommandCode() {
-		return command;
-	}
+    private SOCKS5Command command;
+    private SOCKS5AddressType addressType;
 
-	private String addressBytesToHostname() {
-		if(addressType != SOCKS5_ADDRESS_HOSTNAME)
-			throw new TorException("SOCKS 4 request is not a hostname request");
-		final StringBuilder sb = new StringBuilder();
-		for(int i = 1; i < addressBytes.length; i++) {
-			char c = (char) (addressBytes[i] & 0xFF);
-			sb.append(c);
-		}
-		return sb.toString();
-	}
-	
-	public void readRequest() throws SocksRequestException {
-		if(!processAuthentication()) {
-			throw new SocksRequestException("Failed to negotiate authentication");
-		}
-		if(readByte() != SOCKS5_VERSION)
-			throw new SocksRequestException();
+    private byte[] addressBytes = new byte[0];
+    private byte[] portBytes = new byte[0];
 
-		command = readByte();
-		readByte(); // Reserved
-		addressType = readByte();
-		addressBytes = readAddressBytes();
-		portBytes = readPortData();
-		if(addressType == SOCKS5_ADDRESS_IPV4)
-			setIPv4AddressData(addressBytes);
-		else if(addressType == SOCKS5_ADDRESS_HOSTNAME)
-			setHostname(addressBytesToHostname());
-		else 
-			throw new SocksRequestException();
-		setPortData(portBytes);		
-	}
-	
-	public void sendConnectionRefused() throws SocksRequestException {
-		sendResponse(SOCKS5_STATUS_CONNECTION_REFUSED);
-	}
+    Socks5Request(TorConfig config, Socket socket) {
+        super(config, socket);
+    }
 
-	public void sendError(boolean isUnsupportedCommand) throws SocksRequestException  {
-		if(isUnsupportedCommand) {
-			sendResponse(SOCKS5_STATUS_COMMAND_NOT_SUPPORTED);
-		} else {
-			sendResponse(SOCKS5_STATUS_FAILURE);
-		}
-	}
-	
-	public void sendSuccess() throws SocksRequestException {
-		sendResponse(SOCKS5_STATUS_SUCCESS);
-	}
-	
-	private void sendResponse(int status) throws SocksRequestException {
-		final int responseLength = 4 + addressBytes.length + portBytes.length;
-		final byte[] response = new byte[responseLength];
-		response[0] = SOCKS5_VERSION;
-		response[1] = (byte) status;
-		response[2] = 0;
-		response[3] = (byte) addressType;
-		System.arraycopy(addressBytes, 0, response, 4, addressBytes.length);
-		System.arraycopy(portBytes, 0, response, 4 + addressBytes.length, portBytes.length);
-		socketWrite(response);
-	}
-	
-	private boolean processAuthentication() throws SocksRequestException {
-		final int nmethods = readByte();
-		boolean foundAuthNone = false;
-		for(int i = 0; i < nmethods; i++) {
-			final int meth = readByte();
-			if(meth == SOCKS5_AUTH_NONE)
-				foundAuthNone = true;
-		}
+    private String addressBytesToHostname() {
+        if (addressType != SOCKS5AddressType.ADDRESS_HOSTNAME) {
+            throw new IllegalStateException("Not a hostname request");
+        }
+        return new String(addressBytes, 1, addressBytes.length - 1, StandardCharsets.UTF_8);
+    }
 
-		if(foundAuthNone) {
-			sendAuthenticationResponse(SOCKS5_AUTH_NONE);
-			return true;
-		} else {
-			sendAuthenticationResponse(0xFF);
-			return false;
-		}
-	}
-	
-	
-	private void sendAuthenticationResponse(int method) throws SocksRequestException {
-		final byte[] response = new byte[2];
-		response[0] = SOCKS5_VERSION;
-		response[1] = (byte) method;
-		socketWrite(response);
-	}
+    private byte[] readPortData() throws SocksRequestException {
+        byte[] data = new byte[2];
+        readAll(data);
+        return data;
+    }
 
-	private byte[] readAddressBytes() throws SocksRequestException {
-		switch(addressType) {
-		case SOCKS5_ADDRESS_IPV4:
-			return readIPv4AddressData();
-		case SOCKS5_ADDRESS_IPV6:
-			return readIPv6AddressData();
-		case SOCKS5_ADDRESS_HOSTNAME:
-			return readHostnameData();
-		default:
-			throw new SocksRequestException();
-		}
-	}
-	
-	private byte[] readHostnameData() throws SocksRequestException {
-		final int length = readByte();
-		final byte[] addrData = new byte[length + 1];
-		addrData[0] = (byte) length;
-		readAll(addrData, 1, length);
-		return addrData;
-	}
+    private void setIPv4AddressData(byte[] data) throws SocksRequestException {
+        if (data.length != 4) throw new SocksRequestException("Invalid IPv4 data");
+        try {
+            InetAddress addr = InetAddress.getByAddress(data);
+            setHostname(addr.getHostAddress());  // ✅ использовать родительский метод
+        } catch (UnknownHostException e) {
+            throw new SocksRequestException("Failed to parse IPv4 address", e);
+        }
+    }
+
+    private byte[] readIPv4AddressData() throws SocksRequestException {
+        byte[] data = new byte[4];
+        readAll(data);
+        return data;
+    }
+
+    private byte[] readIPv6AddressData() throws SocksRequestException {
+        byte[] data = new byte[16];
+        readAll(data);
+        return data;
+    }
+
+    @Override
+    public boolean isConnectRequest() {
+        return command == SOCKS5Command.COMMAND_CONNECT;
+    }
+
+    @Override
+    public int getCommandCode() {
+        return command.getCommand();
+    }
+
+    @Override
+    public void readRequest() throws SocksRequestException {
+        if (!processAuthentication()) {
+            throw new SocksRequestException("Failed to negotiate authentication");
+        }
+        if (readByte() != SOCKS5Command.VERSION.getCommand()) {
+            throw new SocksRequestException();
+        }
+
+        command = SOCKS5Command.ofCommand(readByte());
+        readByte(); // Reserved
+        addressType = SOCKS5AddressType.ofType(readByte());
+        addressBytes = readAddressBytes();
+        portBytes = readPortData();
+
+        if (addressType == SOCKS5AddressType.ADDRESS_IPV4) {
+            setIPv4AddressData(addressBytes);
+        } else if (addressType == SOCKS5AddressType.ADDRESS_HOSTNAME) {
+            setHostname(addressBytesToHostname());
+        } else {
+            throw new SocksRequestException();
+        }
+        setPortData(portBytes);
+    }
+
+    @Override
+    public void sendConnectionRefused() throws SocksRequestException {
+        sendResponse(SOCKS5Status.CONNECTION_REFUSED);
+    }
+
+    @Override
+    public void sendError(boolean isUnsupportedCommand) throws SocksRequestException {
+        if (isUnsupportedCommand) {
+            sendResponse(SOCKS5Status.COMMAND_NOT_SUPPORTED);
+        } else {
+            sendResponse(SOCKS5Status.FAILURE);
+        }
+    }
+
+    @Override
+    public void sendSuccess() throws SocksRequestException {
+        sendResponse(SOCKS5Status.SUCCESS);
+    }
+
+    private void sendResponse(SOCKS5Status status) throws SocksRequestException {
+        int responseLength = 4 + addressBytes.length + portBytes.length;
+        ByteBuffer response = ByteBuffer.allocate(responseLength);
+
+        response.put((byte) SOCKS5Command.VERSION.getCommand());
+        response.put((byte) status.getStatus());
+        response.put((byte) 0);
+        response.put((byte) addressType.getAddressType());
+
+        response.put(addressBytes);
+        response.put(portBytes);
+
+        socketWrite(response.array());
+    }
+
+    private boolean processAuthentication() throws SocksRequestException {
+        int nmethods = readByte();
+        boolean foundAuthNone = false;
+
+        for (int i = 0; i < nmethods; i++) {
+            SOCKS5Command meth = SOCKS5Command.ofCommand(readByte());
+            if (meth == SOCKS5Command.AUTH_NONE) {
+                foundAuthNone = true;
+            }
+        }
+
+        if (foundAuthNone) {
+            sendAuthenticationResponse(SOCKS5Command.AUTH_NONE);
+            return true;
+        } else {
+            sendAuthenticationResponse(SOCKS5Command.NO_ACCEPTABLE);
+            return false;
+        }
+    }
+
+
+    private void sendAuthenticationResponse(SOCKS5Command method) throws SocksRequestException {
+        byte[] response = new byte[2];
+        response[0] = (byte) SOCKS5Command.VERSION.getCommand();
+        response[1] = (byte) method.getCommand();
+
+        socketWrite(response);
+    }
+
+    private byte[] readAddressBytes() throws SocksRequestException {
+        return switch (addressType) {
+            case SOCKS5AddressType.ADDRESS_IPV4 -> readIPv4AddressData();
+            case SOCKS5AddressType.ADDRESS_IPV6 -> readIPv6AddressData();
+            case SOCKS5AddressType.ADDRESS_HOSTNAME -> readHostnameData();
+        };
+    }
+
+    private byte[] readHostnameData() throws SocksRequestException {
+        int length = readByte();
+        byte[] addrData = new byte[length + 1];
+
+        addrData[0] = (byte) length;
+        readAll(addrData, 1, length);
+
+        return addrData;
+    }
 }

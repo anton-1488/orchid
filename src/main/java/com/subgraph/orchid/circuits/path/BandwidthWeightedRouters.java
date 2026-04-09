@@ -3,7 +3,7 @@ package com.subgraph.orchid.circuits.path;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.subgraph.orchid.routers.Router;
+import com.subgraph.orchid.directory.router.Router;
 import com.subgraph.orchid.crypto.TorRandom;
 
 public class BandwidthWeightedRouters {

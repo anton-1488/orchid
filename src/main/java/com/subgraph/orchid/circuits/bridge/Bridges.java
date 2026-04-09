@@ -6,8 +6,8 @@ import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.config.TorConfigBridgeLine;
 import com.subgraph.orchid.crypto.TorRandom;
 import com.subgraph.orchid.exceptions.DirectoryRequestFailedException;
-import com.subgraph.orchid.routers.Router;
-import com.subgraph.orchid.routers.RouterDescriptor;
+import com.subgraph.orchid.directory.router.Router;
+import com.subgraph.orchid.directory.router.RouterDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

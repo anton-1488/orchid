@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.subgraph.orchid.ConsensusDocument;
 import com.subgraph.orchid.Directory;
-import com.subgraph.orchid.routers.Router;
+import com.subgraph.orchid.directory.router.Router;
 import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.config.TorConfig.AutoBoolValue;
 import com.subgraph.orchid.data.HexDigest;

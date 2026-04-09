@@ -7,7 +7,7 @@ import com.subgraph.orchid.circuits.cells.Cell;
 import com.subgraph.orchid.HiddenServiceCircuit;
 import com.subgraph.orchid.InternalCircuit;
 import com.subgraph.orchid.circuits.cells.RelayCell;
-import com.subgraph.orchid.routers.Router;
+import com.subgraph.orchid.directory.router.Router;
 import com.subgraph.orchid.circuits.CircuitNodeCryptoState;
 import com.subgraph.orchid.circuits.CircuitNodeImpl;
 import com.subgraph.orchid.crypto.TorMessageDigest;

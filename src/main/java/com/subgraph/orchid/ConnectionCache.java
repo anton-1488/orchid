@@ -4,7 +4,7 @@ package com.subgraph.orchid;
 import com.subgraph.orchid.exceptions.ConnectionFailedException;
 import com.subgraph.orchid.exceptions.ConnectionHandshakeException;
 import com.subgraph.orchid.exceptions.ConnectionTimeoutException;
-import com.subgraph.orchid.routers.Router;
+import com.subgraph.orchid.directory.router.Router;
 
 public interface ConnectionCache {
 	/**

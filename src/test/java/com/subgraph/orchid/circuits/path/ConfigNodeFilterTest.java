@@ -12,7 +12,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.subgraph.orchid.routers.Router;
+import com.subgraph.orchid.directory.router.Router;
 import com.subgraph.orchid.data.IPv4Address;
 
 public class ConfigNodeFilterTest {

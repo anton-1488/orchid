@@ -5,7 +5,7 @@ import com.subgraph.orchid.circuits.path.CircuitNodeChooser;
 import com.subgraph.orchid.circuits.path.CircuitNodeChooser.WeightRule;
 import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.crypto.TorRandom;
-import com.subgraph.orchid.routers.Router;
+import com.subgraph.orchid.directory.router.Router;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;

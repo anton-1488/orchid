@@ -16,7 +16,7 @@ import com.subgraph.orchid.ConnectionCache;
 import com.subgraph.orchid.Directory;
 import com.subgraph.orchid.ExitCircuit;
 import com.subgraph.orchid.InternalCircuit;
-import com.subgraph.orchid.routers.Router;
+import com.subgraph.orchid.directory.router.Router;
 import com.subgraph.orchid.Threading;
 import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.circuits.CircuitManagerImpl.CircuitFilter;

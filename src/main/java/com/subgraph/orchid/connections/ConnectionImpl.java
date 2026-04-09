@@ -27,7 +27,7 @@ import com.subgraph.orchid.exceptions.ConnectionFailedException;
 import com.subgraph.orchid.exceptions.ConnectionHandshakeException;
 import com.subgraph.orchid.exceptions.ConnectionIOException;
 import com.subgraph.orchid.exceptions.ConnectionTimeoutException;
-import com.subgraph.orchid.routers.Router;
+import com.subgraph.orchid.directory.router.Router;
 import com.subgraph.orchid.Threading;
 import com.subgraph.orchid.Tor;
 import com.subgraph.orchid.config.TorConfig;

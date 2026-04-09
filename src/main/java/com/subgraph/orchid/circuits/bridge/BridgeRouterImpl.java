@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import com.subgraph.orchid.Descriptor;
-import com.subgraph.orchid.routers.RouterDescriptor;
+import com.subgraph.orchid.directory.router.RouterDescriptor;
 import com.subgraph.orchid.crypto.TorPublicKey;
 import com.subgraph.orchid.data.HexDigest;
 import com.subgraph.orchid.data.IPv4Address;

@@ -3,7 +3,7 @@ package com.subgraph.orchid.circuits.bridge;
 import com.subgraph.orchid.ConnectionCache;
 import com.subgraph.orchid.GuardEntry;
 import com.subgraph.orchid.exceptions.ConnectionIOException;
-import com.subgraph.orchid.routers.Router;
+import com.subgraph.orchid.directory.router.Router;
 import org.slf4j.LoggerFactory;
 
 public class GuardProbeTask implements Runnable {

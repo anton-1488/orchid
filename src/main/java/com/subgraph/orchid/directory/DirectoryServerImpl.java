@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.subgraph.orchid.DirectoryServer;
 import com.subgraph.orchid.KeyCertificate;
-import com.subgraph.orchid.routers.RouterStatus;
+import com.subgraph.orchid.directory.router.RouterStatus;
 import com.subgraph.orchid.data.HexDigest;
 
 public class DirectoryServerImpl extends RouterImpl implements DirectoryServer {

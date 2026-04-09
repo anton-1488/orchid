@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 import com.subgraph.orchid.circuits.cells.Cell;
 import com.subgraph.orchid.circuits.Circuit;
 import com.subgraph.orchid.circuits.cells.RelayCell;
-import com.subgraph.orchid.routers.Router;
+import com.subgraph.orchid.directory.router.Router;
 import com.subgraph.orchid.crypto.HybridEncryption;
 import com.subgraph.orchid.crypto.TorPublicKey;
 

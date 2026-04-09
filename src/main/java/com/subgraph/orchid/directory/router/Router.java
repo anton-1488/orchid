@@ -1,4 +1,4 @@
-package com.subgraph.orchid.routers;
+package com.subgraph.orchid.directory.router;
 
 import java.util.Set;
 

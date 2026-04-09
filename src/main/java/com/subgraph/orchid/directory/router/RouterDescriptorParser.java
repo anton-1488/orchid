@@ -1,6 +1,5 @@
 package com.subgraph.orchid.directory.router;
 
-import com.subgraph.orchid.routers.RouterDescriptor;
 import com.subgraph.orchid.exceptions.TorParsingException;
 import com.subgraph.orchid.crypto.TorSignature;
 import com.subgraph.orchid.data.BandwidthHistory;

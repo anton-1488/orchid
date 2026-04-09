@@ -2,28 +2,12 @@ package com.subgraph.orchid.config;
 
 import com.subgraph.orchid.data.HexDigest;
 import com.subgraph.orchid.data.IPv4Address;
+import org.jetbrains.annotations.NotNull;
 
-public class TorConfigBridgeLine {
-	
-	private final IPv4Address address;
-	private final int port;
-	private final HexDigest fingerprint;
-
-	TorConfigBridgeLine(IPv4Address address, int port, HexDigest fingerprint) {
-		this.address = address;
-		this.port = port;
-		this.fingerprint = fingerprint;
-	}
-	
-	public IPv4Address getAddress() {
-		return address;
-	}
-	
-	public int getPort() {
-		return port;
-	}
-	
-	public HexDigest getFingerprint() {
-		return fingerprint;
+public record TorConfigBridgeLine(IPv4Address address, int port, HexDigest fingerprint) {
+	@Override
+	@NotNull
+	public String toString() {
+		return String.format("[TOR_CONFIG] - BridgeLine: address: %s, port: %d, fingeprint: %s", address, port, fingerprint.toBase32());
 	}
 }

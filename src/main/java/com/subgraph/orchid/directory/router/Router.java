@@ -1,17 +1,17 @@
 package com.subgraph.orchid.directory.router;
 
-import java.util.Set;
-
 import com.subgraph.orchid.Descriptor;
 import com.subgraph.orchid.crypto.TorPublicKey;
 import com.subgraph.orchid.data.HexDigest;
-import com.subgraph.orchid.data.IPv4Address;
+
+import java.net.InetAddress;
+import java.util.Set;
 
 public interface Router {
 
 	String getNickname();
 	String getCountryCode();
-	IPv4Address getAddress();
+	InetAddress getAddress();
 	int getOnionPort();
 	int getDirectoryPort();
 	TorPublicKey getIdentityKey();
@@ -43,6 +43,6 @@ public interface Router {
 	boolean isFast();
 	boolean isStable();
 	boolean isHSDirectory();
-	boolean exitPolicyAccepts(IPv4Address address, int port);
+	boolean exitPolicyAccepts(InetAddress address, int port);
 	boolean exitPolicyAccepts(int port);
 }

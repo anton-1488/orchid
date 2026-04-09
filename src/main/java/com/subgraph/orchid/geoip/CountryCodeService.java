@@ -4,7 +4,6 @@ import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.AddressNotFoundException;
 import com.maxmind.geoip2.model.CountryResponse;
 import com.maxmind.geoip2.record.Country;
-import com.subgraph.orchid.data.IPv4Address;
 import com.subgraph.orchid.exceptions.TorException;
 import org.slf4j.LoggerFactory;
 
@@ -37,25 +36,28 @@ public class CountryCodeService {
         }
     }
 
-    public String getCountryCodeForAddress(IPv4Address address) {
-        if (reader == null) {
+    public String getCountryCodeForAddress(InetAddress address) {
+        if (reader == null || address == null) {
             return "??";
         }
 
         try {
-            byte[] bytes = new byte[4];
-            int addr = address.getAddressData();
-            bytes[0] = (byte) ((addr >>> 24) & 0xFF);
-            bytes[1] = (byte) ((addr >>> 16) & 0xFF);
-            bytes[2] = (byte) ((addr >>> 8) & 0xFF);
-            bytes[3] = (byte) (addr & 0xFF);
-
-            InetAddress inetAddress = InetAddress.getByAddress(bytes);
-            return reader.tryCountry(inetAddress).map(CountryResponse::country).map(Country::isoCode).orElse("??");
+            return reader.tryCountry(address)
+                    .map(CountryResponse::country)
+                    .map(Country::isoCode)
+                    .orElse("??");
         } catch (AddressNotFoundException e) {
             return "??";
         } catch (Exception e) {
             log.debug("Country lookup failed for {}: {}", address, e.getMessage());
+            return "??";
+        }
+    }
+
+    public String getCountryCodeForAddress(String hostname) {
+        try {
+            return getCountryCodeForAddress(InetAddress.getByName(hostname));
+        } catch (Exception e) {
             return "??";
         }
     }

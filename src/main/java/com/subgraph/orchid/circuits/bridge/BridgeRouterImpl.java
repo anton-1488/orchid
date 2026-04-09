@@ -1,5 +1,6 @@
 package com.subgraph.orchid.circuits.bridge;
 
+import java.net.InetAddress;
 import java.util.Collections;
 import java.util.Set;
 
@@ -7,11 +8,10 @@ import com.subgraph.orchid.Descriptor;
 import com.subgraph.orchid.directory.router.RouterDescriptor;
 import com.subgraph.orchid.crypto.TorPublicKey;
 import com.subgraph.orchid.data.HexDigest;
-import com.subgraph.orchid.data.IPv4Address;
 import com.subgraph.orchid.geoip.CountryCodeService;
 
 public class BridgeRouterImpl implements BridgeRouter {
-    private final IPv4Address address;
+    private final InetAddress address;
     private final int port;
 
     private HexDigest identity;
@@ -19,13 +19,13 @@ public class BridgeRouterImpl implements BridgeRouter {
 
     private volatile String cachedCountryCode;
 
-    BridgeRouterImpl(IPv4Address address, int port) {
+    BridgeRouterImpl(InetAddress address, int port) {
         this.address = address;
         this.port = port;
     }
 
     @Override
-    public IPv4Address getAddress() {
+    public InetAddress getAddress() {
         return address;
     }
 
@@ -195,7 +195,7 @@ public class BridgeRouterImpl implements BridgeRouter {
     }
 
     @Override
-    public boolean exitPolicyAccepts(IPv4Address address, int port) {
+    public boolean exitPolicyAccepts(InetAddress address, int port) {
         return false;
     }
 

@@ -1,29 +1,27 @@
 package com.subgraph.orchid.data;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BandwidthHistory {
-	
-	private final Timestamp reportingTime;
-	private final int reportingInterval;
-	private final List<Integer>  samples = new ArrayList<Integer>();
-	
-	public BandwidthHistory(Timestamp reportingTime, int reportingInterval) {
-		this.reportingTime = reportingTime;
-		this.reportingInterval = reportingInterval;
-	}
-	
-	public int getReportingInterval() {
-		return reportingInterval;
-	}
-	
-	public Timestamp getReportingTime() {
-		return reportingTime;
-	}
-	
-	public void addSample(int value) {
-		samples.add(value);
+@Deprecated
+public record BandwidthHistory(Instant reportingTime, int reportingInterval, List<Integer> samples) {
+	public BandwidthHistory(Instant reportingTime, int reportingInterval) {
+		this(reportingTime, reportingInterval, new ArrayList<>());
 	}
 
+	public List<Integer> getSamples() {
+		return List.copyOf(samples);
+	}
+
+	@Deprecated
+	public void addSample(Integer sample) {
+		samples.add(sample);
+	}
+
+	public BandwidthHistory addNewSample(Integer sample) {
+		List<Integer> newSamples = new ArrayList<>(samples);
+		newSamples.add(sample);
+		return new BandwidthHistory(reportingTime, reportingInterval, newSamples);
+	}
 }

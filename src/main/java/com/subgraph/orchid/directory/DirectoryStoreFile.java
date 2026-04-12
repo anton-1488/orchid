@@ -12,7 +12,7 @@ import java.nio.channels.WritableByteChannel;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.subgraph.orchid.Document;
+import com.subgraph.orchid.directory.document.Document;
 import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.crypto.TorRandom;
 

@@ -1,6 +1,5 @@
 package com.subgraph.orchid.circuits;
 
-import com.subgraph.orchid.CircuitNode;
 import com.subgraph.orchid.connections.Connection;
 import com.subgraph.orchid.Stream;
 import com.subgraph.orchid.circuits.cells.Cell;

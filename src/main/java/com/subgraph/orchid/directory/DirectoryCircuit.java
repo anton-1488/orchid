@@ -1,5 +1,6 @@
-package com.subgraph.orchid;
+package com.subgraph.orchid.directory;
 
+import com.subgraph.orchid.Stream;
 import com.subgraph.orchid.circuits.Circuit;
 import com.subgraph.orchid.exceptions.StreamConnectFailedException;
 

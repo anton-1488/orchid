@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
-import com.subgraph.orchid.CircuitManager;
-import com.subgraph.orchid.ConsensusDocument;
-import com.subgraph.orchid.ConsensusDocument.RequiredCertificate;
-import com.subgraph.orchid.DirectoryCircuit;
+import com.subgraph.orchid.circuits.CircuitManager;
+import com.subgraph.orchid.directory.document.ConsensusDocument;
+import com.subgraph.orchid.directory.document.ConsensusDocument.RequiredCertificate;
+import com.subgraph.orchid.directory.DirectoryCircuit;
 import com.subgraph.orchid.directory.certificate.KeyCertificate;
 import com.subgraph.orchid.directory.router.Router;
 import com.subgraph.orchid.directory.router.RouterDescriptor;

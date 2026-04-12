@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import com.subgraph.orchid.ConsensusDocument;
-import com.subgraph.orchid.Directory;
+import com.subgraph.orchid.directory.document.ConsensusDocument;
+import com.subgraph.orchid.directory.Directory;
 import com.subgraph.orchid.directory.router.Router;
 import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.config.TorConfig.AutoBoolValue;

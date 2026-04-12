@@ -1,6 +1,6 @@
 package com.subgraph.orchid.directory.router;
 
-import com.subgraph.orchid.Descriptor;
+import com.subgraph.orchid.directory.document.Descriptor;
 import com.subgraph.orchid.crypto.TorPublicKey;
 import com.subgraph.orchid.data.HexDigest;
 

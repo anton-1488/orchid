@@ -3,7 +3,6 @@ package com.subgraph.orchid.circuits;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.subgraph.orchid.CircuitNode;
 import com.subgraph.orchid.connections.Connection;
 import com.subgraph.orchid.connections.ConnectionCache;
 import com.subgraph.orchid.exceptions.ConnectionFailedException;

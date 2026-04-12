@@ -2,7 +2,6 @@ package com.subgraph.orchid.directory;
 
 import java.util.Date;
 
-import com.subgraph.orchid.Directory;
 import com.subgraph.orchid.GuardEntry;
 import com.subgraph.orchid.directory.router.Router;
 import com.subgraph.orchid.data.HexDigest;

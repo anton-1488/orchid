@@ -1,6 +1,6 @@
 package com.subgraph.orchid.circuits.bridge;
 
-import com.subgraph.orchid.DirectoryDownloader;
+import com.subgraph.orchid.directory.DirectoryDownloader;
 import com.subgraph.orchid.Globals;
 import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.config.TorConfigBridgeLine;
@@ -75,9 +75,9 @@ public class Bridges {
     }
 
     private BridgeRouterImpl createBridgeFromLine(TorConfigBridgeLine line) {
-        BridgeRouterImpl bridge = new BridgeRouterImpl(line.getAddress(), line.getPort());
-        if (line.getFingerprint() != null) {
-            bridge.setIdentity(line.getFingerprint());
+        BridgeRouterImpl bridge = new BridgeRouterImpl(line.address(), line.port());
+        if (line.fingerprint() != null) {
+            bridge.setIdentity(line.fingerprint());
         }
         return bridge;
     }

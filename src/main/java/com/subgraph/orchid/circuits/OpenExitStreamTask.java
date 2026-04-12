@@ -3,7 +3,6 @@ package com.subgraph.orchid.circuits;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
 
-import com.subgraph.orchid.ExitCircuit;
 import com.subgraph.orchid.Stream;
 import com.subgraph.orchid.exceptions.StreamConnectFailedException;
 

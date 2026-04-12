@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
-import com.subgraph.orchid.ExitCircuit;
 import com.subgraph.orchid.directory.router.Router;
 import com.subgraph.orchid.Stream;
 import com.subgraph.orchid.exceptions.StreamConnectFailedException;

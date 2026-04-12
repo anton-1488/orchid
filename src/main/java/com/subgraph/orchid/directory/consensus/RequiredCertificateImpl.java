@@ -1,6 +1,6 @@
 package com.subgraph.orchid.directory.consensus;
 
-import com.subgraph.orchid.ConsensusDocument;
+import com.subgraph.orchid.directory.document.ConsensusDocument;
 import com.subgraph.orchid.data.HexDigest;
 
 public class RequiredCertificateImpl implements ConsensusDocument.RequiredCertificate {

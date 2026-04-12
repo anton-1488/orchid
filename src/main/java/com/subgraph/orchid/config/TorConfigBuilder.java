@@ -1,8 +1,8 @@
 package com.subgraph.orchid.config;
 
 import com.subgraph.orchid.data.HexDigest;
-import com.subgraph.orchid.data.IPv4Address;
 
+import java.net.InetAddress;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -116,7 +116,7 @@ public class TorConfigBuilder implements Builder {
     }
 
     @Override
-    public Builder addBridge(IPv4Address address, int port) {
+    public Builder addBridge(InetAddress address, int port) {
         List<TorConfigBridgeLine> newBridges = new ArrayList<>(bridges);
         newBridges.add(new TorConfigBridgeLine(address, port, null));
         this.bridges = List.copyOf(newBridges);
@@ -124,7 +124,7 @@ public class TorConfigBuilder implements Builder {
     }
 
     @Override
-    public Builder addBridge(IPv4Address address, int port, HexDigest fingerprint) {
+    public Builder addBridge(InetAddress address, int port, HexDigest fingerprint) {
         List<TorConfigBridgeLine> newBridges = new ArrayList<>(bridges);
         newBridges.add(new TorConfigBridgeLine(address, port, fingerprint));
         this.bridges = List.copyOf(newBridges);

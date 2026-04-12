@@ -1,6 +1,6 @@
-package com.subgraph.orchid;
+package com.subgraph.orchid.circuits;
 
-import com.subgraph.orchid.circuits.Circuit;
+import com.subgraph.orchid.directory.DirectoryCircuit;
 import com.subgraph.orchid.directory.router.Router;
 
 public interface InternalCircuit extends Circuit {

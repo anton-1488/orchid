@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.subgraph.orchid.Descriptor;
+import com.subgraph.orchid.directory.document.Descriptor;
 import com.subgraph.orchid.data.HexDigest;
 import com.subgraph.orchid.misc.GuardedBy;
 

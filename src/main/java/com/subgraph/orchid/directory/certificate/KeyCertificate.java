@@ -1,6 +1,6 @@
 package com.subgraph.orchid.directory.certificate;
 
-import com.subgraph.orchid.Document;
+import com.subgraph.orchid.directory.document.Document;
 import com.subgraph.orchid.crypto.TorPublicKey;
 import com.subgraph.orchid.data.HexDigest;
 

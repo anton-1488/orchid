@@ -1,6 +1,6 @@
 package com.subgraph.orchid.circuits.cells.impls;
 
-import com.subgraph.orchid.CircuitNode;
+import com.subgraph.orchid.circuits.CircuitNode;
 import com.subgraph.orchid.circuits.cells.RelayCell;
 import com.subgraph.orchid.circuits.cells.enums.CellCommand;
 import com.subgraph.orchid.circuits.cells.enums.RelayCellCommand;

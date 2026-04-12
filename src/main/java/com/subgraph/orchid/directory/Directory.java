@@ -1,10 +1,12 @@
-package com.subgraph.orchid;
+package com.subgraph.orchid.directory;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import com.subgraph.orchid.ConsensusDocument.RequiredCertificate;
+import com.subgraph.orchid.directory.document.ConsensusDocument;
+import com.subgraph.orchid.directory.document.ConsensusDocument.RequiredCertificate;
+import com.subgraph.orchid.GuardEntry;
 import com.subgraph.orchid.data.HexDigest;
 import com.subgraph.orchid.directory.certificate.KeyCertificate;
 import com.subgraph.orchid.directory.events.EventHandler;

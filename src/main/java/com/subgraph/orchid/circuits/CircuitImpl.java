@@ -9,11 +9,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
 
 import com.subgraph.orchid.circuits.cells.Cell;
-import com.subgraph.orchid.CircuitNode;
 import com.subgraph.orchid.connections.Connection;
-import com.subgraph.orchid.DirectoryCircuit;
-import com.subgraph.orchid.ExitCircuit;
-import com.subgraph.orchid.InternalCircuit;
+import com.subgraph.orchid.directory.DirectoryCircuit;
 import com.subgraph.orchid.circuits.cells.RelayCell;
 import com.subgraph.orchid.directory.router.Router;
 import com.subgraph.orchid.Stream;

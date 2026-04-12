@@ -3,8 +3,6 @@ package com.subgraph.orchid.circuits;
 import java.util.Collections;
 import java.util.List;
 
-import com.subgraph.orchid.CircuitBuildHandler;
-import com.subgraph.orchid.CircuitNode;
 import com.subgraph.orchid.connections.Connection;
 import com.subgraph.orchid.directory.router.Router;
 import com.subgraph.orchid.circuits.path.CircuitPathChooser;

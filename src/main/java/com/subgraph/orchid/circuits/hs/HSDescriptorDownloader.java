@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
 
-import com.subgraph.orchid.DirectoryCircuit;
-import com.subgraph.orchid.InternalCircuit;
+import com.subgraph.orchid.directory.DirectoryCircuit;
+import com.subgraph.orchid.circuits.InternalCircuit;
 import com.subgraph.orchid.exceptions.OpenFailedException;
 import com.subgraph.orchid.directory.router.Router;
 import com.subgraph.orchid.Stream;

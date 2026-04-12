@@ -2,7 +2,7 @@ package com.subgraph.orchid.directory.downloader;
 
 import java.nio.ByteBuffer;
 
-import com.subgraph.orchid.ConsensusDocument;
+import com.subgraph.orchid.directory.document.ConsensusDocument;
 import com.subgraph.orchid.directory.parsing.DocumentParser;
 
 public class ConsensusFetcher extends DocumentFetcher<ConsensusDocument>{

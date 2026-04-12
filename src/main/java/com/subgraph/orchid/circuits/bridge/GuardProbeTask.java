@@ -31,8 +31,6 @@ public class GuardProbeTask implements Runnable {
             return;
         } catch (ConnectionIOException e) {
             log.error("IO exception probing entry guard {}: ", router, e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
         } catch (Exception e) {
             log.warn("Unexpected exception probing entry guard {}:", router, e);
         }

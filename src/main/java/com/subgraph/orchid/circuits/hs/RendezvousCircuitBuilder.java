@@ -4,9 +4,9 @@ import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 
 import com.subgraph.orchid.circuits.Circuit;
-import com.subgraph.orchid.Directory;
-import com.subgraph.orchid.HiddenServiceCircuit;
-import com.subgraph.orchid.InternalCircuit;
+import com.subgraph.orchid.directory.Directory;
+import com.subgraph.orchid.circuits.HiddenServiceCircuit;
+import com.subgraph.orchid.circuits.InternalCircuit;
 import com.subgraph.orchid.directory.router.Router;
 import com.subgraph.orchid.exceptions.TorException;
 import com.subgraph.orchid.circuits.CircuitManagerImpl;

@@ -1,7 +1,7 @@
 package com.subgraph.orchid.connections;
 
+import com.subgraph.orchid.BootstrapStatus;
 import com.subgraph.orchid.Globals;
-import com.subgraph.orchid.Tor;
 import com.subgraph.orchid.circuits.Circuit;
 import com.subgraph.orchid.circuits.TorInitializationTracker;
 import com.subgraph.orchid.circuits.cells.Cell;
@@ -132,17 +132,17 @@ public class ConnectionImpl implements Connection {
 
     private void connectSocket() throws IOException {
         if (isDirectoryConnection) {
-            initializationTracker.notifyEvent(Tor.BOOTSTRAP_STATUS_CONN_DIR);
+            initializationTracker.notifyEvent(BootstrapStatus.CONN_DIR);
         } else {
-            initializationTracker.notifyEvent(Tor.BOOTSTRAP_STATUS_CONN_OR);
+            initializationTracker.notifyEvent(BootstrapStatus.CONN_OR);
         }
 
         socket.connect(routerToSocketAddress(router), DEFAULT_CONNECT_TIMEOUT);
 
         if (isDirectoryConnection) {
-            initializationTracker.notifyEvent(Tor.BOOTSTRAP_STATUS_HANDSHAKE_DIR);
+            initializationTracker.notifyEvent(BootstrapStatus.HANDSHAKE_DIR);
         } else {
-            initializationTracker.notifyEvent(Tor.BOOTSTRAP_STATUS_HANDSHAKE_OR);
+            initializationTracker.notifyEvent(BootstrapStatus.HANDSHAKE_OR);
         }
     }
 

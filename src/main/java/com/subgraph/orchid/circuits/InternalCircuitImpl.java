@@ -3,10 +3,7 @@ package com.subgraph.orchid.circuits;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-import com.subgraph.orchid.CircuitNode;
-import com.subgraph.orchid.DirectoryCircuit;
-import com.subgraph.orchid.HiddenServiceCircuit;
-import com.subgraph.orchid.InternalCircuit;
+import com.subgraph.orchid.directory.DirectoryCircuit;
 import com.subgraph.orchid.directory.router.Router;
 import com.subgraph.orchid.Stream;
 import com.subgraph.orchid.exceptions.StreamConnectFailedException;

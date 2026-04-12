@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.Set;
 
 import com.subgraph.orchid.directory.certificate.KeyCertificate;
-import com.subgraph.orchid.ConsensusDocument.RequiredCertificate;
+import com.subgraph.orchid.directory.document.ConsensusDocument.RequiredCertificate;
 import com.subgraph.orchid.directory.parsing.DocumentParser;
 
 public class CertificateFetcher extends DocumentFetcher<KeyCertificate>{

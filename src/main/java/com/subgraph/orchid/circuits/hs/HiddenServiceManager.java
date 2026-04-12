@@ -6,8 +6,8 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
 
-import com.subgraph.orchid.Directory;
-import com.subgraph.orchid.HiddenServiceCircuit;
+import com.subgraph.orchid.directory.Directory;
+import com.subgraph.orchid.circuits.HiddenServiceCircuit;
 import com.subgraph.orchid.exceptions.OpenFailedException;
 import com.subgraph.orchid.Stream;
 import com.subgraph.orchid.exceptions.StreamConnectFailedException;

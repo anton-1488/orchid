@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.subgraph.orchid.Directory;
+import com.subgraph.orchid.directory.Directory;
 import com.subgraph.orchid.directory.router.Router;
 import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.circuits.bridge.EntryGuards;

@@ -9,12 +9,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.subgraph.orchid.Directory;
-import com.subgraph.orchid.DirectoryStore;
 import com.subgraph.orchid.GuardEntry;
 import com.subgraph.orchid.directory.router.Router;
 import com.subgraph.orchid.Tor;
-import com.subgraph.orchid.DirectoryStore.CacheFile;
+import com.subgraph.orchid.directory.DirectoryStore.CacheFile;
 import com.subgraph.orchid.crypto.TorRandom;
 
 public class StateFile {

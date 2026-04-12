@@ -1,4 +1,6 @@
-package com.subgraph.orchid;
+package com.subgraph.orchid.directory;
+
+import com.subgraph.orchid.directory.document.Document;
 
 import java.nio.ByteBuffer;
 import java.util.List;

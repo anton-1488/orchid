@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.subgraph.orchid.HiddenServiceCircuit;
+import com.subgraph.orchid.circuits.HiddenServiceCircuit;
 import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.circuits.hs.HSDescriptorCookie.CookieType;
 import com.subgraph.orchid.crypto.TorMessageDigest;

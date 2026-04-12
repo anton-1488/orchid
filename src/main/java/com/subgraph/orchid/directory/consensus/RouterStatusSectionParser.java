@@ -1,6 +1,6 @@
 package com.subgraph.orchid.directory.consensus;
 
-import com.subgraph.orchid.ConsensusDocument.ConsensusFlavor;
+import com.subgraph.orchid.directory.document.ConsensusDocument.ConsensusFlavor;
 import com.subgraph.orchid.exceptions.TorParsingException;
 import com.subgraph.orchid.crypto.TorMessageDigest;
 import com.subgraph.orchid.data.HexDigest;

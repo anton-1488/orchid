@@ -1,6 +1,6 @@
 package com.subgraph.orchid.circuits.path;
 
-import com.subgraph.orchid.ConsensusDocument;
+import com.subgraph.orchid.directory.document.ConsensusDocument;
 import com.subgraph.orchid.directory.router.Router;
 
 class CircuitNodeChooserWeightParameters {

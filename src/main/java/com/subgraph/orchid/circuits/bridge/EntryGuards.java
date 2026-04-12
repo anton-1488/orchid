@@ -6,6 +6,8 @@ import com.subgraph.orchid.circuits.path.CircuitNodeChooser.WeightRule;
 import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.connections.ConnectionCache;
 import com.subgraph.orchid.crypto.TorRandom;
+import com.subgraph.orchid.directory.Directory;
+import com.subgraph.orchid.directory.DirectoryDownloader;
 import com.subgraph.orchid.directory.router.Router;
 import org.slf4j.LoggerFactory;
 
@@ -35,11 +37,11 @@ public class EntryGuards {
     }
 
     public boolean isUsingBridges() {
-        return config.getUseBridges();
+        return config.isUseBridges();
     }
 
     public Router chooseRandomGuard(Set<Router> excluded) {
-        if (config.getUseBridges()) {
+        if (config.isUseBridges()) {
             return bridges.chooseRandomBridge(excluded);
         }
 

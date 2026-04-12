@@ -8,9 +8,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-import com.subgraph.orchid.Descriptor;
-import com.subgraph.orchid.DirectoryStore;
-import com.subgraph.orchid.DirectoryStore.CacheFile;
+import com.subgraph.orchid.directory.document.Descriptor;
+import com.subgraph.orchid.directory.DirectoryStore.CacheFile;
 import com.subgraph.orchid.Threading;
 import com.subgraph.orchid.data.HexDigest;
 import com.subgraph.orchid.directory.parsing.DocumentParser;

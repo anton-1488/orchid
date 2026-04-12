@@ -1,6 +1,6 @@
 package com.subgraph.orchid.socks;
 
-import com.subgraph.orchid.CircuitManager;
+import com.subgraph.orchid.circuits.CircuitManager;
 import com.subgraph.orchid.Stream;
 import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.exceptions.OpenFailedException;

@@ -1,8 +1,8 @@
 package com.subgraph.orchid.config;
 
 import com.subgraph.orchid.data.HexDigest;
-import com.subgraph.orchid.data.IPv4Address;
 
+import java.net.InetAddress;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -181,9 +181,9 @@ public class TorConfig {
 
         Builder bridges(TorConfigBridgeLine... bridges);
 
-        Builder addBridge(IPv4Address address, int port);
+        Builder addBridge(InetAddress address, int port);
 
-        Builder addBridge(IPv4Address address, int port, HexDigest fingerprint);
+        Builder addBridge(InetAddress address, int port, HexDigest fingerprint);
 
         TorConfig build();
     }

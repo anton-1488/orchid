@@ -8,7 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.subgraph.orchid.Tor;
-import com.subgraph.orchid.TorInitializationListener;
+import com.subgraph.orchid.directory.events.TorInitializationListener;
 
 public class TorInitializationTracker {
 	private final static Logger logger = Logger.getLogger(TorInitializationTracker.class.getName());

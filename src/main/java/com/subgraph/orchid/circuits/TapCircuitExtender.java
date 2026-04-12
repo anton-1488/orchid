@@ -2,7 +2,6 @@ package com.subgraph.orchid.circuits;
 
 import java.util.logging.Logger;
 
-import com.subgraph.orchid.CircuitNode;
 import com.subgraph.orchid.circuits.cells.RelayCell;
 import com.subgraph.orchid.directory.router.Router;
 import com.subgraph.orchid.crypto.TorMessageDigest;

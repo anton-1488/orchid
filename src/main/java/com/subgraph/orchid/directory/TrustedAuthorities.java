@@ -4,7 +4,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.subgraph.orchid.DirectoryServer;
 import com.subgraph.orchid.Tor;
 import com.subgraph.orchid.data.HexDigest;
 import com.subgraph.orchid.data.IPv4Address;

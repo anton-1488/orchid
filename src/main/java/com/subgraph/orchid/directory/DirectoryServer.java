@@ -1,4 +1,4 @@
-package com.subgraph.orchid;
+package com.subgraph.orchid.directory;
 
 import java.util.List;
 

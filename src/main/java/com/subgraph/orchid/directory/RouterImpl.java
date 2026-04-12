@@ -3,8 +3,7 @@ package com.subgraph.orchid.directory;
 import java.util.Collections;
 import java.util.Set;
 
-import com.subgraph.orchid.Descriptor;
-import com.subgraph.orchid.Directory;
+import com.subgraph.orchid.directory.document.Descriptor;
 import com.subgraph.orchid.directory.router.Router;
 import com.subgraph.orchid.directory.router.RouterDescriptor;
 import com.subgraph.orchid.directory.router.RouterStatus;

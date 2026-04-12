@@ -7,7 +7,6 @@ import java.io.PrintWriter;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
 
-import com.subgraph.orchid.CircuitNode;
 import com.subgraph.orchid.circuits.cells.RelayCell;
 import com.subgraph.orchid.Stream;
 import com.subgraph.orchid.exceptions.StreamConnectFailedException;

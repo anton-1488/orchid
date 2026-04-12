@@ -3,7 +3,7 @@ package com.subgraph.orchid.directory.downloader;
 import java.nio.ByteBuffer;
 import java.util.Set;
 
-import com.subgraph.orchid.KeyCertificate;
+import com.subgraph.orchid.directory.certificate.KeyCertificate;
 import com.subgraph.orchid.ConsensusDocument.RequiredCertificate;
 import com.subgraph.orchid.directory.parsing.DocumentParser;
 

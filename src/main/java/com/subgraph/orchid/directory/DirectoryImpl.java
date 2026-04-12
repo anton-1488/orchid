@@ -20,7 +20,7 @@ import com.subgraph.orchid.DirectoryServer;
 import com.subgraph.orchid.DirectoryStore;
 import com.subgraph.orchid.DirectoryStore.CacheFile;
 import com.subgraph.orchid.GuardEntry;
-import com.subgraph.orchid.KeyCertificate;
+import com.subgraph.orchid.directory.certificate.KeyCertificate;
 import com.subgraph.orchid.directory.router.Router;
 import com.subgraph.orchid.directory.router.RouterDescriptor;
 import com.subgraph.orchid.directory.router.RouterMicrodescriptor;

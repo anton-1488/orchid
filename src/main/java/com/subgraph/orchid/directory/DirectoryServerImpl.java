@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.subgraph.orchid.DirectoryServer;
-import com.subgraph.orchid.KeyCertificate;
+import com.subgraph.orchid.directory.certificate.KeyCertificate;
 import com.subgraph.orchid.directory.router.RouterStatus;
 import com.subgraph.orchid.data.HexDigest;
 

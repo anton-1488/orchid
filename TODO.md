@@ -12,7 +12,6 @@ com.subgraph.orhid.directory
 com.subgraph.orhid
 
 # Сделать сейчас:
-com.subgraph.orhid.directory.certificate
 com.subgraph.orhid.circuits.path
 com.subgraph.orhid.crypto
 com.subgraph.orhid.sockets

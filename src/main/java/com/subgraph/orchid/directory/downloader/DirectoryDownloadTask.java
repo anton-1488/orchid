@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 import com.subgraph.orchid.ConsensusDocument;
 import com.subgraph.orchid.Directory;
 import com.subgraph.orchid.DirectoryDownloader;
-import com.subgraph.orchid.KeyCertificate;
+import com.subgraph.orchid.directory.certificate.KeyCertificate;
 import com.subgraph.orchid.Threading;
 import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.config.TorConfig.AutoBoolValue;

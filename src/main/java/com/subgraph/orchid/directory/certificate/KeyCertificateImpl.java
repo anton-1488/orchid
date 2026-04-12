@@ -1,93 +1,128 @@
 package com.subgraph.orchid.directory.certificate;
 
+import java.net.InetAddress;
 import java.nio.ByteBuffer;
+import java.time.Instant;
 
-import com.subgraph.orchid.KeyCertificate;
 import com.subgraph.orchid.Tor;
 import com.subgraph.orchid.crypto.TorPublicKey;
 import com.subgraph.orchid.data.HexDigest;
-import com.subgraph.orchid.data.IPv4Address;
-import com.subgraph.orchid.data.Timestamp;
 
 public class KeyCertificateImpl implements KeyCertificate {
-	
-	private IPv4Address directoryAddress;
-	private int directoryPort;
-	private HexDigest fingerprint;
-	private TorPublicKey identityKey;
-	private Timestamp keyPublished;
-	private Timestamp keyExpires;
-	private TorPublicKey signingKey;
-	private String rawDocumentData;
-	
-	private boolean hasValidSignature = false;
+    private InetAddress directoryAddress;
+    private int directoryPort;
+    private HexDigest fingerprint;
+    private TorPublicKey identityKey;
+    private Instant keyPublished;
+    private Instant keyExpires;
+    private TorPublicKey signingKey;
+    private String rawDocumentData;
 
-	void setDirectoryPort(int port) { this.directoryPort = port; }
-	void setDirectoryAddress(IPv4Address address) { this.directoryAddress = address; }
-	void setAuthorityFingerprint(HexDigest fingerprint) { this.fingerprint = fingerprint;}
-	void setAuthorityIdentityKey(TorPublicKey key) { this.identityKey = key; }
-	void setAuthoritySigningKey(TorPublicKey key) { this.signingKey = key; }
-	void setKeyPublishedTime(Timestamp time) { this.keyPublished = time; }
-	void setKeyExpiryTime(Timestamp time) { this.keyExpires = time; }
-	void setValidSignature() { hasValidSignature = true;}
-	void setRawDocumentData(String rawData) { rawDocumentData = rawData; }
-	
-	public boolean isValidDocument() {
-		return hasValidSignature && (fingerprint != null) && (identityKey != null) &&
-			(keyPublished != null) && (keyExpires != null) && (signingKey != null);
-	}
-	
-	public IPv4Address getDirectoryAddress() {
-		return directoryAddress;
-	}
-	
-	public int getDirectoryPort() {
-		return directoryPort;
-	}
-	
-	public HexDigest getAuthorityFingerprint() {
-		return fingerprint;
-	}
-	
-	public TorPublicKey getAuthorityIdentityKey() {
-		return identityKey;
-	}
-	
-	public TorPublicKey getAuthoritySigningKey() {
-		return signingKey;
-	}
-	
-	public Timestamp getKeyPublishedTime() {
-		return keyPublished;
-	}
-	
-	public Timestamp getKeyExpiryTime() {
-		return keyExpires;
-	}
-	
-	public boolean isExpired() {
-		if(keyExpires != null) {
-			return keyExpires.hasPassed();
-		} else {
-			return false;
-		}
-	}
-	
-	public String getRawDocumentData() {
-		return rawDocumentData;
-	}
-	
-	public ByteBuffer getRawDocumentBytes() {
-		if(getRawDocumentData() == null) {
-			return ByteBuffer.allocate(0);
-		} else {
-			return ByteBuffer.wrap(getRawDocumentData().getBytes(Tor.getDefaultCharset()));
-		}
-	}
-	
-	public String toString() {
-		return "(Certificate: address="+ directoryAddress +":"+ directoryPort 
-			+" fingerprint="+ fingerprint +" published="+ keyPublished +" expires="+ keyExpires +")"+
-			"\nident="+ identityKey +" sign="+ signingKey;
-	}
+    private boolean hasValidSignature = false;
+
+    public void setDirectoryPort(int port) {
+        this.directoryPort = port;
+    }
+
+    public void setDirectoryAddress(InetAddress address) {
+        this.directoryAddress = address;
+    }
+
+    public void setAuthorityFingerprint(HexDigest fingerprint) {
+        this.fingerprint = fingerprint;
+    }
+
+    public void setAuthorityIdentityKey(TorPublicKey key) {
+        this.identityKey = key;
+    }
+
+    public void setAuthoritySigningKey(TorPublicKey key) {
+        this.signingKey = key;
+    }
+
+    public void setKeyPublishedTime(Instant time) {
+        this.keyPublished = time;
+    }
+
+    public void setKeyExpiryTime(Instant time) {
+        this.keyExpires = time;
+    }
+
+    public void setValidSignature() {
+        hasValidSignature = true;
+    }
+
+    public void setRawDocumentData(String rawData) {
+        rawDocumentData = rawData;
+    }
+
+    @Override
+    public boolean isValidDocument() {
+        return hasValidSignature && (fingerprint != null) && (identityKey != null) && (keyPublished != null) && (keyExpires != null) && (signingKey != null);
+    }
+
+    @Override
+    public InetAddress getDirectoryAddress() {
+        return directoryAddress;
+    }
+
+    @Override
+    public int getDirectoryPort() {
+        return directoryPort;
+    }
+
+    @Override
+    public HexDigest getAuthorityFingerprint() {
+        return fingerprint;
+    }
+
+    @Override
+    public TorPublicKey getAuthorityIdentityKey() {
+        return identityKey;
+    }
+
+    @Override
+    public TorPublicKey getAuthoritySigningKey() {
+        return signingKey;
+    }
+
+    @Override
+    public Instant getKeyPublishedTime() {
+        return keyPublished;
+    }
+
+    @Override
+    public Instant getKeyExpiryTime() {
+        return keyExpires;
+    }
+
+    @Override
+    public boolean isExpired() {
+        return keyExpires != null && Instant.now().isAfter(keyExpires);
+    }
+
+    @Override
+    public String getRawDocumentData() {
+        return rawDocumentData;
+    }
+
+    @Override
+    public ByteBuffer getRawDocumentBytes() {
+        return getRawDocumentData() == null ? ByteBuffer.allocate(0) : ByteBuffer.wrap(getRawDocumentData().getBytes(Tor.getDefaultCharset()));
+    }
+
+    @Override
+    public String toString() {
+        return "KeyCertificateImpl{" +
+                "directoryAddress=" + directoryAddress +
+                ", directoryPort=" + directoryPort +
+                ", fingerprint=" + fingerprint +
+                ", identityKey=" + identityKey +
+                ", keyPublished=" + keyPublished +
+                ", keyExpires=" + keyExpires +
+                ", signingKey=" + signingKey +
+                ", rawDocumentData='" + rawDocumentData + '\'' +
+                ", hasValidSignature=" + hasValidSignature +
+                '}';
+    }
 }

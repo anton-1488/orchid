@@ -3,6 +3,7 @@ package com.subgraph.orchid;
 import java.util.List;
 
 import com.subgraph.orchid.data.HexDigest;
+import com.subgraph.orchid.directory.certificate.KeyCertificate;
 import com.subgraph.orchid.directory.router.Router;
 
 /**

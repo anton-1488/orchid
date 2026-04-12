@@ -13,7 +13,7 @@ import com.subgraph.orchid.Descriptor;
 import com.subgraph.orchid.Directory;
 import com.subgraph.orchid.DirectoryCircuit;
 import com.subgraph.orchid.DirectoryDownloader;
-import com.subgraph.orchid.KeyCertificate;
+import com.subgraph.orchid.directory.certificate.KeyCertificate;
 import com.subgraph.orchid.exceptions.DirectoryRequestFailedException;
 import com.subgraph.orchid.exceptions.OpenFailedException;
 import com.subgraph.orchid.directory.router.Router;

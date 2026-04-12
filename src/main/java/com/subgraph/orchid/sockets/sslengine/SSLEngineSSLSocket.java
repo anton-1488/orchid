@@ -1,5 +1,14 @@
 package com.subgraph.orchid.sockets.sslengine;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.net.ssl.HandshakeCompletedEvent;
+import javax.net.ssl.HandshakeCompletedListener;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -10,306 +19,377 @@ import java.net.SocketException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.net.ssl.HandshakeCompletedEvent;
-import javax.net.ssl.HandshakeCompletedListener;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocket;
-
 public class SSLEngineSSLSocket extends SSLSocket implements HandshakeCallbackHandler {
+    private static final Logger log = LoggerFactory.getLogger(SSLEngineSSLSocket.class);
 
-	private final SSLEngine engine;
-	private final SSLEngineManager manager;
-	
-	private Socket socket;
-	private InputStream inputStream;
-	private OutputStream outputStream;
-	private final List<HandshakeCompletedListener> listenerList;
-	public SSLEngineSSLSocket(Socket socket, SSLContext context) throws IOException {
-		this.engine = createSSLEngine(context);
-		this.socket = socket;
-		this.manager = new SSLEngineManager(engine, this, socket.getInputStream(), socket.getOutputStream());
-		this.listenerList = new CopyOnWriteArrayList<HandshakeCompletedListener>();
-	}
-	
-	private static SSLEngine createSSLEngine(SSLContext context) {
-		final SSLEngine engine = context.createSSLEngine();
-		engine.setUseClientMode(true);
-		return engine;
-	}
+    private final SSLEngine engine;
+    private final SSLEngineManager manager;
+    private final Socket socket;
+    private final List<HandshakeCompletedListener> listenerList;
 
-	@Override
-	public String[] getSupportedCipherSuites() {
-		return engine.getSupportedCipherSuites();
-	}
+    private InputStream inputStream;
+    private OutputStream outputStream;
+    private volatile boolean closed;
 
-	@Override
-	public String[] getEnabledCipherSuites() {
-		return engine.getEnabledCipherSuites();
-	}
+    public SSLEngineSSLSocket(Socket socket, SSLContext context) throws IOException {
+        this.engine = createSSLEngine(context);
+        this.socket = socket;
+        this.manager = new SSLEngineManager(engine, this, socket.getInputStream(), socket.getOutputStream());
+        this.listenerList = new CopyOnWriteArrayList<>();
+    }
 
-	@Override
-	public void setEnabledCipherSuites(String[] suites) {
-		engine.setEnabledCipherSuites(suites);
-	}
+    private static SSLEngine createSSLEngine(SSLContext context) {
+        SSLEngine engine = context.createSSLEngine();
+        engine.setUseClientMode(true);
+        return engine;
+    }
 
-	@Override
-	public String[] getSupportedProtocols() {
-		return engine.getSupportedProtocols();
-	}
+    // ========== SSL Socket Methods ==========
 
-	@Override
-	public String[] getEnabledProtocols() {
-		return engine.getEnabledProtocols();
-	}
+    @Override
+    public String[] getSupportedCipherSuites() {
+        return engine.getSupportedCipherSuites();
+    }
 
-	@Override
-	public void setEnabledProtocols(String[] protocols) {
-		engine.setEnabledProtocols(protocols);
-	}
+    @Override
+    public String[] getEnabledCipherSuites() {
+        return engine.getEnabledCipherSuites();
+    }
 
-	@Override
-	public SSLSession getSession() {
-		return engine.getSession();
-	}
+    @Override
+    public void setEnabledCipherSuites(String[] suites) {
+        engine.setEnabledCipherSuites(suites);
+    }
 
-	@Override
-	public void addHandshakeCompletedListener(
-			HandshakeCompletedListener listener) {
-		listenerList.add(listener);
-	}
+    @Override
+    public String[] getSupportedProtocols() {
+        return engine.getSupportedProtocols();
+    }
 
-	@Override
-	public void removeHandshakeCompletedListener(
-			HandshakeCompletedListener listener) {
-		listenerList.remove(listener);
-	}
+    @Override
+    public String[] getEnabledProtocols() {
+        return engine.getEnabledProtocols();
+    }
 
-	@Override
-	public void startHandshake() throws IOException {
-		manager.startHandshake();
-	}
+    @Override
+    public void setEnabledProtocols(String[] protocols) {
+        engine.setEnabledProtocols(protocols);
+    }
 
-	@Override
-	public void setUseClientMode(boolean mode) {
-		engine.setUseClientMode(mode);
-	}
+    @Override
+    public SSLSession getSession() {
+        return engine.getSession();
+    }
 
-	@Override
-	public boolean getUseClientMode() {
-		return engine.getUseClientMode();
-	}
+    @Override
+    public void addHandshakeCompletedListener(HandshakeCompletedListener listener) {
+        if (listener != null) {
+            listenerList.add(listener);
+        }
+    }
 
-	@Override
-	public void setNeedClientAuth(boolean need) {
-		engine.setNeedClientAuth(need);
-	}
+    @Override
+    public void removeHandshakeCompletedListener(HandshakeCompletedListener listener) {
+        listenerList.remove(listener);
+    }
 
-	@Override
-	public boolean getNeedClientAuth() {
-		return engine.getNeedClientAuth();
-	}
+    @Override
+    public void startHandshake() throws IOException {
+        checkClosed();
+        manager.startHandshake();
+    }
 
-	@Override
-	public void setWantClientAuth(boolean want) {
-		engine.setWantClientAuth(want);
-	}
+    @Override
+    public void setUseClientMode(boolean mode) {
+        engine.setUseClientMode(mode);
+    }
 
-	@Override
-	public boolean getWantClientAuth() {
-		return engine.getWantClientAuth();
-	}
+    @Override
+    public boolean getUseClientMode() {
+        return engine.getUseClientMode();
+    }
 
-	@Override
-	public void connect(SocketAddress endpoint) throws IOException {
-		throw new IOException("Socket is already connected");
-	}
+    @Override
+    public void setNeedClientAuth(boolean need) {
+        engine.setNeedClientAuth(need);
+    }
 
-	@Override
-	public void connect(SocketAddress endpoint, int timeout) throws IOException {
-		throw new IOException("Socket is already connected");
-	}
+    @Override
+    public boolean getNeedClientAuth() {
+        return engine.getNeedClientAuth();
+    }
 
-	@Override
-	public void bind(SocketAddress bindpoint) throws IOException {
-		throw new IOException("Socket is already connected");
-	}
+    @Override
+    public void setWantClientAuth(boolean want) {
+        engine.setWantClientAuth(want);
+    }
 
-	@Override
-	public InetAddress getInetAddress() {
-		return socket.getInetAddress();
-	}
+    @Override
+    public boolean getWantClientAuth() {
+        return engine.getWantClientAuth();
+    }
 
-	@Override
-	public InetAddress getLocalAddress() {
-		return socket.getLocalAddress();
-	}
+    // ========== Socket passthrough methods ==========
 
-	@Override
-	public int getPort() {
-		return socket.getPort();
-	}
+    @Override
+    public void connect(SocketAddress endpoint) throws IOException {
+        throw new IOException("Socket is already connected");
+    }
 
-	@Override
-	public int getLocalPort() {
-		return socket.getLocalPort();
-	}
+    @Override
+    public void connect(SocketAddress endpoint, int timeout) throws IOException {
+        throw new IOException("Socket is already connected");
+    }
 
-	@Override
-	public SocketAddress getRemoteSocketAddress() {
-		return socket.getRemoteSocketAddress();
-	}
+    @Override
+    public void bind(SocketAddress bindpoint) throws IOException {
+        throw new IOException("Socket is already connected");
+    }
 
-	@Override
-	public SocketAddress getLocalSocketAddress() {
-		return socket.getLocalSocketAddress();
-	}
+    @Override
+    public InetAddress getInetAddress() {
+        return socket.getInetAddress();
+    }
 
-	@Override
-	public void setTcpNoDelay(boolean on) throws SocketException {
-		socket.setTcpNoDelay(on);
-	}
+    @Override
+    public InetAddress getLocalAddress() {
+        return socket.getLocalAddress();
+    }
 
-	@Override
-	public boolean getTcpNoDelay() throws SocketException {
-		return socket.getTcpNoDelay();
-	}
+    @Override
+    public int getPort() {
+        return socket.getPort();
+    }
 
-	@Override
-	public void setSoLinger(boolean on, int linger) throws SocketException {
-		socket.setSoLinger(on, linger);
-	}
+    @Override
+    public int getLocalPort() {
+        return socket.getLocalPort();
+    }
 
-	@Override
-	public int getSoLinger() throws SocketException {
-		return socket.getSoLinger();
-	}
+    @Override
+    public SocketAddress getRemoteSocketAddress() {
+        return socket.getRemoteSocketAddress();
+    }
 
-	@Override
-	public void setOOBInline(boolean on) throws SocketException {
-		socket.setOOBInline(on);
-	}
+    @Override
+    public SocketAddress getLocalSocketAddress() {
+        return socket.getLocalSocketAddress();
+    }
 
-	@Override
-	public boolean getOOBInline() throws SocketException {
-		return socket.getOOBInline();
-	}
+    @Override
+    public void setTcpNoDelay(boolean on) throws SocketException {
+        socket.setTcpNoDelay(on);
+    }
 
-	@Override
-	public synchronized void setSoTimeout(int timeout) throws SocketException {
-		socket.setSoTimeout(timeout);
-	}
+    @Override
+    public boolean getTcpNoDelay() throws SocketException {
+        return socket.getTcpNoDelay();
+    }
 
-	@Override
-	public synchronized int getSoTimeout() throws SocketException {
-		return socket.getSoTimeout();
-	}
+    @Override
+    public void setSoLinger(boolean on, int linger) throws SocketException {
+        socket.setSoLinger(on, linger);
+    }
 
-	@Override
-	public synchronized void setSendBufferSize(int size) throws SocketException {
-		socket.setSendBufferSize(size);
-	}
+    @Override
+    public int getSoLinger() throws SocketException {
+        return socket.getSoLinger();
+    }
 
-	@Override
-	public synchronized int getSendBufferSize() throws SocketException {
-		return socket.getSendBufferSize();
-	}
+    @Override
+    public void setOOBInline(boolean on) throws SocketException {
+        socket.setOOBInline(on);
+    }
 
-	@Override
-	public synchronized void setReceiveBufferSize(int size)
-			throws SocketException {
-		socket.setReceiveBufferSize(size);
-	}
+    @Override
+    public boolean getOOBInline() throws SocketException {
+        return socket.getOOBInline();
+    }
 
-	@Override
-	public synchronized int getReceiveBufferSize() throws SocketException {
-		return socket.getReceiveBufferSize();
-	}
+    @Override
+    public synchronized void setSoTimeout(int timeout) throws SocketException {
+        socket.setSoTimeout(timeout);
+    }
 
-	@Override
-	public void setKeepAlive(boolean on) throws SocketException {
-		socket.setKeepAlive(on);
-	}
+    @Override
+    public synchronized int getSoTimeout() throws SocketException {
+        return socket.getSoTimeout();
+    }
 
-	@Override
-	public boolean getKeepAlive() throws SocketException {
-		return socket.getKeepAlive();
-	}
+    @Override
+    public synchronized void setSendBufferSize(int size) throws SocketException {
+        socket.setSendBufferSize(size);
+    }
 
-	@Override
-	public void setTrafficClass(int tc) throws SocketException {
-		socket.setTrafficClass(tc);
-	}
+    @Override
+    public synchronized int getSendBufferSize() throws SocketException {
+        return socket.getSendBufferSize();
+    }
 
-	@Override
-	public int getTrafficClass() throws SocketException {
-		return socket.getTrafficClass();
-	}
+    @Override
+    public synchronized void setReceiveBufferSize(int size) throws SocketException {
+        socket.setReceiveBufferSize(size);
+    }
 
-	@Override
-	public void setReuseAddress(boolean on) throws SocketException {
-		socket.setReuseAddress(on);
-	}
+    @Override
+    public synchronized int getReceiveBufferSize() throws SocketException {
+        return socket.getReceiveBufferSize();
+    }
 
-	@Override
-	public boolean getReuseAddress() throws SocketException {
-		return socket.getReuseAddress();
-	}
+    @Override
+    public void setKeepAlive(boolean on) throws SocketException {
+        socket.setKeepAlive(on);
+    }
 
-	@Override
-	public void shutdownInput() throws IOException {
-		throw new UnsupportedOperationException("shutdownInput() not supported on SSL Sockets");
-	}
+    @Override
+    public boolean getKeepAlive() throws SocketException {
+        return socket.getKeepAlive();
+    }
 
-	@Override
-	public void shutdownOutput() throws IOException {
-		throw new UnsupportedOperationException("shutdownOutput() not supported on SSL Sockets");
-	}
+    @Override
+    public void setTrafficClass(int tc) throws SocketException {
+        socket.setTrafficClass(tc);
+    }
 
-	@Override
-	public boolean isInputShutdown() {
-		return socket.isInputShutdown();
-	}
+    @Override
+    public int getTrafficClass() throws SocketException {
+        return socket.getTrafficClass();
+    }
 
-	@Override
-	public boolean isOutputShutdown() {
-		return socket.isOutputShutdown();
-	}
+    @Override
+    public void setReuseAddress(boolean on) throws SocketException {
+        socket.setReuseAddress(on);
+    }
 
-	@Override
-	public void setEnableSessionCreation(boolean flag) {
-		engine.setEnableSessionCreation(flag);
-	}
+    @Override
+    public boolean getReuseAddress() throws SocketException {
+        return socket.getReuseAddress();
+    }
 
-	@Override
-	public boolean getEnableSessionCreation() {
-		return engine.getEnableSessionCreation();
-	}
+    @Override
+    public void shutdownInput() {
+        throw new UnsupportedOperationException("shutdownInput() not supported on SSL Sockets");
+    }
 
-	@Override
-	public synchronized InputStream getInputStream() throws IOException {
-		if(inputStream == null) {
-			inputStream = new SSLEngineInputStream(manager);
-		}
-		return inputStream;
-	}
+    @Override
+    public void shutdownOutput() {
+        throw new UnsupportedOperationException("shutdownOutput() not supported on SSL Sockets");
+    }
 
-	@Override
-	public OutputStream getOutputStream() throws IOException {
-		if(outputStream == null) {
-			outputStream = new SSLEngineOutputStream(manager);
-		}
-		return outputStream;
-	}
+    @Override
+    public boolean isInputShutdown() {
+        return socket.isInputShutdown();
+    }
 
-	public void handshakeCompleted() {
-		if(listenerList.isEmpty()) {
-			return;
-		}
-		final HandshakeCompletedEvent event = new HandshakeCompletedEvent(this, engine.getSession());
-		for(HandshakeCompletedListener listener: listenerList) {
-			listener.handshakeCompleted(event);
-		}
-	}
+    @Override
+    public boolean isOutputShutdown() {
+        return socket.isOutputShutdown();
+    }
+
+    @Override
+    public void setEnableSessionCreation(boolean flag) {
+        engine.setEnableSessionCreation(flag);
+    }
+
+    @Override
+    public boolean getEnableSessionCreation() {
+        return engine.getEnableSessionCreation();
+    }
+
+    // ========== Streams ==========
+
+    @Override
+    public synchronized InputStream getInputStream() throws IOException {
+        checkClosed();
+        if (inputStream == null) {
+            inputStream = new SSLEngineInputStream(manager);
+        }
+        return inputStream;
+    }
+
+    @Override
+    public OutputStream getOutputStream() throws IOException {
+        checkClosed();
+        if (outputStream == null) {
+            outputStream = new SSLEngineOutputStream(manager);
+        }
+        return outputStream;
+    }
+
+    // ========== Close handling ==========
+
+    @Override
+    public boolean isClosed() {
+        return closed || socket.isClosed();
+    }
+
+    @Override
+    public void close() throws IOException {
+        if (closed) return;
+        closed = true;
+
+        IOException firstException = null;
+
+        try {
+            if (inputStream != null) {
+                inputStream.close();
+            }
+        } catch (IOException e) {
+            firstException = e;
+        }
+
+        try {
+            if (outputStream != null) {
+                outputStream.close();
+            }
+        } catch (IOException e) {
+            if (firstException == null) firstException = e;
+        }
+
+        try {
+            manager.close();
+        } catch (IOException e) {
+            if (firstException == null) firstException = e;
+        }
+
+        try {
+            socket.close();
+        } catch (IOException e) {
+            if (firstException == null) firstException = e;
+        }
+
+        if (firstException != null) {
+            throw firstException;
+        }
+    }
+
+    // ========== Handshake callback ==========
+
+    @Override
+    public void handshakeCompleted() {
+        if (listenerList.isEmpty()) return;
+
+        SSLSession session = engine.getSession();
+        if (session == null) {
+            log.warn("Handshake completed but session is null");
+            return;
+        }
+
+        HandshakeCompletedEvent event = new HandshakeCompletedEvent(this, session);
+        for (HandshakeCompletedListener listener : listenerList) {
+            try {
+                listener.handshakeCompleted(event);
+            } catch (Exception e) {
+                log.warn("Handshake listener failed", e);
+            }
+        }
+    }
+
+    // ========== Private helpers ==========
+
+    private void checkClosed() throws SocketException {
+        if (closed) {
+            throw new SocketException("Socket is closed");
+        }
+    }
 }

@@ -1,186 +1,143 @@
 package com.subgraph.orchid.sockets;
 
-import com.subgraph.orchid.exceptions.OpenFailedException;
 import com.subgraph.orchid.Stream;
-import com.subgraph.orchid.Threading;
 import com.subgraph.orchid.TorClient;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.ConnectException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.net.SocketException;
-import java.net.SocketImpl;
-import java.net.SocketOptions;
-import java.net.SocketTimeoutException;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.locks.Lock;
+import java.net.*;
 
 public class OrchidSocketImpl extends SocketImpl {
-	private final TorClient torClient;
+    private final TorClient torClient;
+    private Stream stream;
 
-	private Lock streamLock = Threading.lock("stream");
-	private Stream stream;
-	
-	OrchidSocketImpl(TorClient torClient) {
-		this.torClient = torClient;
-		this.fd = new FileDescriptor();
-	}
+    OrchidSocketImpl(TorClient torClient) {
+        this.torClient = torClient;
+        this.fd = new FileDescriptor();
+    }
 
-	public void setOption(int optID, Object value) throws SocketException {
-		// Ignored.
-	}
+    @Override
+    public void setOption(int optID, Object value) {
+        // Ignored.
+    }
 
-	public Object getOption(int optID) throws SocketException {
-		if(optID == SocketOptions.SO_LINGER) {
-			return 0;
-		} else if(optID == SocketOptions.TCP_NODELAY) {
-			return Boolean.TRUE;
-		} else if(optID == SocketOptions.SO_TIMEOUT) {
-			return 0;
-		} else {
-			return 0;
-		}
-	}
+    @Override
+    public Object getOption(int optID) {
+        if (optID == SocketOptions.SO_LINGER) {
+            return 0;
+        } else if (optID == SocketOptions.TCP_NODELAY) {
+            return Boolean.TRUE;
+        } else if (optID == SocketOptions.SO_TIMEOUT) {
+            return 0;
+        } else {
+            return 0;
+        }
+    }
 
-	@Override
-	protected void create(boolean stream) throws IOException {
-		
-	}
+    @Override
+    protected void create(boolean stream) {
 
-	@Override
-	protected void connect(String host, int port) throws IOException {
-		SocketAddress endpoint =
-				InetSocketAddress.createUnresolved(host, port);
-		connect(endpoint, 0);
-	}
+    }
 
-	@Override
-	protected void connect(InetAddress address, int port) throws IOException {
-		SocketAddress endpoint =
-				InetSocketAddress.createUnresolved(address.getHostAddress(), port);
-		connect(endpoint, 0);
-	}
+    @Override
+    protected void connect(String host, int port) throws IOException {
+        SocketAddress endpoint = InetSocketAddress.createUnresolved(host, port);
+        connect(endpoint, 0);
+    }
 
-	@Override
-	protected void connect(SocketAddress address, int timeout)
-			throws IOException {
-		if(!(address instanceof InetSocketAddress)) {
-			throw new IllegalArgumentException("Unsupported address type");
-		}
-		final InetSocketAddress inetAddress = (InetSocketAddress) address;
-		
-		doConnect(addressToName(inetAddress), inetAddress.getPort());
-	}
-	
-	private String addressToName(InetSocketAddress address) {
-		if(address.getAddress() != null) {
-			return address.getAddress().getHostAddress();
-		} else {
-			return address.getHostName();
-		}
-	}
+    @Override
+    protected void connect(InetAddress address, int port) throws IOException {
+        SocketAddress endpoint = InetSocketAddress.createUnresolved(address.getHostAddress(), port);
+        connect(endpoint, 0);
+    }
 
-	private void doConnect(String host, int port) throws IOException {
-		Stream stream;
+    @Override
+    protected void connect(SocketAddress address, int timeout) throws IOException {
+        if (!(address instanceof InetSocketAddress inetAddress)) {
+            throw new IllegalArgumentException("Unsupported address type");
+        }
+        doConnect(addressToName(inetAddress), inetAddress.getPort());
+    }
 
-		// Try to avoid holding the stream lock here whilst calling into torclient to avoid accidental inversions.
+    private String addressToName(@NotNull InetSocketAddress address) {
+        if (address.getAddress() != null) {
+            return address.getAddress().getHostAddress();
+        } else {
+            return address.getHostName();
+        }
+    }
 
-		streamLock.lock();
-		stream = this.stream;
-		streamLock.unlock();
+    private synchronized void doConnect(String host, int port) throws IOException {
+        if (stream != null) {
+            throw new SocketException("Already connected");
+        }
 
-		if (stream != null)
-			throw new SocketException("Already connected");
+        try {
+            stream = torClient.openExitStreamTo(host, port);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new SocketException("connect() interrupted");
+        } catch (Exception e) {
+            throw new SocketException(e);
+        }
+    }
 
-		try {
-			stream = torClient.openExitStreamTo(host, port);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new SocketException("connect() interrupted");
-		} catch (TimeoutException e) {
-			throw new SocketTimeoutException();
-		} catch (OpenFailedException e) {
-			throw new ConnectException(e.getMessage());
-		}
+    @Override
+    protected void bind(InetAddress host, int port) {
+        throw new UnsupportedOperationException();
+    }
 
-		streamLock.lock();
-		if (this.stream != null) {
-			// Raced with another concurrent call.
-			streamLock.unlock();
-			stream.close();
-		} else {
-			this.stream = stream;
-			streamLock.unlock();
-		}
-	}
+    @Override
+    protected void listen(int backlog) {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	protected void bind(InetAddress host, int port) throws IOException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    protected void accept(SocketImpl s) {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	protected void listen(int backlog) throws IOException {
-		throw new UnsupportedOperationException();
-	}
+    private synchronized Stream getStream() throws IOException {
+        if (stream == null) {
+            throw new IOException("Not connected");
+        }
+        return stream;
+    }
 
-	@Override
-	protected void accept(SocketImpl s) throws IOException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    protected InputStream getInputStream() throws IOException {
+        return getStream().getInputStream();
+    }
 
-	private Stream getStream() throws IOException {
-		streamLock.lock();
-		try {
-			if (stream == null)
-				throw new IOException("Not connected");
-			return stream;
-		} finally {
-			streamLock.unlock();
-		}
-	}
+    @Override
+    protected OutputStream getOutputStream() throws IOException {
+        return getStream().getOutputStream();
+    }
 
-	@Override
-	protected InputStream getInputStream() throws IOException {
-		return getStream().getInputStream();
-	}
+    @Override
+    protected int available() throws IOException {
+        return getStream().getInputStream().available();
+    }
 
-	@Override
-	protected OutputStream getOutputStream() throws IOException {
-		return getStream().getOutputStream();
-	}
+    @Override
+    protected synchronized void close() throws IOException {
+        stream.close();
+        stream = null;
+    }
 
-	@Override
-	protected int available() throws IOException {
-		return getStream().getInputStream().available();
-	}
+    @Override
+    protected void sendUrgentData(int data) {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	protected void close() throws IOException {
-		Stream toClose;
-		streamLock.lock();
-		toClose = this.stream;
-		this.stream = null;
-		streamLock.unlock();
-		if (toClose != null)
-			toClose.close();
-	}
+    @Override
+    protected void shutdownInput() {
+    }
 
-	@Override
-	protected void sendUrgentData(int data) throws IOException {
-		throw new UnsupportedOperationException();
-	}
-	
-	 protected void shutdownInput() throws IOException {
-	  //throw new IOException("Method not implemented!");
-	}
-	 
-	 protected void shutdownOutput() throws IOException {
-	  //throw new IOException("Method not implemented!");
-	}
+    @Override
+    protected void shutdownOutput() {
+    }
 }

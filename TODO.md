@@ -14,4 +14,3 @@ com.subgraph.orhid
 # Сделать сейчас:
 com.subgraph.orhid.circuits.path
 com.subgraph.orhid.crypto
-com.subgraph.orhid.sockets

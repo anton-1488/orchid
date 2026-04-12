@@ -11,8 +11,8 @@ import java.util.logging.Logger;
 
 import com.subgraph.orchid.CircuitBuildHandler;
 import com.subgraph.orchid.CircuitNode;
-import com.subgraph.orchid.Connection;
-import com.subgraph.orchid.ConnectionCache;
+import com.subgraph.orchid.connections.Connection;
+import com.subgraph.orchid.connections.ConnectionCache;
 import com.subgraph.orchid.Directory;
 import com.subgraph.orchid.ExitCircuit;
 import com.subgraph.orchid.InternalCircuit;

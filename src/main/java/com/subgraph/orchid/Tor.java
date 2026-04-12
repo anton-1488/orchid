@@ -7,6 +7,7 @@ import com.subgraph.orchid.circuits.CircuitManagerImpl;
 import com.subgraph.orchid.circuits.TorInitializationTracker;
 import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.config.TorConfigImpl;
+import com.subgraph.orchid.connections.ConnectionCache;
 import com.subgraph.orchid.connections.ConnectionCacheImpl;
 import com.subgraph.orchid.directory.DirectoryImpl;
 import com.subgraph.orchid.directory.downloader.DirectoryDownloaderImpl;

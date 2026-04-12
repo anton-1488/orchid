@@ -1,6 +1,6 @@
 package com.subgraph.orchid.circuits.bridge;
 
-import com.subgraph.orchid.ConnectionCache;
+import com.subgraph.orchid.connections.ConnectionCache;
 import com.subgraph.orchid.GuardEntry;
 import com.subgraph.orchid.exceptions.ConnectionIOException;
 import com.subgraph.orchid.directory.router.Router;

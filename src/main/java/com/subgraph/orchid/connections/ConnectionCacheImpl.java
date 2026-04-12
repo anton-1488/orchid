@@ -1,204 +1,103 @@
 package com.subgraph.orchid.connections;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
-
-import javax.net.ssl.SSLSocket;
-
-import com.subgraph.orchid.Connection;
-import com.subgraph.orchid.ConnectionCache;
-import com.subgraph.orchid.exceptions.ConnectionFailedException;
-import com.subgraph.orchid.exceptions.ConnectionHandshakeException;
-import com.subgraph.orchid.exceptions.ConnectionTimeoutException;
-import com.subgraph.orchid.directory.router.Router;
-import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.circuits.TorInitializationTracker;
-import com.subgraph.orchid.dashboard.DashboardRenderable;
-import com.subgraph.orchid.dashboard.DashboardRenderer;
+import com.subgraph.orchid.config.TorConfig;
+import com.subgraph.orchid.directory.router.Router;
+import com.subgraph.orchid.exceptions.TorException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class ConnectionCacheImpl implements ConnectionCache, DashboardRenderable {
-	private final static Logger logger = Logger.getLogger(ConnectionCacheImpl.class.getName());
-	
-	private class ConnectionTask implements Callable<ConnectionImpl> {
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.*;
 
-		private final Router router;
-		private final boolean isDirectoryConnection;
-		
-		ConnectionTask(Router router, boolean isDirectoryConnection) {
-			this.router = router;
-			this.isDirectoryConnection = isDirectoryConnection;
-		}
+public class ConnectionCacheImpl implements ConnectionCache {
+    private static final Logger log = LoggerFactory.getLogger(ConnectionCacheImpl.class);
+    private final Map<Router, ConnectionImpl> activeConnections = new ConcurrentHashMap<>();
+    private final Map<Router, CompletableFuture<ConnectionImpl>> pendingConnections = new ConcurrentHashMap<>();
+    private final ScheduledExecutorService scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
+    private final ExecutorService virtualExecutor = Executors.newVirtualThreadPerTaskExecutor();
 
-		public ConnectionImpl call() throws Exception {
-			final SSLSocket socket = factory.createSocket();
-			final ConnectionImpl conn = new ConnectionImpl(config, socket, router, initializationTracker, isDirectoryConnection);
-			conn.connect();
-			return conn;
-		}
-	}
-	
-	private class CloseIdleConnectionCheckTask implements Runnable {
-		public void run() {
-			for(Future<ConnectionImpl> f: activeConnections.values()) {
-				if(f.isDone()) {
-					try {
-						final ConnectionImpl c = f.get();
-						c.idleCloseCheck();
-					} catch (Exception e) { }
-				}
-			}
-		}
-	}
+    private volatile boolean isClosed;
+    private final TorConfig torConfig;
+    private final TorInitializationTracker initializationTracker;
 
-	private final ConcurrentMap<Router, Future<ConnectionImpl>> activeConnections = new ConcurrentHashMap<Router, Future<ConnectionImpl>>();
-	private final ConnectionSocketFactory factory = new ConnectionSocketFactory();
-	private final ScheduledExecutorService scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
+    public ConnectionCacheImpl(TorConfig config, TorInitializationTracker tracker) {
+        this.torConfig = config;
+        this.initializationTracker = tracker;
 
-	private final TorConfig config;
-	private final TorInitializationTracker initializationTracker;
-	private volatile boolean isClosed;
+        scheduledExecutor.scheduleAtFixedRate(ConnectionTasksFactory.getCloseIdleConnectionCheckTask(activeConnections.values()), 5000, 5000, TimeUnit.MILLISECONDS);
+    }
 
-	
-	public ConnectionCacheImpl(TorConfig config, TorInitializationTracker tracker) {
-		this.config = config;
-		this.initializationTracker = tracker;
-		scheduledExecutor.scheduleAtFixedRate(new CloseIdleConnectionCheckTask(), 5000, 5000, TimeUnit.MILLISECONDS);
-	}
+    @Override
+    public Connection getConnectionTo(Router router, boolean isDirectoryConnection) throws TorException {
+        if (isClosed) {
+            throw new IllegalStateException("ConnectionCache has been closed");
+        }
 
-	public void close() {
-		if(isClosed) {
-			return;
-		}
-		isClosed = true;
-		for(Future<ConnectionImpl> f: activeConnections.values()) {
-			if(f.isDone()) {
-				try {
-					ConnectionImpl conn = f.get();
-					conn.closeSocket();
-				} catch (InterruptedException e) {
-					logger.warning("Unexpected interruption while closing connection");
-				} catch (ExecutionException e) {
-					logger.warning("Exception closing connection: "+ e.getCause());
-				}
-			} else {
-				// FIXME this doesn't close the socket, so the connection task lingers
-				// A proper fix would require maintaining pending connections in a separate
-				// collection.
-				f.cancel(true);
-			}
-		}
-		activeConnections.clear();
-		scheduledExecutor.shutdownNow();
-	}
+        log.debug("Get connection to {}:{} ({})", router.getAddress(), router.getOnionPort(), router.getNickname());
 
-	@Override
-	public boolean isClosed() {
-		return isClosed;
-	}
+        ConnectionImpl conn = activeConnections.get(router);
+        if (conn != null && !conn.isClosed()) {
+            return conn;
+        }
 
-	public Connection getConnectionTo(Router router, boolean isDirectoryConnection) throws InterruptedException, ConnectionTimeoutException, ConnectionFailedException, ConnectionHandshakeException {
-		if(isClosed) {
-			throw new IllegalStateException("ConnectionCache has been closed");
-		}
-		logger.fine("Get connection to "+ router.getAddress() + " "+ router.getOnionPort() + " " + router.getNickname());
-		while(true) {
-			Future<ConnectionImpl> f = getFutureFor(router, isDirectoryConnection);
-			try {
-				Connection c = f.get();
-				if(c.isClosed()) {
-					activeConnections.remove(router, f);
-				} else {
-					return c;
-				}
-			} catch (CancellationException e) {
-				activeConnections.remove(router, f);
-			} catch (ExecutionException e) {
-				activeConnections.remove(router, f);
-				final Throwable t = e.getCause();
-				if(t instanceof ConnectionTimeoutException) {
-					throw (ConnectionTimeoutException) t;
-				} else if(t instanceof ConnectionFailedException) {
-					throw (ConnectionFailedException) t;
-				} else if(t instanceof ConnectionHandshakeException) {
-					throw (ConnectionHandshakeException) t;
-				}
-				throw new RuntimeException("Unexpected exception: "+ e, e);
-			}
-		}
-	}
+        CompletableFuture<ConnectionImpl> future = pendingConnections.computeIfAbsent(router, r -> CompletableFuture.supplyAsync(() -> createConnection(r, isDirectoryConnection), virtualExecutor));
 
-	private Future<ConnectionImpl> getFutureFor(Router router, boolean isDirectoryConnection) {
-		Future<ConnectionImpl> f = activeConnections.get(router);
-		if(f != null) {
-			return f;
-		}
-		return createFutureForIfAbsent(router, isDirectoryConnection);
-	}
+        try {
+            ConnectionImpl newConn = future.get();
+            pendingConnections.remove(router);
+            activeConnections.put(router, newConn);
+            return newConn;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            pendingConnections.remove(router);
+            throw new TorException("Interrupted while connecting to " + router.getAddress(), e);
+        } catch (ExecutionException e) {
+            pendingConnections.remove(router);
+            throw new TorException("Failed to connect to " + router.getAddress(), e.getCause());
+        }
+    }
 
-	private Future<ConnectionImpl> createFutureForIfAbsent(Router router, boolean isDirectoryConnection) {
-		final Callable<ConnectionImpl> task = new ConnectionTask(router, isDirectoryConnection);
-		final FutureTask<ConnectionImpl> futureTask = new FutureTask<ConnectionImpl>(task);
-		
-		final Future<ConnectionImpl> f = activeConnections.putIfAbsent(router, futureTask);
-		if(f != null) {
-			return f;
-		}
-		
-		futureTask.run();
-		return futureTask;
-	}
+    private ConnectionImpl createConnection(Router router, boolean isDirectoryConnection) {
+        try {
+            log.debug("Creating connection to {}", router.getAddress());
+            ConnectionImpl conn = new ConnectionImpl(torConfig, ConnectionSocketFactory.createSocket(), router, initializationTracker, isDirectoryConnection);
+            conn.connect();
+            return conn;
+        } catch (Exception e) {
+            throw new CompletionException(e);
+        }
+    }
 
-	public void dashboardRender(DashboardRenderer renderer, PrintWriter writer, int flags) throws IOException {
-		if((flags & DASHBOARD_CONNECTIONS) == 0) {
-			return;
-		}
-		printDashboardBanner(writer, flags);
-		for(Connection c: getActiveConnections()) {
-			if(!c.isClosed()) {
-				renderer.renderComponent(writer, flags, c);
-			}
-		}
-		writer.println();
-	}
+    public List<Connection> getActiveConnections() {
+        return List.copyOf(activeConnections.values());
+    }
 
-	private void printDashboardBanner(PrintWriter writer, int flags) {
-		final boolean verbose = (flags & DASHBOARD_CONNECTIONS_VERBOSE) != 0;
-		if(verbose) {
-			writer.println("[Connection Cache (verbose)]");
-		} else {
-			writer.println("[Connection Cache]");
-		}
-		writer.println();
-	}
+    @Override
+    public void close() {
+        if (isClosed) return;
 
-	List<Connection> getActiveConnections() {
-		final List<Connection> cs = new ArrayList<Connection>();
-		for(Future<ConnectionImpl> future: activeConnections.values()) {
-			addConnectionFromFuture(future, cs);
-		}
-		return cs;
-	}
+        for (ConnectionImpl conn : activeConnections.values()) {
+            try {
+                conn.closeSocket();
+            } catch (Exception e) {
+                log.debug("Error closing connection", e);
+            }
+        }
+        for (CompletableFuture<ConnectionImpl> future : pendingConnections.values()) {
+            future.cancel(true);
+        }
 
-	private void addConnectionFromFuture(Future<ConnectionImpl> future, List<Connection> connectionList) {
-		try {
-			if(future.isDone() && !future.isCancelled()) {
-				connectionList.add(future.get());
-			}
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		} catch (ExecutionException e) { }
-	}
+        activeConnections.clear();
+        pendingConnections.clear();
+        scheduledExecutor.close();
+
+        isClosed = true;
+    }
+
+    @Override
+    public boolean isClosed() {
+        return isClosed;
+    }
 }

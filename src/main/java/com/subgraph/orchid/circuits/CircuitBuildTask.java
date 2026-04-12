@@ -4,8 +4,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.subgraph.orchid.CircuitNode;
-import com.subgraph.orchid.Connection;
-import com.subgraph.orchid.ConnectionCache;
+import com.subgraph.orchid.connections.Connection;
+import com.subgraph.orchid.connections.ConnectionCache;
 import com.subgraph.orchid.exceptions.ConnectionFailedException;
 import com.subgraph.orchid.exceptions.ConnectionHandshakeException;
 import com.subgraph.orchid.exceptions.ConnectionTimeoutException;

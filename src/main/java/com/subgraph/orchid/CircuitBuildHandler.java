@@ -1,6 +1,7 @@
 package com.subgraph.orchid;
 
 import com.subgraph.orchid.circuits.Circuit;
+import com.subgraph.orchid.connections.Connection;
 
 /**
  * This callback interface is used for reporting progress when
@@ -9,7 +10,7 @@ import com.subgraph.orchid.circuits.Circuit;
  * method.
  * 
  * The normal sequence of callbacks which are fired when a circuit is opened
- * successfully is {@link #connectionCompleted(Connection)} for the initial 
+ * successfully is {@link #connectionCompleted(Connection)} for the initial
  * connection to the entry router, followed by one or more 
  * {@link #nodeAdded(CircuitNode)} as the circuit is extended with new nodes.
  * When all requested nodes in the path have been added successfully to the

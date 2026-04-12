@@ -1,48 +1,46 @@
 package com.subgraph.orchid.crypto;
 
+import com.subgraph.orchid.exceptions.TorException;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
-import com.subgraph.orchid.exceptions.TorException;
-
 public class TorPrivateKey {
+    private static final SecureRandom RANDOM = new SecureRandom();
+    @Contract(" -> new")
+    public static @NotNull TorPrivateKey generateNewKeypair() {
+        try {
+            KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
+            generator.initialize(1024, RANDOM);
+            KeyPair pair = generator.generateKeyPair();
+            return new TorPrivateKey((RSAPrivateKey) pair.getPrivate(), (RSAPublicKey) pair.getPublic());
+        } catch (Exception e) {
+            throw new TorException(e);
+        }
+    }
 
-	static public TorPrivateKey generateNewKeypair() {
-		KeyPairGenerator generator = createGenerator();
-		generator.initialize(1024, new SecureRandom());
-		KeyPair pair = generator.generateKeyPair();
-		return new TorPrivateKey((RSAPrivateKey)pair.getPrivate(), (RSAPublicKey)pair.getPublic());
-	}
+    private final TorPublicKey publicKey;
+    private final RSAPrivateKey privateKey;
 
-	static KeyPairGenerator createGenerator() {
-		try {
-			return KeyPairGenerator.getInstance("RSA");
-		} catch (NoSuchAlgorithmException e) {
-			throw new TorException(e);
-		}
-	}
+    TorPrivateKey(RSAPrivateKey privateKey, RSAPublicKey publicKey) {
+        this.privateKey = privateKey;
+        this.publicKey = new TorPublicKey(publicKey);
+    }
 
-	private final TorPublicKey publicKey;
-	private final RSAPrivateKey privateKey;
+    public TorPublicKey getPublicKey() {
+        return publicKey;
+    }
 
-	TorPrivateKey(RSAPrivateKey privateKey, RSAPublicKey publicKey) {
-		this.privateKey = privateKey;
-		this.publicKey = new TorPublicKey(publicKey);
-	}
+    public RSAPublicKey getRSAPublicKey() {
+        return publicKey.getRSAPublicKey();
+    }
 
-	public TorPublicKey getPublicKey() {
-		return publicKey;
-	}
-
-	public RSAPublicKey getRSAPublicKey() {
-		return publicKey.getRSAPublicKey();
-	}
-
-	public RSAPrivateKey getRSAPrivateKey() {
-		return privateKey;
-	}
+    public RSAPrivateKey getRSAPrivateKey() {
+        return privateKey;
+    }
 }

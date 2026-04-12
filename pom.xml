@@ -41,7 +41,6 @@
             <version>${geoip.version}</version>
         </dependency>
 
-
         <!-- Bouncy Castle dependencies !-->
         <dependency>
             <groupId>org.bouncycastle</groupId>

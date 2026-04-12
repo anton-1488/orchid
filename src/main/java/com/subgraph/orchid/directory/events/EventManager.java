@@ -1,32 +1,32 @@
 package com.subgraph.orchid.directory.events;
 
-import java.util.ArrayList;
+import com.subgraph.orchid.Globals;
+
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
 
 public class EventManager {
-    private final List<EventHandler> handlers = new ArrayList<>();
+    private static final List<EventHandler> handlers = new CopyOnWriteArrayList<>();
+    private static final ExecutorService eventExecutor = Globals.VIRTUAL_EXECUTOR;
 
-    public void addListener(final EventHandler listener) {
-        synchronized (this) {
-            handlers.add(listener);
-        }
+    private EventManager() {
     }
 
-    public void removeListener(final EventHandler listener) {
-        synchronized (this) {
-            handlers.remove(listener);
-        }
+    public static void addListener(EventHandler listener) {
+        handlers.add(Objects.requireNonNull(listener));
     }
 
-    public void fireEvent(final Event event) {
-        EventHandler[] handlersCopy;
-        synchronized (this) {
-            handlersCopy = new EventHandler[handlers.size()];
-            handlers.toArray(handlersCopy);
-        }
+    public static void removeListener(EventHandler listener) {
+        handlers.remove(Objects.requireNonNull(listener));
+    }
 
-        for (EventHandler handler : handlersCopy) {
-            handler.handleEvent(event);
+    public static void fireEvent(Event event) {
+        Objects.requireNonNull(event);
+
+        for (EventHandler handler : handlers) {
+            eventExecutor.execute(() -> handler.handleEvent(event));
         }
     }
 }

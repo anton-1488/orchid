@@ -7,6 +7,10 @@ import java.net.Socket;
 
 public class Test {
     public static void main(String[] args) throws Exception {
+
+    }
+
+    private static void checkTor() throws Exception {
         TorClient client = new TorClient();
         client.addInitializationListener(new TorInitializationListener() {
             public void initializationProgress(String message, int percent) {

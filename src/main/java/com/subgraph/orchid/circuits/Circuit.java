@@ -2,8 +2,8 @@ package com.subgraph.orchid.circuits;
 
 import com.subgraph.orchid.connections.Connection;
 import com.subgraph.orchid.Stream;
-import com.subgraph.orchid.circuits.cells.Cell;
-import com.subgraph.orchid.circuits.cells.RelayCell;
+import com.subgraph.orchid.cells.Cell;
+import com.subgraph.orchid.cells.RelayCell;
 import com.subgraph.orchid.exceptions.TorException;
 
 import java.util.List;

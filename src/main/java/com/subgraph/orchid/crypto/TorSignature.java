@@ -8,6 +8,8 @@ import java.util.Arrays;
 import com.subgraph.orchid.exceptions.TorException;
 import com.subgraph.orchid.exceptions.TorParsingException;
 import org.bouncycastle.util.encoders.Base64;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 public class TorSignature {
     private final static String SIGNATURE_BEGIN = "-----BEGIN SIGNATURE-----";
@@ -15,7 +17,8 @@ public class TorSignature {
     private final static String SIGNATURE_END = "-----END SIGNATURE-----";
     private final static String ID_SIGNATURE_END = "-----END ID SIGNATURE-----";
 
-    static public TorSignature createFromPEMBuffer(String buffer) {
+    @Contract("_ -> new")
+    public static @NotNull TorSignature createFromPEMBuffer(String buffer) {
         BufferedReader reader = new BufferedReader(new StringReader(buffer));
         String header = nextLine(reader);
         if (!(SIGNATURE_BEGIN.equals(header) || ID_SIGNATURE_BEGIN.equals(header))) {
@@ -24,7 +27,7 @@ public class TorSignature {
         return new TorSignature(Base64.decode(parseBase64Data(reader)), DigestAlgorithm.DIGEST_SHA1);
     }
 
-    static private String parseBase64Data(BufferedReader reader) {
+    public static @NotNull String parseBase64Data(BufferedReader reader) {
         StringBuilder base64Data = new StringBuilder();
         while (true) {
             String line = nextLine(reader);
@@ -35,7 +38,7 @@ public class TorSignature {
         }
     }
 
-    static String nextLine(BufferedReader reader) {
+    private static @NotNull String nextLine(@NotNull BufferedReader reader) {
         try {
             String line = reader.readLine();
             if (line == null) {

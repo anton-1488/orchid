@@ -8,18 +8,19 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
 
-import com.subgraph.orchid.circuits.cells.Cell;
+import com.subgraph.orchid.cells.Cell;
 import com.subgraph.orchid.connections.Connection;
 import com.subgraph.orchid.directory.DirectoryCircuit;
-import com.subgraph.orchid.circuits.cells.RelayCell;
-import com.subgraph.orchid.directory.router.Router;
+import com.subgraph.orchid.cells.RelayCell;
+import com.subgraph.orchid.router.Router;
 import com.subgraph.orchid.Stream;
 import com.subgraph.orchid.exceptions.StreamConnectFailedException;
 import com.subgraph.orchid.exceptions.TorException;
-import com.subgraph.orchid.circuits.path.CircuitPathChooser;
+import com.subgraph.orchid.path.CircuitPathChooser;
 import com.subgraph.orchid.exceptions.PathSelectionFailedException;
 import com.subgraph.orchid.dashboard.DashboardRenderable;
 import com.subgraph.orchid.dashboard.DashboardRenderer;
+import com.subgraph.orchid.stream.StreamImpl;
 
 /**
  * This class represents an established circuit through the Tor network.

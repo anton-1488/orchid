@@ -1,7 +1,7 @@
 package com.subgraph.orchid.circuits;
 
-import com.subgraph.orchid.circuits.cells.Cell;
-import com.subgraph.orchid.circuits.cells.RelayCell;
+import com.subgraph.orchid.cells.Cell;
+import com.subgraph.orchid.cells.RelayCell;
 import com.subgraph.orchid.crypto.TorMessageDigest;
 import com.subgraph.orchid.crypto.TorStreamCipher;
 import com.subgraph.orchid.data.HexDigest;

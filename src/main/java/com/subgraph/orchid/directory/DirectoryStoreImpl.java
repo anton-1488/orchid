@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.subgraph.orchid.directory.document.Document;
+import com.subgraph.orchid.document.Document;
 import com.subgraph.orchid.config.TorConfig;
 
 public class DirectoryStoreImpl implements DirectoryStore {

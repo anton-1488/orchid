@@ -2,14 +2,14 @@ package com.subgraph.orchid;
 
 import com.subgraph.orchid.circuits.CircuitManager;
 import com.subgraph.orchid.circuits.CircuitManagerImpl;
-import com.subgraph.orchid.circuits.TorInitializationTracker;
+import com.subgraph.orchid.events.TorInitializationTracker;
 import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.connections.ConnectionCache;
 import com.subgraph.orchid.connections.ConnectionCacheImpl;
 import com.subgraph.orchid.directory.Directory;
 import com.subgraph.orchid.directory.DirectoryImpl;
 import com.subgraph.orchid.directory.DirectoryStore;
-import com.subgraph.orchid.directory.downloader.DirectoryDownloaderImpl;
+import com.subgraph.orchid.downloader.DirectoryDownloaderImpl;
 import com.subgraph.orchid.socks.SocksPortListener;
 import com.subgraph.orchid.socks.SocksPortListenerImpl;
 import org.jetbrains.annotations.Contract;

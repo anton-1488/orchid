@@ -5,13 +5,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
-import com.subgraph.orchid.directory.router.Router;
+import com.subgraph.orchid.router.Router;
 import com.subgraph.orchid.Stream;
 import com.subgraph.orchid.exceptions.StreamConnectFailedException;
-import com.subgraph.orchid.circuits.path.CircuitPathChooser;
+import com.subgraph.orchid.path.CircuitPathChooser;
 import com.subgraph.orchid.exceptions.PathSelectionFailedException;
 import com.subgraph.orchid.data.IPv4Address;
 import com.subgraph.orchid.data.exitpolicy.ExitTarget;
+import com.subgraph.orchid.stream.StreamImpl;
 
 public class ExitCircuitImpl extends CircuitImpl implements ExitCircuit {
 	

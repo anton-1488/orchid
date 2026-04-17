@@ -1,8 +1,8 @@
 package com.subgraph.orchid.connections;
 
-import com.subgraph.orchid.circuits.TorInitializationTracker;
+import com.subgraph.orchid.events.TorInitializationTracker;
 import com.subgraph.orchid.config.TorConfig;
-import com.subgraph.orchid.directory.router.Router;
+import com.subgraph.orchid.router.Router;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

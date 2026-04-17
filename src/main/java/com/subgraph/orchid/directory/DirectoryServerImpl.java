@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.subgraph.orchid.directory.certificate.KeyCertificate;
-import com.subgraph.orchid.directory.router.RouterStatus;
+import com.subgraph.orchid.certificate.KeyCertificate;
+import com.subgraph.orchid.router.RouterImpl;
+import com.subgraph.orchid.router.RouterStatus;
 import com.subgraph.orchid.data.HexDigest;
 
 public class DirectoryServerImpl extends RouterImpl implements DirectoryServer {

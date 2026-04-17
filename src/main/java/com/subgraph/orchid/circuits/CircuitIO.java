@@ -13,17 +13,18 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.subgraph.orchid.circuits.cells.Cell;
+import com.subgraph.orchid.cells.Cell;
 import com.subgraph.orchid.connections.Connection;
 import com.subgraph.orchid.exceptions.ConnectionIOException;
-import com.subgraph.orchid.circuits.cells.RelayCell;
+import com.subgraph.orchid.cells.RelayCell;
 import com.subgraph.orchid.Stream;
 import com.subgraph.orchid.Threading;
 import com.subgraph.orchid.exceptions.TorException;
-import com.subgraph.orchid.circuits.cells.impls.CellImpl;
-import com.subgraph.orchid.circuits.cells.impls.RelayCellImpl;
+import com.subgraph.orchid.cells.impls.CellImpl;
+import com.subgraph.orchid.cells.impls.RelayCellImpl;
 import com.subgraph.orchid.dashboard.DashboardRenderable;
 import com.subgraph.orchid.dashboard.DashboardRenderer;
+import com.subgraph.orchid.stream.StreamImpl;
 
 public class CircuitIO implements DashboardRenderable {
 	private static final Logger logger = Logger.getLogger(CircuitIO.class.getName());

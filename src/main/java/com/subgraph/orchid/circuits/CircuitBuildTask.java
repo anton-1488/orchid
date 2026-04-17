@@ -5,10 +5,11 @@ import java.util.logging.Logger;
 
 import com.subgraph.orchid.connections.Connection;
 import com.subgraph.orchid.connections.ConnectionCache;
+import com.subgraph.orchid.events.TorInitializationTracker;
 import com.subgraph.orchid.exceptions.ConnectionFailedException;
 import com.subgraph.orchid.exceptions.ConnectionHandshakeException;
 import com.subgraph.orchid.exceptions.ConnectionTimeoutException;
-import com.subgraph.orchid.directory.router.Router;
+import com.subgraph.orchid.router.Router;
 import com.subgraph.orchid.Tor;
 import com.subgraph.orchid.exceptions.TorException;
 import com.subgraph.orchid.exceptions.PathSelectionFailedException;

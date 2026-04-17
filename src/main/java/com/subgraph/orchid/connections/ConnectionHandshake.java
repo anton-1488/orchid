@@ -1,15 +1,15 @@
 package com.subgraph.orchid.connections;
 
-import com.subgraph.orchid.circuits.bridge.BridgeRouter;
-import com.subgraph.orchid.circuits.cells.Cell;
-import com.subgraph.orchid.circuits.cells.enums.AddressType;
-import com.subgraph.orchid.circuits.cells.enums.CellCommand;
-import com.subgraph.orchid.circuits.cells.impls.CellImpl;
-import com.subgraph.orchid.circuits.cells.io.CellReader;
-import com.subgraph.orchid.circuits.cells.io.CellWriter;
+import com.subgraph.orchid.bridge.BridgeRouter;
+import com.subgraph.orchid.cells.Cell;
+import com.subgraph.orchid.cells.enums.AddressType;
+import com.subgraph.orchid.cells.enums.CellCommand;
+import com.subgraph.orchid.cells.impls.CellImpl;
+import com.subgraph.orchid.cells.io.CellReader;
+import com.subgraph.orchid.cells.io.CellWriter;
 import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.crypto.TorPublicKey;
-import com.subgraph.orchid.directory.router.Router;
+import com.subgraph.orchid.router.Router;
 import com.subgraph.orchid.exceptions.ConnectionHandshakeException;
 import com.subgraph.orchid.exceptions.ConnectionIOException;
 import org.jetbrains.annotations.NotNull;

@@ -7,7 +7,7 @@ import com.subgraph.orchid.directory.DirectoryCircuit;
 import com.subgraph.orchid.Stream;
 import com.subgraph.orchid.data.IPv4Address;
 import com.subgraph.orchid.exceptions.OpenFailedException;
-import com.subgraph.orchid.directory.router.Router;
+import com.subgraph.orchid.router.Router;
 
 
 public interface CircuitManager {

@@ -12,7 +12,7 @@ import java.nio.channels.WritableByteChannel;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.subgraph.orchid.directory.document.Document;
+import com.subgraph.orchid.document.Document;
 import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.crypto.TorRandom;
 
@@ -153,7 +153,7 @@ public class DirectoryStoreFile {
 
 	private RandomAccessFile openFile() {
 		try {
-			final File f = new File(config.getDataDirectory(), cacheFilename);
+			final File f = new File(config.dataDirectory(), cacheFilename);
 			createDirectoryIfMissing();
 			return new RandomAccessFile(f, "rw");
 		} catch (FileNotFoundException e) {
@@ -178,7 +178,7 @@ public class DirectoryStoreFile {
 
 	private File createTempFile() {
 		final long n = TorRandom.nextLong();
-		final File f = new File(config.getDataDirectory(), cacheFilename + Long.toString(n));
+		final File f = new File(config.dataDirectory(), cacheFilename + Long.toString(n));
 		f.deleteOnExit();
 		return f;
 	}
@@ -203,7 +203,7 @@ public class DirectoryStoreFile {
 	}
 	
 	private File getFile() {
-		return new File(config.getDataDirectory(), cacheFilename);
+		return new File(config.dataDirectory(), cacheFilename);
 	}
 
 	public void remove() {
@@ -215,7 +215,7 @@ public class DirectoryStoreFile {
 		if(directoryCreationFailed) {
 			return;
 		}
-		final File dd = config.getDataDirectory();
+		final File dd = config.dataDirectory();
 		if(!dd.exists()) {
 			if(!dd.mkdirs()) {
 				directoryCreationFailed = true;

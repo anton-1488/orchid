@@ -1,7 +1,7 @@
 package com.subgraph.orchid.connections;
 
-import com.subgraph.orchid.circuits.cells.Cell;
-import com.subgraph.orchid.circuits.cells.enums.CellCommand;
+import com.subgraph.orchid.cells.Cell;
+import com.subgraph.orchid.cells.enums.CellCommand;
 import com.subgraph.orchid.exceptions.ConnectionHandshakeException;
 import com.subgraph.orchid.exceptions.ConnectionIOException;
 import org.slf4j.Logger;

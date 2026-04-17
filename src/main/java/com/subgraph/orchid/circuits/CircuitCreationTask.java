@@ -12,12 +12,15 @@ import java.util.logging.Logger;
 import com.subgraph.orchid.connections.Connection;
 import com.subgraph.orchid.connections.ConnectionCache;
 import com.subgraph.orchid.directory.Directory;
-import com.subgraph.orchid.directory.router.Router;
+import com.subgraph.orchid.events.TorInitializationTracker;
+import com.subgraph.orchid.router.Router;
 import com.subgraph.orchid.Threading;
 import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.circuits.CircuitManagerImpl.CircuitFilter;
-import com.subgraph.orchid.circuits.path.CircuitPathChooser;
+import com.subgraph.orchid.path.CircuitPathChooser;
 import com.subgraph.orchid.data.exitpolicy.ExitTarget;
+import com.subgraph.orchid.stream.OpenExitStreamTask;
+import com.subgraph.orchid.stream.StreamExitRequest;
 
 public class CircuitCreationTask implements Runnable {
 	private final static Logger logger = Logger.getLogger(CircuitCreationTask.class.getName());

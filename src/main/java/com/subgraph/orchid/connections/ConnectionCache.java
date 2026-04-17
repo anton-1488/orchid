@@ -1,7 +1,7 @@
 package com.subgraph.orchid.connections;
 
 
-import com.subgraph.orchid.directory.router.Router;
+import com.subgraph.orchid.router.Router;
 import com.subgraph.orchid.exceptions.TorException;
 
 public interface ConnectionCache extends AutoCloseable {

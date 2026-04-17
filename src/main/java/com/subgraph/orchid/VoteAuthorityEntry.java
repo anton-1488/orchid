@@ -1,7 +1,7 @@
 package com.subgraph.orchid;
 
 import com.subgraph.orchid.data.HexDigest;
-import com.subgraph.orchid.directory.consensus.DirectorySignature;
+import com.subgraph.orchid.consensus.DirectorySignature;
 
 import java.net.InetAddress;
 import java.util.List;

@@ -2,9 +2,9 @@ package com.subgraph.orchid.connections;
 
 
 import com.subgraph.orchid.circuits.Circuit;
-import com.subgraph.orchid.circuits.cells.Cell;
+import com.subgraph.orchid.cells.Cell;
 import com.subgraph.orchid.exceptions.ConnectionIOException;
-import com.subgraph.orchid.directory.router.Router;
+import com.subgraph.orchid.router.Router;
 
 /**
  * A network connection to a Tor onion router.

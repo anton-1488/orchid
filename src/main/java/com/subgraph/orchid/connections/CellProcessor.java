@@ -1,7 +1,7 @@
 package com.subgraph.orchid.connections;
 
 import com.subgraph.orchid.circuits.Circuit;
-import com.subgraph.orchid.circuits.cells.Cell;
+import com.subgraph.orchid.cells.Cell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

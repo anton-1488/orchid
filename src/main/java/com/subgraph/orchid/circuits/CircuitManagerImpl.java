@@ -16,24 +16,27 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import com.subgraph.orchid.connections.Connection;
 import com.subgraph.orchid.connections.ConnectionCache;
-import com.subgraph.orchid.directory.document.ConsensusDocument;
+import com.subgraph.orchid.document.ConsensusDocument;
 import com.subgraph.orchid.directory.Directory;
 import com.subgraph.orchid.directory.DirectoryCircuit;
+import com.subgraph.orchid.events.TorInitializationTracker;
 import com.subgraph.orchid.exceptions.OpenFailedException;
-import com.subgraph.orchid.directory.router.Router;
+import com.subgraph.orchid.router.Router;
 import com.subgraph.orchid.Stream;
 import com.subgraph.orchid.exceptions.StreamConnectFailedException;
 import com.subgraph.orchid.Threading;
 import com.subgraph.orchid.Tor;
 import com.subgraph.orchid.config.TorConfig;
-import com.subgraph.orchid.circuits.bridge.EntryGuards;
-import com.subgraph.orchid.circuits.hs.HiddenServiceManager;
-import com.subgraph.orchid.circuits.path.CircuitPathChooser;
+import com.subgraph.orchid.bridge.EntryGuards;
+import com.subgraph.orchid.hiddenservice.HiddenServiceManager;
+import com.subgraph.orchid.path.CircuitPathChooser;
 import com.subgraph.orchid.crypto.TorRandom;
 import com.subgraph.orchid.dashboard.DashboardRenderable;
 import com.subgraph.orchid.dashboard.DashboardRenderer;
 import com.subgraph.orchid.data.IPv4Address;
-import com.subgraph.orchid.directory.downloader.DirectoryDownloaderImpl;
+import com.subgraph.orchid.downloader.DirectoryDownloaderImpl;
+import com.subgraph.orchid.stream.PendingExitStreams;
+import com.subgraph.orchid.stream.StreamExitRequest;
 
 public class CircuitManagerImpl implements CircuitManager, DashboardRenderable {
 	private final static int OPEN_DIRECTORY_STREAM_RETRY_COUNT = 5;

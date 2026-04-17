@@ -1,8 +1,8 @@
 package com.subgraph.orchid.circuits;
 
-import com.subgraph.orchid.circuits.cells.Cell;
-import com.subgraph.orchid.circuits.cells.RelayCell;
-import com.subgraph.orchid.directory.router.Router;
+import com.subgraph.orchid.cells.Cell;
+import com.subgraph.orchid.cells.RelayCell;
+import com.subgraph.orchid.router.Router;
 import com.subgraph.orchid.exceptions.TorException;
 
 public class CircuitNodeImpl implements CircuitNode {

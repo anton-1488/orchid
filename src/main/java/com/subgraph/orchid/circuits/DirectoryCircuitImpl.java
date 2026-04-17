@@ -4,11 +4,12 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 import com.subgraph.orchid.directory.DirectoryCircuit;
-import com.subgraph.orchid.directory.router.Router;
+import com.subgraph.orchid.router.Router;
 import com.subgraph.orchid.Stream;
 import com.subgraph.orchid.exceptions.StreamConnectFailedException;
-import com.subgraph.orchid.circuits.path.CircuitPathChooser;
+import com.subgraph.orchid.path.CircuitPathChooser;
 import com.subgraph.orchid.exceptions.PathSelectionFailedException;
+import com.subgraph.orchid.stream.StreamImpl;
 
 public class DirectoryCircuitImpl extends CircuitImpl implements DirectoryCircuit {
 	

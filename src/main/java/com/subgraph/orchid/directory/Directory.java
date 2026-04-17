@@ -4,15 +4,15 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import com.subgraph.orchid.directory.document.ConsensusDocument;
-import com.subgraph.orchid.directory.document.ConsensusDocument.RequiredCertificate;
+import com.subgraph.orchid.document.ConsensusDocument;
+import com.subgraph.orchid.document.ConsensusDocument.RequiredCertificate;
 import com.subgraph.orchid.GuardEntry;
 import com.subgraph.orchid.data.HexDigest;
-import com.subgraph.orchid.directory.certificate.KeyCertificate;
-import com.subgraph.orchid.directory.events.EventHandler;
-import com.subgraph.orchid.directory.router.Router;
-import com.subgraph.orchid.directory.router.RouterDescriptor;
-import com.subgraph.orchid.directory.router.RouterMicrodescriptor;
+import com.subgraph.orchid.certificate.KeyCertificate;
+import com.subgraph.orchid.events.EventHandler;
+import com.subgraph.orchid.router.Router;
+import com.subgraph.orchid.router.RouterDescriptor;
+import com.subgraph.orchid.router.RouterMicrodescriptor;
 
 /**
  * 

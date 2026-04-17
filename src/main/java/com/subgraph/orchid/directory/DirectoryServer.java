@@ -3,8 +3,8 @@ package com.subgraph.orchid.directory;
 import java.util.List;
 
 import com.subgraph.orchid.data.HexDigest;
-import com.subgraph.orchid.directory.certificate.KeyCertificate;
-import com.subgraph.orchid.directory.router.Router;
+import com.subgraph.orchid.certificate.KeyCertificate;
+import com.subgraph.orchid.router.Router;
 
 /**
  * Represents a directory authority server or a directory cache.

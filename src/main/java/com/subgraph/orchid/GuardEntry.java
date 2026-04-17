@@ -2,6 +2,7 @@ package com.subgraph.orchid;
 
 import com.subgraph.orchid.router.Router;
 
+import java.time.Instant;
 import java.util.Date;
 
 public interface GuardEntry {
@@ -17,13 +18,13 @@ public interface GuardEntry {
 
     String getVersion();
 
-    Date getCreatedTime();
+    Instant getCreatedTime();
 
-    Date getDownSince();
+    Instant getDownSince();
 
-    Date getLastConnectAttempt();
+    Instant getLastConnectAttempt();
 
-    Date getUnlistedSince();
+    Instant getUnlistedSince();
 
     boolean testCurrentlyUsable();
 

@@ -12,24 +12,28 @@ import com.subgraph.orchid.parsing.DocumentParser;
 import com.subgraph.orchid.parsing.DocumentParserFactory;
 import com.subgraph.orchid.router.RouterDescriptorParser;
 import com.subgraph.orchid.router.RouterMicrodescriptorParser;
+import org.jetbrains.annotations.NotNull;
 
 public class DocumentParserFactoryImpl implements DocumentParserFactory {
-	
-	public DocumentParser<KeyCertificate> createKeyCertificateParser(ByteBuffer buffer) {
-		return new KeyCertificateParser(new DocumentFieldParserImpl(buffer));
-	}
+    @Override
+    public DocumentParser<KeyCertificate> createKeyCertificateParser(ByteBuffer buffer) {
+        return new KeyCertificateParser(new DocumentFieldParserImpl(buffer));
+    }
 
-	public DocumentParser<RouterDescriptor> createRouterDescriptorParser(ByteBuffer buffer, boolean verifySignatures) {
-		return new RouterDescriptorParser(new DocumentFieldParserImpl(buffer), verifySignatures);
-	}
+    @Override
+    public DocumentParser<RouterDescriptor> createRouterDescriptorParser(ByteBuffer buffer, boolean verifySignatures) {
+        return new RouterDescriptorParser(new DocumentFieldParserImpl(buffer), verifySignatures);
+    }
 
-	public DocumentParser<RouterMicrodescriptor> createRouterMicrodescriptorParser(ByteBuffer buffer) {
-		buffer.rewind();
-		DocumentFieldParser dfp = new DocumentFieldParserImpl(buffer);
-		return new RouterMicrodescriptorParser(dfp);
-	}
+    @Override
+    public DocumentParser<RouterMicrodescriptor> createRouterMicrodescriptorParser(@NotNull ByteBuffer buffer) {
+        buffer.rewind();
+        DocumentFieldParser dfp = new DocumentFieldParserImpl(buffer);
+        return new RouterMicrodescriptorParser(dfp);
+    }
 
-	public DocumentParser<ConsensusDocument> createConsensusDocumentParser(ByteBuffer buffer) {
-		return new ConsensusDocumentParser(new DocumentFieldParserImpl(buffer));
-	}
+    @Override
+    public DocumentParser<ConsensusDocument> createConsensusDocumentParser(ByteBuffer buffer) {
+        return new ConsensusDocumentParser(new DocumentFieldParserImpl(buffer));
+    }
 }

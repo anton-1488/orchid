@@ -1,9 +1,11 @@
 package com.subgraph.orchid.document;
 
+import java.net.InetAddress;
 import java.util.Set;
 
 import com.subgraph.orchid.crypto.TorPublicKey;
 import com.subgraph.orchid.data.HexDigest;
+import com.subgraph.orchid.data.InetAddressUtils;
 
 public interface Descriptor extends Document {
     enum CacheLocation {NOT_CACHED, CACHED_CACHEFILE, CACHED_JOURNAL}
@@ -37,7 +39,7 @@ public interface Descriptor extends Document {
      *
      * @return The IPv4 address of this router.
      */
-    IPv4Address getAddress();
+    InetAddress getAddress();
 
     /**
      * Return the port on which this node accepts TLS connections
@@ -53,12 +55,12 @@ public interface Descriptor extends Document {
      * Return true if the exit policy of this router permits connections
      * to the specified destination endpoint.
      *
-     * @param address The IPv4 address of the destination.
+     * @param address The address of the destination.
      * @param port    The destination port.
      * @return True if an exit connection to the specified destination is allowed
      * or false otherwise.
      */
-    boolean exitPolicyAccepts(IPv4Address address, int port);
+    boolean exitPolicyAccepts(InetAddressUtils address, int port);
 
     /**
      * Return true if the exit policy of this router accepts most connections

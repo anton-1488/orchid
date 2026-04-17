@@ -1,102 +1,144 @@
 package com.subgraph.orchid.directory;
 
+import java.net.InetAddress;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
 import com.subgraph.orchid.router.RouterStatus;
 import com.subgraph.orchid.data.HexDigest;
-import com.subgraph.orchid.data.IPv4Address;
-import com.subgraph.orchid.data.Timestamp;
 import com.subgraph.orchid.data.exitpolicy.ExitPorts;
 
 public class DirectoryAuthorityStatus implements RouterStatus {
+    private String nickname;
+    private HexDigest identity;
+    private InetAddress address;
+    private int routerPort;
+    private int directoryPort;
+    private final Set<String> flags = new HashSet<>();
+    private HexDigest v3Ident;
 
-	private String nickname;
-	private HexDigest identity;
-	private IPv4Address address;
-	private int routerPort;
-	private int directoryPort;
-	private Set<String> flags = new HashSet<String>();
-	private HexDigest v3Ident;
-	
-	void setV1Authority() { }
-	void setHiddenServiceAuthority() { addFlag("HSDir"); }
-	void unsetHiddenServiceAuthority() { flags.remove("HSDir"); }
-	void setBridgeAuthority() { }
-	void unsetV2Authority() { flags.remove("V2Dir"); }
-	void setNickname(String name) { nickname = name; }
-	void setIdentity(HexDigest identity) { this.identity = identity; }
-	void setAddress(IPv4Address address) { this.address = address; }
-	void setRouterPort(int port) { this.routerPort = port; }
-	void setDirectoryPort(int port) { this.directoryPort = port; }
-	void addFlag(String flag) { this.flags.add(flag); }
-	void setV3Ident(HexDigest v3Ident) { this.v3Ident = v3Ident; }
-	
-	DirectoryAuthorityStatus() {
-		addFlag("Authority");
-		addFlag("V2Dir");
-	}
-	
-	public IPv4Address getAddress() {
-		return address;
-	}
 
-	public HexDigest getDescriptorDigest() {
-		return null;
-	}
+    public void setHiddenServiceAuthority() {
+        addFlag("HSDir");
+    }
 
-	public int getDirectoryPort() {
-		return directoryPort;
-	}
+    public void unsetHiddenServiceAuthority() {
+        flags.remove("HSDir");
+    }
 
-	public int getEstimatedBandwidth() {
-		return 0;
-	}
+    public void setBridgeAuthority() {
+    }
 
-	public ExitPorts getExitPorts() {
-		return null;
-	}
+    public void setNickname(String name) {
+        nickname = name;
+    }
 
-	public HexDigest getIdentity() {
-		return identity;
-	}
+    public void setIdentity(HexDigest identity) {
+        this.identity = identity;
+    }
 
-	public boolean hasBandwidth() {
-		return false;
-	}
+    public void setAddress(InetAddress address) {
+        this.address = address;
+    }
 
-	public int getMeasuredBandwidth() {
-		return 0;
-	}
+    public void setRouterPort(int port) {
+        this.routerPort = port;
+    }
 
-	public String getNickname() {
-		return nickname;
-	}
+    public void setDirectoryPort(int port) {
+        this.directoryPort = port;
+    }
 
-	public Timestamp getPublicationTime() {		
-		return null;
-	}
+    public void addFlag(String flag) {
+        this.flags.add(flag);
+    }
 
-	public int getRouterPort() {
-		return routerPort;
-	}
+    public void setV3Ident(HexDigest v3Ident) {
+        this.v3Ident = v3Ident;
+    }
 
-	public String getVersion() {
-		return null;
-	}
+    public DirectoryAuthorityStatus() {
+        addFlag("Authority");
+        addFlag("V2Dir");
+    }
 
-	public boolean hasFlag(String flag) {
-		return flags.contains(flag);
-	}
+    @Override
+    public InetAddress getAddress() {
+        return address;
+    }
 
-	public boolean isDirectory() {
-		return true;
-	}
+    @Override
+    public HexDigest getDescriptorDigest() {
+        return null;
+    }
 
-	HexDigest getV3Ident() {
-		return v3Ident;
-	}
-	public HexDigest getMicrodescriptorDigest() {
-		return null;
-	}
+    @Override
+    public int getDirectoryPort() {
+        return directoryPort;
+    }
+
+    @Override
+    public int getEstimatedBandwidth() {
+        return 0;
+    }
+
+    @Override
+    public ExitPorts getExitPorts() {
+        return null;
+    }
+
+    @Override
+    public HexDigest getIdentity() {
+        return identity;
+    }
+
+    @Override
+    public boolean hasBandwidth() {
+        return false;
+    }
+
+    @Override
+    public int getMeasuredBandwidth() {
+        return 0;
+    }
+
+    @Override
+    public String getNickname() {
+        return nickname;
+    }
+
+    @Override
+    public Instant getPublicationTime() {
+        return null;
+    }
+
+    @Override
+    public int getRouterPort() {
+        return routerPort;
+    }
+
+    @Override
+    public String getVersion() {
+        return null;
+    }
+
+    @Override
+    public boolean hasFlag(String flag) {
+        return flags.contains(flag);
+    }
+
+    @Override
+    public boolean isDirectory() {
+        return true;
+    }
+
+    @Override
+    public HexDigest getMicrodescriptorDigest() {
+        return null;
+    }
+
+    public HexDigest getV3Ident() {
+        return v3Ident;
+    }
 }

@@ -8,21 +8,22 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 
 public class EventManager {
-    private static final List<EventHandler> handlers = new CopyOnWriteArrayList<>();
     private static final ExecutorService eventExecutor = Globals.VIRTUAL_EXECUTOR;
+    private final List<EventHandler> handlers;
 
-    private EventManager() {
+    public EventManager() {
+        handlers = new CopyOnWriteArrayList<>();
     }
 
-    public static void addListener(EventHandler listener) {
+    public void addListener(EventHandler listener) {
         handlers.add(Objects.requireNonNull(listener));
     }
 
-    public static void removeListener(EventHandler listener) {
+    public void removeListener(EventHandler listener) {
         handlers.remove(Objects.requireNonNull(listener));
     }
 
-    public static void fireEvent(Event event) {
+    public void fireEvent(Event event) {
         Objects.requireNonNull(event);
 
         for (EventHandler handler : handlers) {

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public record TorConfig(Path dataDirectory, int socksPort, long circuitBuildTimeoutMillis,
-                        long circuitStreamTimeoutMillis, int numEntryGuards, boolean useEntryGuards,
+                        long circuitStreamTimeoutMillis, int numEntryGuards, boolean useEntryGuards, boolean useMicroDescriptors,
                         List<String> excludeNodes, List<String> excludeExitNodes, List<String> exitNodes,
                         List<String> entryNodes, boolean strictNodes, boolean useBridges,
                         List<TorConfigBridgeLine> bridges) {
@@ -32,6 +32,8 @@ public record TorConfig(Path dataDirectory, int socksPort, long circuitBuildTime
         Builder numEntryGuards(int num);
 
         Builder useEntryGuards(boolean use);
+
+        Builder useMicroDesciptors(boolean use);
 
         Builder excludeNodes(String... nodes);
 

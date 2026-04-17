@@ -22,6 +22,7 @@ public class TorConfigBuilder implements Builder {
     private List<String> exitNodes = List.of();
     private List<String> entryNodes = List.of();
     private boolean strictNodes = false;
+    private boolean useMicroDescriptors = true;
     private boolean useBridges = false;
     private List<TorConfigBridgeLine> bridges = List.of();
 
@@ -64,6 +65,12 @@ public class TorConfigBuilder implements Builder {
     @Override
     public Builder useEntryGuards(boolean use) {
         this.useEntryGuards = use;
+        return this;
+    }
+
+    @Override
+    public Builder useMicroDesciptors(boolean use) {
+        this.useMicroDescriptors = use;
         return this;
     }
 
@@ -140,6 +147,7 @@ public class TorConfigBuilder implements Builder {
                 circuitStreamTimeoutMillis,
                 numEntryGuards,
                 useEntryGuards,
+                useMicroDescriptors,
                 excludeNodes,
                 excludeExitNodes,
                 exitNodes,

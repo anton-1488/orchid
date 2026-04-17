@@ -1,18 +1,18 @@
 package com.subgraph.orchid.router;
 
-import java.util.Collections;
-import java.util.Set;
-
+import com.subgraph.orchid.crypto.TorPublicKey;
+import com.subgraph.orchid.data.HexDigest;
 import com.subgraph.orchid.directory.Directory;
 import com.subgraph.orchid.document.Descriptor;
 import com.subgraph.orchid.exceptions.TorException;
-import com.subgraph.orchid.crypto.TorPublicKey;
-import com.subgraph.orchid.data.HexDigest;
-import com.subgraph.orchid.data.IPv4Address;
 import com.subgraph.orchid.geoip.CountryCodeService;
 
+import java.net.InetAddress;
+import java.util.Collections;
+import java.util.Set;
+
 public class RouterImpl implements Router {
-	static RouterImpl createFromRouterStatus(Directory directory, RouterStatus status) {
+	public static RouterImpl createFromRouterStatus(Directory directory, RouterStatus status) {
 		return new RouterImpl(directory, status);
 	}
 
@@ -30,7 +30,7 @@ public class RouterImpl implements Router {
 		refreshDescriptor();
 	}
 
-	void updateStatus(RouterStatus status) {
+	public void updateStatus(RouterStatus status) {
 		if(!identityHash.equals(status.getIdentity()))
 			throw new TorException("Identity hash does not match status update");
 		this.status = status;
@@ -58,7 +58,7 @@ public class RouterImpl implements Router {
 		return status.getDescriptorDigest();
 	}
 
-	public IPv4Address getAddress() {
+	public InetAddress getAddress() {
 		return status.getAddress();
 	}
 
@@ -218,7 +218,7 @@ public class RouterImpl implements Router {
 		}
 	}
 
-	public boolean exitPolicyAccepts(IPv4Address address, int port) {
+	public boolean exitPolicyAccepts(InetAddress address, int port) {
 		refreshDescriptor();
 		if(descriptor == null) {
 			return false;

@@ -13,6 +13,7 @@ import java.net.InetAddress;
 import java.util.Objects;
 
 public class CountryCodeService {
+    // FROM: https://raw.githubusercontent.com/wp-statistics/GeoLite2-Country/refs/heads/master/GeoLite2-Country.mmdb.gz
     private final static String DATABASE_FILENAME = "/data/GeoLite2-Country.mmdb";
     private final static CountryCodeService DEFAULT_INSTANCE = new CountryCodeService();
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(CountryCodeService.class);

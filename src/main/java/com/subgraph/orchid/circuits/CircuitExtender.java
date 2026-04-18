@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 
 import com.subgraph.orchid.cells.Cell;
 import com.subgraph.orchid.cells.RelayCell;
+import com.subgraph.orchid.cells.enums.RelayCellStatus;
 import com.subgraph.orchid.router.Router;
 import com.subgraph.orchid.exceptions.TorException;
 import com.subgraph.orchid.cells.impls.CellImpl;
@@ -107,7 +108,7 @@ public class CircuitExtender {
 	}
 
 
-	public RelayCell receiveRelayResponse(int expectedCommand, Router extendTarget) {
+	public RelayCell receiveRelayResponse(RelayCellStatus expectedCommand, Router extendTarget) {
 		final RelayCell cell = circuit.receiveRelayCell();
 		if(cell == null) {
 			throw new TorException("Timeout building circuit");
@@ -139,7 +140,7 @@ public class CircuitExtender {
 
 	}
 
-	public RelayCell createRelayCell(int command) {
+	public RelayCell createRelayCell(RelayCellStatus command) {
 		return new RelayCellImpl(circuit.getFinalCircuitNode(), circuit.getCircuitId(), 0, command, true);
 	}
 	

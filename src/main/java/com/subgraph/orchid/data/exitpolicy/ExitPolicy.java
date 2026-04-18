@@ -19,9 +19,9 @@ public class ExitPolicy {
 
     public boolean acceptsTarget(@NotNull ExitTarget target) {
         if (target.isAddressTarget()) {
-            return acceptsDestination(target.getAddress(), target.getPort());
+            return acceptsDestination(target.getAddress(), target.port());
         } else {
-            return acceptsPort(target.getPort());
+            return acceptsPort(target.port());
         }
     }
 

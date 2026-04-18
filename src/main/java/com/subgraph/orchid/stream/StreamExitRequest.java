@@ -56,7 +56,7 @@ public class StreamExitRequest implements ExitTarget {
 		return hostname;
 	}
 
-	public int getPort() {
+	public int port() {
 		return port;
 	}
 

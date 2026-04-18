@@ -142,7 +142,7 @@ public class StreamImpl implements Stream, DashboardRenderable {
 		waitForRelayConnected(timeout);
 	}
 
-	void openExit(String target, int port, long timeout) throws InterruptedException, TimeoutException, StreamConnectFailedException {
+	public void openExit(String target, int port, long timeout) throws InterruptedException, TimeoutException, StreamConnectFailedException {
 		streamTarget = target + ":"+ port;
 		final RelayCell cell = new RelayCellImpl(circuit.getFinalCircuitNode(), circuit.getCircuitId(), streamId, RelayCell.RELAY_BEGIN);
 		cell.putString(target + ":"+ port);

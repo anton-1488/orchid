@@ -2,119 +2,124 @@ package com.subgraph.orchid.circuits;
 
 import com.subgraph.orchid.cells.Cell;
 import com.subgraph.orchid.cells.RelayCell;
-import com.subgraph.orchid.router.Router;
 import com.subgraph.orchid.exceptions.TorException;
+import com.subgraph.orchid.router.Router;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class CircuitNodeImpl implements CircuitNode {
-	
-	public static CircuitNode createAnonymous(CircuitNode previous, byte[] keyMaterial, byte[] verifyDigest) {
-		return createNode(null, previous, keyMaterial, verifyDigest);
-	}
-	
-	public static CircuitNode createFirstHop(Router r, byte[] keyMaterial, byte[] verifyDigest) {
-		return createNode(r, null, keyMaterial, verifyDigest);
-	}
-	
-	public static CircuitNode createNode(Router r, CircuitNode previous, byte[] keyMaterial, byte[] verifyDigest) {
-		final CircuitNodeCryptoState cs = CircuitNodeCryptoState.createFromKeyMaterial(keyMaterial, verifyDigest);
-		return new CircuitNodeImpl(r, previous, cs);
-	}
+    private final static int CIRCWINDOW_START = 1000;
+    private final static int CIRCWINDOW_INCREMENT = 100;
 
-	private final static int CIRCWINDOW_START = 1000;
-	private final static int CIRCWINDOW_INCREMENT = 100;
+    public static @NotNull CircuitNode createAnonymous(CircuitNode previous, byte[] keyMaterial, byte[] verifyDigest) {
+        return createNode(null, previous, keyMaterial, verifyDigest);
+    }
 
-	private final Router router;
-	private final CircuitNodeCryptoState cryptoState;
-	private final CircuitNode previousNode;
+    public static @NotNull CircuitNode createFirstHop(Router r, byte[] keyMaterial, byte[] verifyDigest) {
+        return createNode(r, null, keyMaterial, verifyDigest);
+    }
 
-	private final Object windowLock;
-	private int packageWindow;
-	private int deliverWindow;
-	
-	private CircuitNodeImpl(Router router, CircuitNode previous, CircuitNodeCryptoState cryptoState) {
-		previousNode = previous;
-		this.router = router;
-		this.cryptoState = cryptoState;
-		windowLock = new Object();
-		packageWindow = CIRCWINDOW_START;
-		deliverWindow = CIRCWINDOW_START;
-	}
+    public static @NotNull CircuitNode createNode(Router r, CircuitNode previous, byte[] keyMaterial, byte[] verifyDigest) {
+        CircuitNodeCryptoState cs = CircuitNodeCryptoState.createFromKeyMaterial(keyMaterial, verifyDigest);
+        return new CircuitNodeImpl(r, previous, cs);
+    }
 
-	public Router getRouter() {
-		return router;
-	}
+    private final Router router;
+    private final CircuitNodeCryptoState cryptoState;
+    private final CircuitNode previousNode;
+    private final Object windowLock = new Object();
 
-	public CircuitNode getPreviousNode() {
-		return previousNode;
-	}
+    private final AtomicInteger packageWindow = new AtomicInteger(CIRCWINDOW_START);
+    private final AtomicInteger deliverWindow = new AtomicInteger(CIRCWINDOW_START);
 
-	public void encryptForwardCell(RelayCell cell) {
-		cryptoState.encryptForwardCell(cell);
-	}
+    private CircuitNodeImpl(Router router, CircuitNode previous, CircuitNodeCryptoState cryptoState) {
+        previousNode = previous;
+        this.router = router;
+        this.cryptoState = cryptoState;
+    }
 
-	public boolean decryptBackwardCell(Cell cell) {
-		return cryptoState.decryptBackwardCell(cell);
-	}
+    @Override
+    public Router getRouter() {
+        return router;
+    }
 
-	public void updateForwardDigest(RelayCell cell) {
-		cryptoState.updateForwardDigest(cell);
-	}
+    @Override
+    public CircuitNode getPreviousNode() {
+        return previousNode;
+    }
 
-	public byte[] getForwardDigestBytes() {
-		return cryptoState.getForwardDigestBytes();
-	}
+    @Override
+    public void encryptForwardCell(RelayCell cell) {
+        cryptoState.encryptForwardCell(cell);
+    }
 
-	public String toString() {
-		if(router != null) {
-			return "|"+ router.getNickname() + "|";
-		} else {
-			return "|()|";
-		}
-	}
+    @Override
+    public boolean decryptBackwardCell(Cell cell) {
+        return cryptoState.decryptBackwardCell(cell);
+    }
 
-	public void decrementDeliverWindow() {
-		synchronized(windowLock) {
-			deliverWindow--;
-		}
-	}
+    @Override
+    public void updateForwardDigest(RelayCell cell) {
+        cryptoState.updateForwardDigest(cell);
+    }
 
-	public boolean considerSendingSendme() {
-		synchronized(windowLock) {
-			if(deliverWindow <= (CIRCWINDOW_START - CIRCWINDOW_INCREMENT)) {
-				deliverWindow += CIRCWINDOW_INCREMENT;
-				return true;
-			}
-			return false;
-		}
-	}
+    @Override
+    public byte[] getForwardDigestBytes() {
+        return cryptoState.getForwardDigestBytes();
+    }
 
-	public void waitForSendWindow() {
-		waitForSendWindow(false);
-	}
+    @Override
+    public void decrementDeliverWindow() {
+        deliverWindow.decrementAndGet();
+    }
 
-	public void waitForSendWindowAndDecrement() {
-		waitForSendWindow(true);
-	}
+    @Override
+    public synchronized boolean considerSendingSendme() {
+        if (deliverWindow.get() <= (CIRCWINDOW_START - CIRCWINDOW_INCREMENT)) {
+            deliverWindow.addAndGet(CIRCWINDOW_INCREMENT);
+            return true;
+        }
+        return false;
+    }
 
-	private void waitForSendWindow(boolean decrement) {
-		synchronized(windowLock) {
-			while(packageWindow == 0) {
-				try {
-					windowLock.wait();
-				} catch (InterruptedException e) {
-					throw new TorException("Thread interrupted while waiting for circuit send window");
-				}
-			}
-			if(decrement)
-				packageWindow--;
-		}
-	}
+    @Override
+    public void waitForSendWindow() {
+        waitForSendWindow(false);
+    }
 
-	public void incrementSendWindow() {
-		synchronized(windowLock) {
-			packageWindow += CIRCWINDOW_INCREMENT;
-			windowLock.notifyAll();
-		}
-		
-	}
+    @Override
+    public void waitForSendWindowAndDecrement() {
+        waitForSendWindow(true);
+    }
+
+    private synchronized void waitForSendWindow(boolean decrement) {
+        while (packageWindow.get() == 0) {
+            try {
+                windowLock.wait();
+            } catch (InterruptedException e) {
+                throw new TorException("Thread interrupted while waiting for circuit send window");
+            }
+        }
+        if (decrement) {
+            packageWindow.decrementAndGet();
+        }
+    }
+
+    @Override
+    public void incrementSendWindow() {
+        packageWindow.addAndGet(CIRCWINDOW_INCREMENT);
+        windowLock.notifyAll();
+    }
+
+    @Override
+    public String toString() {
+        return "CircuitNodeImpl{" +
+                "router=" + router +
+                ", cryptoState=" + cryptoState +
+                ", previousNode=" + previousNode +
+                ", packageWindow=" + packageWindow +
+                ", deliverWindow=" + deliverWindow +
+                '}';
+    }
 }

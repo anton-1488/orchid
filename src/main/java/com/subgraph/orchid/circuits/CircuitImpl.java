@@ -250,13 +250,6 @@ public abstract class CircuitImpl implements Circuit, DashboardRenderable {
 		}
 	}
 	
-	protected abstract String getCircuitTypeLabel();
-	
-	public String toString() {
-		return "  Circuit ("+ getCircuitTypeLabel() + ") id="+ getCircuitId() +" state=" + status.getStateAsString() +" "+ pathToString();
-	}
-
-	
 	protected String pathToString() {
 		final StringBuilder sb = new StringBuilder();
 		sb.append("[");
@@ -282,5 +275,16 @@ public abstract class CircuitImpl implements Circuit, DashboardRenderable {
 			writer.println(toString());
 			renderer.renderComponent(writer, flags, io);
 		}
-	}	
+	}
+
+	@Override
+	public String toString() {
+		return "CircuitImpl{" +
+				"circuitManager=" + circuitManager +
+				", prechosenPath=" + prechosenPath +
+				", nodeList=" + nodeList +
+				", status=" + status +
+				", io=" + io +
+				'}';
+	}
 }

@@ -7,7 +7,6 @@ import java.net.InetAddress;
 import java.util.concurrent.TimeoutException;
 
 public interface ExitCircuit extends Circuit {
-
     /**
      * Open an exit stream from the final node in this circuit to the
      * specified target address and port.
@@ -29,5 +28,4 @@ public interface ExitCircuit extends Circuit {
     Stream openExitStream(String hostname, int port, long timeout) throws InterruptedException, TimeoutException, StreamConnectFailedException;
 
     boolean canHandleExitToPort(int port);
-
 }

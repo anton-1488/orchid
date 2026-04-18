@@ -9,5 +9,5 @@ public interface ExitTarget {
 
     String getHostname();
 
-    int getPort();
+    int port();
 }

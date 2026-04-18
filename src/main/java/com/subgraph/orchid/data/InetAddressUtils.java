@@ -13,7 +13,7 @@ public class InetAddressUtils {
         try {
             return InetAddress.getByName(address);
         } catch (Exception e) {
-            log.error("Error to create InetAddress: ", e);
+            log.error("Error to create InetAddress from string: ", e);
             return null;
         }
     }

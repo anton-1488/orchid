@@ -190,9 +190,9 @@ public class CircuitPathChooser {
 
     private boolean routerSupportsTarget(Router router, @NotNull ExitTarget target) {
         if (target.isAddressTarget()) {
-            return router.exitPolicyAccepts(target.getAddress(), target.getPort());
+            return router.exitPolicyAccepts(target.getAddress(), target.port());
         } else {
-            return router.exitPolicyAccepts(target.getPort());
+            return router.exitPolicyAccepts(target.port());
         }
     }
 }

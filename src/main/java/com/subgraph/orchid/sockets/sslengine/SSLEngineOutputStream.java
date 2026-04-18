@@ -10,7 +10,7 @@ public class SSLEngineOutputStream extends OutputStream {
     private final SSLEngineManager manager;
     private final ByteBuffer outputBuffer;
 
-    public SSLEngineOutputStream(SSLEngineManager manager) {
+    public SSLEngineOutputStream(@NotNull SSLEngineManager manager) {
         this.manager = manager;
         this.outputBuffer = manager.getSendBuffer();
     }

@@ -1,14 +1,10 @@
 package com.subgraph.orchid.sockets.sslengine;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.net.ssl.HandshakeCompletedEvent;
-import javax.net.ssl.HandshakeCompletedListener;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocket;
+import javax.net.ssl.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -31,14 +27,14 @@ public class SSLEngineSSLSocket extends SSLSocket implements HandshakeCallbackHa
     private OutputStream outputStream;
     private volatile boolean closed;
 
-    public SSLEngineSSLSocket(Socket socket, SSLContext context) throws IOException {
+    public SSLEngineSSLSocket(@NotNull Socket socket, SSLContext context) throws IOException {
         this.engine = createSSLEngine(context);
         this.socket = socket;
         this.manager = new SSLEngineManager(engine, this, socket.getInputStream(), socket.getOutputStream());
         this.listenerList = new CopyOnWriteArrayList<>();
     }
 
-    private static SSLEngine createSSLEngine(SSLContext context) {
+    private static @NotNull SSLEngine createSSLEngine(@NotNull SSLContext context) {
         SSLEngine engine = context.createSSLEngine();
         engine.setUseClientMode(true);
         return engine;

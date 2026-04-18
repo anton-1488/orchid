@@ -7,9 +7,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class DescriptorCacheData<T extends Descriptor> {
-    /**
-     * 7 days
-     */
     private final static long EXPIRY_PERIOD = TimeUnit.DAYS.toMillis(7);
 
     private final Map<HexDigest, T> descriptorMap;

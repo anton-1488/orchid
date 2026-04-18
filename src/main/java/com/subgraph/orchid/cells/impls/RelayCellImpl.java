@@ -1,9 +1,9 @@
 package com.subgraph.orchid.cells.impls;
 
-import com.subgraph.orchid.circuits.CircuitNode;
 import com.subgraph.orchid.cells.RelayCell;
 import com.subgraph.orchid.cells.enums.CellCommand;
 import com.subgraph.orchid.cells.enums.RelayCellCommand;
+import com.subgraph.orchid.circuits.CircuitNode;
 import com.subgraph.orchid.exceptions.TorException;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,21 +15,21 @@ public class RelayCellImpl extends CellImpl implements RelayCell {
     private final CircuitNode circuitNode;
     private final boolean isOutgoing;
 
-    /*
+    /**
      * The payload of each unencrypted RELAY cell consists of:
-     *     Relay command           [1 byte]
-     *     'Recognized'            [2 bytes]
-     *     StreamID                [2 bytes]
-     *     Digest                  [4 bytes]
-     *     Length                  [2 bytes]
-     *     Data                    [CELL_LEN-14 bytes]
+     * Relay command           [1 byte]
+     * 'Recognized'            [2 bytes]
+     * StreamID                [2 bytes]
+     * Digest                  [4 bytes]
+     * Length                  [2 bytes]
+     * Data                    [CELL_LEN-14 bytes]
      */
 
     public RelayCellImpl(CircuitNode node, int circuit, int stream, RelayCellCommand relayCommand) {
         this(node, circuit, stream, relayCommand, false);
     }
 
-    public RelayCellImpl(CircuitNode node, int circuit, int stream, RelayCellCommand rcc, boolean isRelayEarly) {
+    public RelayCellImpl(CircuitNode node, int circuit, int stream, @NotNull RelayCellCommand rcc, boolean isRelayEarly) {
         super(circuit, (isRelayEarly) ? (CellCommand.RELAY_EARLY) : (CellCommand.RELAY));
         this.circuitNode = node;
         this.relayCellCommand = rcc;
@@ -61,26 +61,32 @@ public class RelayCellImpl extends CellImpl implements RelayCell {
         }
     }
 
+    @Override
     public int getStreamId() {
         return streamId;
     }
 
+    @Override
     public RelayCellCommand getRelayCommand() {
         return relayCellCommand;
     }
 
+    @Override
     public void setLength() {
         writer.putShortAt(LENGTH_OFFSET, (short) (writer.getPosition() - HEADER_SIZE));
     }
 
+    @Override
     public void setDigest(byte[] digest) {
         getCellWriter().putByteArray(DIGEST_OFFSET, digest);
     }
 
+    @Override
     public ByteBuffer getPayloadBuffer() {
         return cellBuffer.duplicate().reset().slice();
     }
 
+    @Override
     public CircuitNode getCircuitNode() {
         return circuitNode;
     }

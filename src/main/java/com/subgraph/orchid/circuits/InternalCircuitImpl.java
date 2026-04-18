@@ -49,7 +49,7 @@ public class InternalCircuitImpl extends CircuitImpl implements InternalCircuit,
         if (type != InternalType.UNUSED) {
             throw new IllegalStateException("Cannot cannibalize internal circuit with type " + type);
         }
-        CircuitExtender extender = new CircuitExtender(this, ntorEnabled);
+        CircuitExtender extender = new CircuitExtender(this);
         extender.extendTo(target);
     }
 
@@ -64,7 +64,7 @@ public class InternalCircuitImpl extends CircuitImpl implements InternalCircuit,
             return stream;
         } catch (Exception e) {
             removeStream(stream);
-            return processStreamOpenException(e);
+            throw e;
         }
     }
 
@@ -96,7 +96,7 @@ public class InternalCircuitImpl extends CircuitImpl implements InternalCircuit,
             return stream;
         } catch (Exception e) {
             removeStream(stream);
-            return processStreamOpenException(e);
+            throw e;
         }
     }
 }

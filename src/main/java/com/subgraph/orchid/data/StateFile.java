@@ -29,7 +29,7 @@ public class StateFile {
     private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final Logger log = LoggerFactory.getLogger(StateFile.class);
 
-    private final List<GuardEntryImpl> guardEntries = new CopyOnWriteArrayList<>();
+    private final List<GuardEntry> guardEntries = new CopyOnWriteArrayList<>();
 
     private static class Line {
         final String line;
@@ -143,7 +143,7 @@ public class StateFile {
 
     public synchronized ByteBuffer getFileContents() {
         StringBuilder sb = new StringBuilder();
-        for (GuardEntryImpl entry : guardEntries) {
+        for (GuardEntry entry : guardEntries) {
             sb.append(entry.writeToString());
         }
         return ByteBuffer.wrap(sb.toString().getBytes(Tor.getDefaultCharset()));

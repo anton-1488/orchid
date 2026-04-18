@@ -1,8 +1,8 @@
 package com.subgraph.orchid.certificate;
 
-import com.subgraph.orchid.document.Document;
 import com.subgraph.orchid.crypto.TorPublicKey;
 import com.subgraph.orchid.data.HexDigest;
+import com.subgraph.orchid.document.Document;
 
 import java.net.InetAddress;
 import java.time.Instant;

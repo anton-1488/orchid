@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.List;
 
 public class MicrodescriptorFetcher extends DocumentFetcher<RouterMicrodescriptor> {
-
     private final List<HexDigest> fingerprints;
 
     public MicrodescriptorFetcher(Collection<HexDigest> fingerprints) {

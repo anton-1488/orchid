@@ -5,6 +5,7 @@ import com.subgraph.orchid.exceptions.TorException;
 import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
+import org.jetbrains.annotations.NotNull;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -63,15 +64,15 @@ public class TorPublicKey {
         return keyFingerprint;
     }
 
-    public boolean verifySignature(TorSignature signature, HexDigest digest) {
+    public boolean verifySignature(TorSignature signature, @NotNull HexDigest digest) {
         return verifySignatureFromDigestBytes(signature, digest.getRawBytes());
     }
 
-    public boolean verifySignature(TorSignature signature, TorMessageDigest digest) {
+    public boolean verifySignature(TorSignature signature, @NotNull TorMessageDigest digest) {
         return verifySignatureFromDigestBytes(signature, digest.getDigestBytes());
     }
 
-    public boolean verifySignatureFromDigestBytes(TorSignature signature, byte[] digestBytes) {
+    public boolean verifySignatureFromDigestBytes(@NotNull TorSignature signature, byte[] digestBytes) {
         Cipher cipher = createCipherInstance();
         try {
             byte[] decrypted = cipher.doFinal(signature.getSignatureBytes());
@@ -81,7 +82,7 @@ public class TorPublicKey {
         }
     }
 
-    private Cipher createCipherInstance() {
+    private @NotNull Cipher createCipherInstance() {
         try {
             Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
             cipher.init(Cipher.DECRYPT_MODE, getKey());

@@ -1,15 +1,15 @@
 package com.subgraph.orchid.crypto;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.Arrays;
-
 import com.subgraph.orchid.exceptions.TorException;
 import com.subgraph.orchid.exceptions.TorParsingException;
 import org.bouncycastle.util.encoders.Base64;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.Arrays;
 
 public class TorSignature {
     private final static String SIGNATURE_BEGIN = "-----BEGIN SIGNATURE-----";
@@ -64,7 +64,7 @@ public class TorSignature {
         return Arrays.copyOf(signatureBytes, signatureBytes.length);
     }
 
-    public boolean verify(TorPublicKey publicKey, TorMessageDigest digest) {
+    public boolean verify(@NotNull TorPublicKey publicKey, TorMessageDigest digest) {
         return publicKey.verifySignature(this, digest);
     }
 

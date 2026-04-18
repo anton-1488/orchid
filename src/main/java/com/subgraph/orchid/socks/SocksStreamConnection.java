@@ -1,6 +1,7 @@
 package com.subgraph.orchid.socks;
 
 import com.subgraph.orchid.Stream;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +21,7 @@ public class SocksStreamConnection {
     private final OutputStream torOutput;
     private final CountDownLatch doneLatch = new CountDownLatch(2);
 
-    private SocksStreamConnection(Socket socket, Stream stream) {
+    private SocksStreamConnection(Socket socket, @NotNull Stream stream) {
         this.socket = socket;
         this.stream = stream;
         this.torInput = stream.getInputStream();

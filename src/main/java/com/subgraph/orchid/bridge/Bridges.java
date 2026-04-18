@@ -1,13 +1,14 @@
 package com.subgraph.orchid.bridge;
 
-import com.subgraph.orchid.directory.DirectoryDownloader;
 import com.subgraph.orchid.Globals;
 import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.config.TorConfigBridgeLine;
 import com.subgraph.orchid.crypto.TorRandom;
+import com.subgraph.orchid.directory.DirectoryDownloader;
 import com.subgraph.orchid.exceptions.DirectoryRequestFailedException;
 import com.subgraph.orchid.router.Router;
 import com.subgraph.orchid.router.RouterDescriptor;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +75,7 @@ public class Bridges {
         }
     }
 
-    private BridgeRouterImpl createBridgeFromLine(TorConfigBridgeLine line) {
+    private @NotNull BridgeRouterImpl createBridgeFromLine(@NotNull TorConfigBridgeLine line) {
         BridgeRouterImpl bridge = new BridgeRouterImpl(line.address(), line.port());
         if (line.fingerprint() != null) {
             bridge.setIdentity(line.fingerprint());

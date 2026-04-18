@@ -113,6 +113,7 @@ public class DirectoryDownloaderImpl implements DirectoryDownloader {
         return downloadRouterMicrodescriptors(fingerprints, openCircuit());
     }
 
+    @Override
     public List<RouterMicrodescriptor> downloadRouterMicrodescriptors(Set<HexDigest> fingerprints, DirectoryCircuit circuit) throws DirectoryRequestFailedException {
         DirectoryDocumentRequestor requestor = new DirectoryDocumentRequestor(initializationTracker);
         List<RouterMicrodescriptor> ds = requestor.downloadRouterMicrodescriptors(fingerprints);

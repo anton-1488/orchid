@@ -34,7 +34,7 @@ public class SSLEngineManager {
     private boolean handshakeStarted = false;
     private volatile boolean closed = false;
 
-    SSLEngineManager(SSLEngine engine, HandshakeCallbackHandler handshakeCallback, InputStream input, OutputStream output) {
+    SSLEngineManager(@NotNull SSLEngine engine, HandshakeCallbackHandler handshakeCallback, InputStream input, OutputStream output) {
         this.engine = engine;
         this.handshakeCallback = handshakeCallback;
         this.input = input;
@@ -276,7 +276,7 @@ public class SSLEngineManager {
         }
     }
 
-    private void networkWriteBuffer(ByteBuffer buffer) throws IOException {
+    private void networkWriteBuffer(@NotNull ByteBuffer buffer) throws IOException {
         byte[] data = buffer.array();
         int offset = buffer.position();
         int length = buffer.remaining();
@@ -286,7 +286,7 @@ public class SSLEngineManager {
         buffer.position(buffer.limit());
     }
 
-    private int networkReadBuffer(ByteBuffer buffer) throws IOException {
+    private int networkReadBuffer(@NotNull ByteBuffer buffer) throws IOException {
         byte[] data = buffer.array();
         int offset = buffer.position();
         int available = buffer.remaining();

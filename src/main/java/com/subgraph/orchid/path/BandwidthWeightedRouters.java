@@ -1,11 +1,11 @@
 package com.subgraph.orchid.path;
 
+import com.subgraph.orchid.crypto.TorRandom;
+import com.subgraph.orchid.router.Router;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.subgraph.orchid.router.Router;
-import com.subgraph.orchid.crypto.TorRandom;
-import org.jetbrains.annotations.NotNull;
 
 public class BandwidthWeightedRouters {
     public static final long MAX_SCALE = Long.MAX_VALUE / 4;

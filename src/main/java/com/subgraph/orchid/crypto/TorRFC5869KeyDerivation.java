@@ -1,13 +1,13 @@
 package com.subgraph.orchid.crypto;
 
-import java.nio.ByteBuffer;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+import com.subgraph.orchid.Tor;
+import org.jetbrains.annotations.NotNull;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-
-import com.subgraph.orchid.Tor;
+import java.nio.ByteBuffer;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 public class TorRFC5869KeyDerivation {
     private final static String PROTOID = "ntor-curve25519-sha256-1";
@@ -16,12 +16,12 @@ public class TorRFC5869KeyDerivation {
 
     private final byte[] seed;
 
-    public TorRFC5869KeyDerivation(byte[] seed) {
+    public TorRFC5869KeyDerivation(byte @NotNull [] seed) {
         this.seed = new byte[seed.length];
         System.arraycopy(seed, 0, this.seed, 0, seed.length);
     }
 
-    public void deriveKeys(byte[] keyMaterialOut, byte[] verifyHashOut) {
+    public void deriveKeys(byte @NotNull [] keyMaterialOut, byte @NotNull [] verifyHashOut) {
         ByteBuffer keyData = deriveKeys(keyMaterialOut.length + verifyHashOut.length);
         keyData.get(keyMaterialOut);
         keyData.get(verifyHashOut);
@@ -59,12 +59,12 @@ public class TorRFC5869KeyDerivation {
         return mac.doFinal(bb.array());
     }
 
-    private ByteBuffer makeBuffer(int len) {
+    private @NotNull ByteBuffer makeBuffer(int len) {
         byte[] bs = new byte[len];
         return ByteBuffer.wrap(bs);
     }
 
-    private Mac createMacInstance() {
+    private @NotNull Mac createMacInstance() {
         SecretKeySpec keyspec = new SecretKeySpec(seed, "HmacSHA256");
         try {
             Mac mac = Mac.getInstance("HmacSHA256");

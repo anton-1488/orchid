@@ -19,7 +19,6 @@ public final class FilterFactory {
     private final static Pattern ROUTERNAME_PATTERN = Pattern.compile("^\\w{1,19}$");
 
     private FilterFactory() {
-
     }
 
     public static @Nullable RouterFilter createFilterFor(String s) {

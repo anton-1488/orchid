@@ -158,6 +158,7 @@ public class GuardEntryImpl implements GuardEntry {
         }
     }
 
+    @Override
     public synchronized String writeToString() {
         StringBuilder sb = new StringBuilder();
         appendEntryGuardLine(sb);

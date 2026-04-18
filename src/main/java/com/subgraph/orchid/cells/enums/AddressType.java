@@ -25,6 +25,7 @@ public enum AddressType {
     public int getValue() {
         return value;
     }
+
     public byte getByteValue() {
         return (byte) value;
     }

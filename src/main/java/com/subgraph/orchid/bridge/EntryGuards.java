@@ -1,17 +1,23 @@
 package com.subgraph.orchid.bridge;
 
-import com.subgraph.orchid.*;
-import com.subgraph.orchid.path.CircuitNodeChooser;
-import com.subgraph.orchid.path.CircuitNodeChooser.WeightRule;
+import com.subgraph.orchid.Globals;
+import com.subgraph.orchid.GuardEntry;
 import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.connections.ConnectionCache;
 import com.subgraph.orchid.crypto.TorRandom;
 import com.subgraph.orchid.directory.Directory;
 import com.subgraph.orchid.directory.DirectoryDownloader;
+import com.subgraph.orchid.path.CircuitNodeChooser;
+import com.subgraph.orchid.path.CircuitNodeChooser.WeightRule;
 import com.subgraph.orchid.router.Router;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
 public class EntryGuards {
@@ -57,7 +63,7 @@ public class EntryGuards {
         return usableGuards.get(TorRandom.nextInt(n));
     }
 
-    private synchronized List<Router> getMinimumUsableGuards(Set<Router> excluded) {
+    private synchronized @NotNull List<Router> getMinimumUsableGuards(Set<Router> excluded) {
         testStatusOfAllGuards();
         while (true) {
             List<Router> usableGuards = getUsableGuardRouters(excluded);
@@ -95,17 +101,17 @@ public class EntryGuards {
      * all methods below called holding 'lock'
      */
 
-    private void retestProbeSucceeded(GuardEntry entry) {
+    private void retestProbeSucceeded(@NotNull GuardEntry entry) {
         entry.clearDownSince();
     }
 
-    private void initialProbeSucceeded(GuardEntry entry) {
+    private void initialProbeSucceeded(@NotNull GuardEntry entry) {
         log.debug("Probe connection to {} succeeded. Adding it as a new entry guard.", entry.getRouterForEntry());
         directory.addGuardEntry(entry);
         retestAllUnreachable();
     }
 
-    private void retestProbeFailed(GuardEntry entry) {
+    private void retestProbeFailed(@NotNull GuardEntry entry) {
         entry.markAsDown();
     }
 
@@ -134,7 +140,7 @@ public class EntryGuards {
         }
     }
 
-    private List<Router> getUsableGuardRouters(Set<Router> excluded) {
+    private @NotNull List<Router> getUsableGuardRouters(Set<Router> excluded) {
         List<Router> usableRouters = new ArrayList<>();
         for (GuardEntry entry : directory.getGuardEntries()) {
             addRouterIfUsableAndNotExcluded(entry, excluded, usableRouters);
@@ -142,7 +148,7 @@ public class EntryGuards {
         return usableRouters;
     }
 
-    private void addRouterIfUsableAndNotExcluded(GuardEntry entry, Set<Router> excluded, List<Router> routers) {
+    private void addRouterIfUsableAndNotExcluded(@NotNull GuardEntry entry, Set<Router> excluded, List<Router> routers) {
         if (entry.testCurrentlyUsable() && entry.getDownSince() == null) {
             Router r = entry.getRouterForEntry();
             if (r != null && !excluded.contains(r)) {
@@ -151,7 +157,7 @@ public class EntryGuards {
         }
     }
 
-    private Set<Router> getExcludedForChooseNew(Set<Router> excluded, List<Router> usable) {
+    private @NotNull Set<Router> getExcludedForChooseNew(Set<Router> excluded, List<Router> usable) {
         Set<Router> set = new HashSet<>();
         set.addAll(excluded);
         set.addAll(usable);
@@ -199,7 +205,7 @@ public class EntryGuards {
         return nodeChooser.chooseRandomNode(WeightRule.WEIGHT_FOR_GUARD, router -> router.isValid() && router.isPossibleGuard() && router.isRunning() && !excluded.contains(router));
     }
 
-    private void launchEntryProbe(GuardEntry entry) {
+    private void launchEntryProbe(@NotNull GuardEntry entry) {
         if (!entry.testCurrentlyUsable() || pendingProbes.contains(entry)) {
             return;
         }
@@ -213,34 +219,34 @@ public class EntryGuards {
      * If the guard is excluded because of its status in the networkstatuses for
      * over 30 days, Tor removes it from the list entirely, preserving order.
      */
-    private boolean isPermanentlyUnlisted(GuardEntry entry) {
-        Date unlistedSince = entry.getUnlistedSince();
+    private boolean isPermanentlyUnlisted(@NotNull GuardEntry entry) {
+        Instant unlistedSince = entry.getUnlistedSince();
         if (unlistedSince == null || pendingProbes.contains(entry)) {
             return false;
         }
-        long unlistedTime = System.currentTimeMillis() - unlistedSince.getTime();
+        long unlistedTime = System.currentTimeMillis() - unlistedSince.toEpochMilli();
         return unlistedTime > RetestInterval.THIRTY_DAYS.getTime();
     }
 
     /**
      * Expire guards after 60 days since creation time.
      */
-    private boolean isExpired(GuardEntry entry) {
-        Date createdAt = entry.getCreatedTime();
-        long createdAgo = System.currentTimeMillis() - createdAt.getTime();
+    private boolean isExpired(@NotNull GuardEntry entry) {
+        Instant createdAt = entry.getCreatedTime();
+        long createdAgo = System.currentTimeMillis() - createdAt.toEpochMilli();
         return createdAgo > RetestInterval.SIXTY_DAYS.getTime();
     }
 
-    private boolean needsUnreachableTest(GuardEntry entry) {
-        final Date downSince = entry.getDownSince();
+    private boolean needsUnreachableTest(@NotNull GuardEntry entry) {
+        Instant downSince = entry.getDownSince();
         if (downSince == null || !entry.testCurrentlyUsable()) {
             return false;
         }
 
         long now = System.currentTimeMillis();
-        long timeDown = now - downSince.getTime();
-        Date lastConnect = entry.getLastConnectAttempt();
-        long timeSinceLastRetest = (lastConnect == null) ? timeDown : (now - lastConnect.getTime());
+        long timeDown = now - downSince.toEpochMilli();
+        Instant lastConnect = entry.getLastConnectAttempt();
+        long timeSinceLastRetest = (lastConnect == null) ? timeDown : (now - lastConnect.toEpochMilli());
 
         return timeSinceLastRetest > RetestInterval.getRetestInterval(timeDown).getTime();
     }

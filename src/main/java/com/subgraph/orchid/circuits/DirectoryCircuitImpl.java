@@ -24,7 +24,7 @@ public class DirectoryCircuitImpl extends CircuitImpl implements DirectoryCircui
             return stream;
         } catch (Exception e) {
             removeStream(stream);
-            return processStreamOpenException(e);
+            throw e;
         }
     }
 

@@ -1,5 +1,7 @@
 package com.subgraph.orchid.cells.enums;
 
+import org.jetbrains.annotations.NotNull;
+
 public enum RelayCellReason {
     MISC(1),
     RESOLVE_FAILED(2),
@@ -16,7 +18,7 @@ public enum RelayCellReason {
     TOR_PROTOCOL(13),
     NOT_DIRECTORY(14);
 
-    public static RelayCellReason ofReason(int reason) {
+    public static @NotNull RelayCellReason ofReason(int reason) {
         for (RelayCellReason rsn : values()) {
             if (rsn.reason == reason) {
                 return rsn;

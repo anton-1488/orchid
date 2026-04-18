@@ -1,11 +1,11 @@
 package com.subgraph.orchid.document;
 
-import java.net.InetAddress;
-import java.util.Set;
-
 import com.subgraph.orchid.crypto.TorPublicKey;
 import com.subgraph.orchid.data.HexDigest;
 import com.subgraph.orchid.data.InetAddressUtils;
+
+import java.net.InetAddress;
+import java.util.Set;
 
 public interface Descriptor extends Document {
     enum CacheLocation {NOT_CACHED, CACHED_CACHEFILE, CACHED_JOURNAL}

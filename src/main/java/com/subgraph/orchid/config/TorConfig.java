@@ -1,6 +1,8 @@
 package com.subgraph.orchid.config;
 
 import com.subgraph.orchid.data.HexDigest;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.net.InetAddress;
 import java.nio.file.Path;
@@ -8,13 +10,15 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public record TorConfig(Path dataDirectory, int socksPort, long circuitBuildTimeoutMillis,
-                        long circuitStreamTimeoutMillis, int numEntryGuards, boolean useEntryGuards, boolean useMicroDescriptors,
+                        long circuitStreamTimeoutMillis, int numEntryGuards, boolean useEntryGuards,
+                        boolean useMicroDescriptors,
                         List<String> excludeNodes, List<String> excludeExitNodes, List<String> exitNodes,
                         List<String> entryNodes, boolean strictNodes, boolean useBridges,
                         List<TorConfigBridgeLine> bridges) {
 
     // Builder
-    static Builder builder() {
+    @Contract(" -> new")
+    public static @NotNull Builder builder() {
         return new TorConfigBuilder();
     }
 

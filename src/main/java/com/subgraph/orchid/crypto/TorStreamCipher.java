@@ -1,27 +1,30 @@
 package com.subgraph.orchid.crypto;
 
-import java.security.GeneralSecurityException;
+import com.subgraph.orchid.exceptions.TorException;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-
-import com.subgraph.orchid.exceptions.TorException;
+import java.security.GeneralSecurityException;
 
 public class TorStreamCipher {
     public static final int KEY_LEN = 16;
 
-    public static TorStreamCipher createWithRandomKey() {
+    public static @NotNull TorStreamCipher createWithRandomKey() {
         final SecretKey randomKey = generateRandomKey();
         return new TorStreamCipher(randomKey.getEncoded());
     }
 
-    public static TorStreamCipher createFromKeyBytes(byte[] keyBytes) {
+    @Contract("_ -> new")
+    public static @NotNull TorStreamCipher createFromKeyBytes(byte[] keyBytes) {
         return new TorStreamCipher(keyBytes);
     }
 
-    public static TorStreamCipher createFromKeyBytesWithIV(byte[] keyBytes, byte[] iv) {
+    @Contract("_, _ -> new")
+    public static @NotNull TorStreamCipher createFromKeyBytesWithIV(byte[] keyBytes, byte[] iv) {
         return new TorStreamCipher(keyBytes, iv);
     }
 
@@ -49,7 +52,7 @@ public class TorStreamCipher {
         }
     }
 
-    private void applyIV(byte[] iv) {
+    private void applyIV(byte @NotNull [] iv) {
         if (iv.length != BLOCK_SIZE) {
             throw new IllegalArgumentException();
         }
@@ -69,11 +72,12 @@ public class TorStreamCipher {
         return key.getEncoded();
     }
 
-    private static SecretKeySpec keyBytesToSecretKey(byte[] keyBytes) {
+    @Contract(value = "_ -> new", pure = true)
+    private static @NotNull SecretKeySpec keyBytesToSecretKey(byte[] keyBytes) {
         return new SecretKeySpec(keyBytes, "AES");
     }
 
-    private static Cipher createCipher(SecretKeySpec keySpec) {
+    private static @NotNull Cipher createCipher(SecretKeySpec keySpec) {
         try {
             final Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
             cipher.init(Cipher.ENCRYPT_MODE, keySpec);

@@ -13,6 +13,7 @@ import com.subgraph.orchid.parsing.NameIntegerParameter;
 import jdk.jfr.Percentage;
 import org.bouncycastle.util.encoders.Base64;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -47,7 +48,7 @@ public class DocumentFieldParserImpl implements DocumentFieldParser {
 
     private DocumentParsingHandler callbackHandler;
 
-    public DocumentFieldParserImpl(ByteBuffer buffer) {
+    public DocumentFieldParserImpl(@NotNull ByteBuffer buffer) {
         buffer.rewind();
         this.inputBuffer = buffer;
         rawDocumentBuffer = new StringBuilder();
@@ -351,7 +352,7 @@ public class DocumentFieldParserImpl implements DocumentFieldParser {
         return line;
     }
 
-    private String nextLineFromInputBuffer() {
+    private @Nullable String nextLineFromInputBuffer() {
         if (!inputBuffer.hasRemaining()) {
             return null;
         }

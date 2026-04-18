@@ -1,5 +1,7 @@
 package com.subgraph.orchid.socks.enums;
 
+import org.jetbrains.annotations.NotNull;
+
 public enum SOCKS5Status {
     SUCCESS(0),
     FAILURE(1),
@@ -13,7 +15,7 @@ public enum SOCKS5Status {
         this.status = status;
     }
 
-    public static SOCKS5Status ofStatus(int stt) {
+    public static @NotNull SOCKS5Status ofStatus(int stt) {
         for (SOCKS5Status status : values()) {
             if (status.status == stt) {
                 return status;

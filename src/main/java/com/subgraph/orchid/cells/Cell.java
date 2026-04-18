@@ -35,7 +35,6 @@ public interface Cell {
 
     int getCircIdLength();
 
-
     /**
      * Return the circuit id field from this cell.
      *

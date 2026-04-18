@@ -36,6 +36,7 @@ public class ExitCircuitImpl extends CircuitImpl implements ExitCircuit {
         return openExitStream(address.toString(), port, timeout);
     }
 
+    @Override
     public Stream openExitStream(String target, int port, long timeout) throws InterruptedException, TimeoutException, StreamConnectFailedException {
         StreamImpl stream = createNewStream();
         try {
@@ -43,7 +44,7 @@ public class ExitCircuitImpl extends CircuitImpl implements ExitCircuit {
             return stream;
         } catch (Exception e) {
             removeStream(stream);
-            return processStreamOpenException(e);
+            throw e;
         }
     }
 
@@ -67,6 +68,7 @@ public class ExitCircuitImpl extends CircuitImpl implements ExitCircuit {
         }
     }
 
+    @Override
     public boolean canHandleExitToPort(int port) {
         return exitRouter.exitPolicyAccepts(port);
     }

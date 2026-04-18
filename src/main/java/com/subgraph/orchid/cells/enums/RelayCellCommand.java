@@ -1,5 +1,7 @@
 package com.subgraph.orchid.cells.enums;
 
+import org.jetbrains.annotations.NotNull;
+
 public enum RelayCellCommand {
     ESTABLISH_INTRO(32),
     ESTABLISH_RENDEZVOUS(33),
@@ -26,7 +28,7 @@ public enum RelayCellCommand {
     EXTEND2(14),
     EXTENDED2(15);
 
-    public static RelayCellCommand ofCommand(int comand) {
+    public static @NotNull RelayCellCommand ofCommand(int comand) {
         for (RelayCellCommand cmd : values()) {
             if (cmd.command == comand) {
                 return cmd;

@@ -1,5 +1,10 @@
 package com.subgraph.orchid.crypto;
 
+import com.subgraph.orchid.data.HexDigest;
+import org.jetbrains.annotations.NotNull;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -7,24 +12,17 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
-import com.subgraph.orchid.data.HexDigest;
-import org.jetbrains.annotations.NotNull;
-
 public class TorNTorKeyAgreement implements TorKeyAgreement {
-    public final static int CURVE25519_PUBKEY_LEN = 32;
-    final static int CURVE25519_OUTPUT_LEN = 32;
-    final static int DIGEST256_LEN = 32;
-    final static int DIGEST_LEN = 20;
-    final static int KEY_LEN = 16;
-    final static int NTOR_ONIONSKIN_LEN = 2 * CURVE25519_PUBKEY_LEN + DIGEST_LEN;
-    final static String PROTOID = "ntor-curve25519-sha256-1";
-    final static String SERVER_STR = "Server";
-    final static int SECRET_INPUT_LEN = CURVE25519_PUBKEY_LEN * 3 + CURVE25519_OUTPUT_LEN * 2 + DIGEST_LEN + PROTOID.length();
-    final static int AUTH_INPUT_LEN = DIGEST256_LEN + DIGEST_LEN + (CURVE25519_PUBKEY_LEN * 3) + PROTOID.length() + SERVER_STR.length();
-    final static Charset cs = StandardCharsets.ISO_8859_1;
+    public static final int CURVE25519_PUBKEY_LEN = 32;
+    private static final int CURVE25519_OUTPUT_LEN = 32;
+    private static final int DIGEST256_LEN = 32;
+    private static final int DIGEST_LEN = 20;
+    private static final int NTOR_ONIONSKIN_LEN = 2 * CURVE25519_PUBKEY_LEN + DIGEST_LEN;
+    private static final String PROTOID = "ntor-curve25519-sha256-1";
+    private static final String SERVER_STR = "Server";
+    private static final int SECRET_INPUT_LEN = CURVE25519_PUBKEY_LEN * 3 + CURVE25519_OUTPUT_LEN * 2 + DIGEST_LEN + PROTOID.length();
+    private static final int AUTH_INPUT_LEN = DIGEST256_LEN + DIGEST_LEN + (CURVE25519_PUBKEY_LEN * 3) + PROTOID.length() + SERVER_STR.length();
+    private static final Charset cs = StandardCharsets.ISO_8859_1;
 
     private final HexDigest peerIdentity;
     private final byte[] peerNTorOnionKey;  /* pubkey_B */
@@ -38,7 +36,6 @@ public class TorNTorKeyAgreement implements TorKeyAgreement {
         this.secretKey_x = generateSecretKey();
         this.publicKey_X = getPublicKeyForPrivate(secretKey_x);
     }
-
 
     @Override
     public byte[] createOnionSkin() {
@@ -95,7 +92,7 @@ public class TorNTorKeyAgreement implements TorKeyAgreement {
         return "ntorNTORntorNTOR".getBytes(cs);
     }
 
-    private byte[] buildSecretInput(byte[] serverPublic_Y) {
+    private byte @NotNull [] buildSecretInput(byte[] serverPublic_Y) {
         ByteBuffer bb = makeBuffer(SECRET_INPUT_LEN);
         bb.put(scalarMult(serverPublic_Y));
         bb.put(scalarMult(peerNTorOnionKey));
@@ -107,7 +104,7 @@ public class TorNTorKeyAgreement implements TorKeyAgreement {
         return bb.array();
     }
 
-    private byte[] buildAuthInput(byte[] verify, byte[] serverPublic_Y) {
+    private byte @NotNull [] buildAuthInput(byte[] verify, byte[] serverPublic_Y) {
         ByteBuffer bb = makeBuffer(AUTH_INPUT_LEN);
         bb.put(verify);
         bb.put(peerIdentity.getRawBytes());
@@ -119,14 +116,14 @@ public class TorNTorKeyAgreement implements TorKeyAgreement {
         return bb.array();
     }
 
-    private byte[] scalarMult(byte[] peerValue) {
+    private byte @NotNull [] scalarMult(byte[] peerValue) {
         byte[] out = new byte[CURVE25519_OUTPUT_LEN];
         Curve25519.crypto_scalarmult(out, secretKey_x, peerValue);
         isBad |= isAllZero(out);
         return out;
     }
 
-    public boolean isAllZero(byte[] bs) {
+    public boolean isAllZero(byte @NotNull [] bs) {
         boolean result = true;
         for (byte b : bs) {
             result &= (b == 0);

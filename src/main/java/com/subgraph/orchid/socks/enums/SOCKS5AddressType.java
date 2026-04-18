@@ -1,5 +1,7 @@
 package com.subgraph.orchid.socks.enums;
 
+import org.jetbrains.annotations.NotNull;
+
 public enum SOCKS5AddressType {
     ADDRESS_IPV4(1),
     ADDRESS_HOSTNAME(3),
@@ -11,7 +13,7 @@ public enum SOCKS5AddressType {
         this.type = type;
     }
 
-    public static SOCKS5AddressType ofType(int tpe) {
+    public static @NotNull SOCKS5AddressType ofType(int tpe) {
         for (SOCKS5AddressType type : values()) {
             if (type.type == tpe) {
                 return type;

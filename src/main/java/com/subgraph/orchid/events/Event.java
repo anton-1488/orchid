@@ -1,3 +1,4 @@
 package com.subgraph.orchid.events;
 
-public interface Event {}
+public interface Event {
+}

@@ -3,6 +3,7 @@ package com.subgraph.orchid.circuits;
 import com.subgraph.orchid.Stream;
 import com.subgraph.orchid.cells.Cell;
 import com.subgraph.orchid.cells.RelayCell;
+import com.subgraph.orchid.cells.enums.RelayCellCommand;
 import com.subgraph.orchid.connections.Connection;
 import com.subgraph.orchid.exceptions.TorException;
 
@@ -60,7 +61,7 @@ public interface Circuit {
      * @param targetNode   The target circuit node to encrypt this cell for.
      * @return A newly created relay cell object.
      */
-    RelayCell createRelayCell(int relayCommand, int streamId, CircuitNode targetNode);
+    RelayCell createRelayCell(RelayCellCommand relayCommand, int streamId, CircuitNode targetNode);
 
     /**
      * Returns the next relay response cell received on this circuit.  If no response is
@@ -85,7 +86,6 @@ public interface Circuit {
      * @return The final 'hop' or node of this circuit.
      */
     CircuitNode getFinalCircuitNode();
-
 
     void destroyCircuit();
 

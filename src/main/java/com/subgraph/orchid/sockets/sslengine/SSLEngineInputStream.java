@@ -11,7 +11,7 @@ public class SSLEngineInputStream extends InputStream {
     private final ByteBuffer recvBuffer;
     private boolean isEOF;
 
-    SSLEngineInputStream(SSLEngineManager manager) {
+    SSLEngineInputStream(@NotNull SSLEngineManager manager) {
         this.manager = manager;
         this.recvBuffer = manager.getRecvBuffer();
     }

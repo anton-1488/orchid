@@ -1,7 +1,7 @@
 package com.subgraph.orchid.socks;
 
-import com.subgraph.orchid.circuits.CircuitManager;
 import com.subgraph.orchid.Globals;
+import com.subgraph.orchid.circuits.CircuitManager;
 import com.subgraph.orchid.config.TorConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

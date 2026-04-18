@@ -1,6 +1,8 @@
 package com.subgraph.orchid.sockets;
 
 import com.subgraph.orchid.TorClient;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import javax.net.SocketFactory;
 import java.io.IOException;
@@ -30,7 +32,7 @@ public class OrchidSocketFactory extends SocketFactory {
     }
 
     @Override
-    public Socket createSocket(InetAddress address, int port) throws IOException {
+    public Socket createSocket(@NotNull InetAddress address, int port) throws IOException {
         Socket s = createSocketInstance();
         return connectOrchidSocket(s, address.getHostAddress(), port);
     }
@@ -40,13 +42,14 @@ public class OrchidSocketFactory extends SocketFactory {
         return createSocket(address, port);
     }
 
-    private Socket connectOrchidSocket(Socket s, String host, int port) throws IOException {
+    @Contract("_, _, _ -> param1")
+    private @NotNull Socket connectOrchidSocket(@NotNull Socket s, String host, int port) throws IOException {
         SocketAddress endpoint = InetSocketAddress.createUnresolved(host, port);
         s.connect(endpoint);
         return s;
     }
 
-    private Socket createSocketInstance() throws SocketException {
+    private @NotNull Socket createSocketInstance() throws SocketException {
         OrchidSocketImpl impl = new OrchidSocketImpl(torClient);
         return new Socket(impl) {
         };

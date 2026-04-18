@@ -3,6 +3,7 @@ package com.subgraph.orchid.crypto;
 import org.bouncycastle.crypto.agreement.X25519Agreement;
 import org.bouncycastle.crypto.params.X25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.X25519PublicKeyParameters;
+import org.jetbrains.annotations.NotNull;
 
 import java.security.SecureRandom;
 
@@ -15,7 +16,7 @@ public final class Curve25519 {
     /**
      * Генерация секретного ключа (32 байта)
      */
-    public static byte[] generateSecretKey() {
+    public static byte @NotNull [] generateSecretKey() {
         byte[] key = new byte[32];
         RANDOM.nextBytes(key);
         key[0] &= (byte) 248;
@@ -36,7 +37,7 @@ public final class Curve25519 {
     /**
      * ECDH: общий секрет из своего секретного и чужого публичного ключа
      */
-    public static byte[] scalarMult(byte[] secretKey, byte[] peerPublicKey) {
+    public static byte @NotNull [] scalarMult(byte[] secretKey, byte[] peerPublicKey) {
         X25519PrivateKeyParameters privateKey = new X25519PrivateKeyParameters(secretKey, 0);
         X25519PublicKeyParameters publicKey = new X25519PublicKeyParameters(peerPublicKey, 0);
 

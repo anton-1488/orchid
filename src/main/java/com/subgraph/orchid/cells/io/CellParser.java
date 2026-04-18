@@ -1,7 +1,8 @@
 package com.subgraph.orchid.cells.io;
 
-import com.subgraph.orchid.cells.impls.CellImpl;
 import com.subgraph.orchid.cells.enums.CellCommand;
+import com.subgraph.orchid.cells.impls.CellImpl;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,29 +12,26 @@ import static com.subgraph.orchid.cells.Cell.*;
 import static com.subgraph.orchid.cells.enums.CellCommand.VERSIONS;
 
 public class CellParser {
-    public static CellImpl readFromInputStream(InputStream input) throws IOException {
-        final ByteBuffer header = readHeaderFromInputStream(input);
-
-        final int circuitId = header.getShort() & 0xFFFF;
+    public static @NotNull CellImpl readFromInputStream(InputStream input) throws IOException {
+        ByteBuffer header = readHeaderFromInputStream(input);
+        int circuitId = header.getShort() & 0xFFFF;
         CellCommand command = CellCommand.ofCommand(header.get() & 0xFF);
 
         if (command == VERSIONS || command.getCommand() > 127) {
             return readVarCell(circuitId, command, input);
         }
-
-        final CellImpl cell = new CellImpl(circuitId, command);
+        CellImpl cell = new CellImpl(circuitId, command);
         readAll(input, cell.getCellBytes(), CELL_HEADER_LEN, CELL_PAYLOAD_LEN);
-
         return cell;
     }
 
-    private static ByteBuffer readHeaderFromInputStream(InputStream input) throws IOException {
+    private static @NotNull ByteBuffer readHeaderFromInputStream(InputStream input) throws IOException {
         byte[] cellHeader = new byte[CELL_HEADER_LEN];
         readAll(input, cellHeader);
         return ByteBuffer.wrap(cellHeader);
     }
 
-    private static CellImpl readVarCell(int circuitId, CellCommand command, InputStream input) throws IOException {
+    private static @NotNull CellImpl readVarCell(int circuitId, CellCommand command, InputStream input) throws IOException {
         byte[] lengthField = new byte[2];
         readAll(input, lengthField);
         int length = ((lengthField[0] & 0xFF) << 8) | (lengthField[1] & 0xFF);
@@ -47,7 +45,7 @@ public class CellParser {
         readAll(input, buffer, 0, buffer.length);
     }
 
-    private static void readAll(InputStream input, byte[] buffer, int offset, int length) throws IOException {
+    private static void readAll(@NotNull InputStream input, byte[] buffer, int offset, int length) throws IOException {
         input.readNBytes(buffer, offset, length);
     }
 }

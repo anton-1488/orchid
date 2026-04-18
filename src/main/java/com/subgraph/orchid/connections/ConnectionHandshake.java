@@ -9,9 +9,9 @@ import com.subgraph.orchid.cells.io.CellReader;
 import com.subgraph.orchid.cells.io.CellWriter;
 import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.crypto.TorPublicKey;
-import com.subgraph.orchid.router.Router;
 import com.subgraph.orchid.exceptions.ConnectionHandshakeException;
 import com.subgraph.orchid.exceptions.ConnectionIOException;
+import com.subgraph.orchid.router.Router;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,13 +33,11 @@ public abstract class ConnectionHandshake {
     protected final List<Short> remoteVersions;
     private int remoteTimestamp;
     private InetAddress myAddress;
-    private final List<InetAddress> remoteAddresses;
 
     public ConnectionHandshake(ConnectionImpl connection, SSLSocket socket) {
         this.connection = connection;
         this.socket = socket;
         this.remoteVersions = new ArrayList<>();
-        this.remoteAddresses = new ArrayList<>();
     }
 
     public static ConnectionHandshake createHandshake(TorConfig config, ConnectionImpl connection, SSLSocket socket) {
@@ -127,9 +125,6 @@ public abstract class ConnectionHandshake {
             myAddress = readAddress(reader);
 
             int addressCount = reader.getByte();
-            for (int i = 0; i < addressCount; i++) {
-                remoteAddresses.add(readAddress(reader));
-            }
         } catch (Exception e) {
             throw new ConnectionHandshakeException(e);
         }

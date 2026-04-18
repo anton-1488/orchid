@@ -1,5 +1,7 @@
 package com.subgraph.orchid.crypto;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.security.SecureRandom;
 
 public class TorRandom {
@@ -9,7 +11,7 @@ public class TorRandom {
         throw new UnsupportedOperationException();
     }
 
-    public static byte[] getBytes(int length) {
+    public static byte @NotNull [] getBytes(int length) {
         byte[] bs = new byte[length];
         random.nextBytes(bs);
         return bs;
@@ -18,6 +20,7 @@ public class TorRandom {
     public static long nextLong() {
         return random.nextLong(0, Long.MAX_VALUE);
     }
+
     public static long nextLong(long bound) {
         return random.nextLong(bound);
     }

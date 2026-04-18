@@ -1,12 +1,12 @@
 package com.subgraph.orchid.downloader;
 
-import java.nio.ByteBuffer;
-import java.util.Set;
-
 import com.subgraph.orchid.certificate.KeyCertificate;
 import com.subgraph.orchid.document.ConsensusDocument.RequiredCertificate;
 import com.subgraph.orchid.downloader.request.TorRequest;
 import com.subgraph.orchid.parsing.DocumentParser;
+
+import java.nio.ByteBuffer;
+import java.util.Set;
 
 public class CertificateFetcher extends DocumentFetcher<KeyCertificate> {
     private final Set<RequiredCertificate> requiredCertificates;

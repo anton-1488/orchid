@@ -5,6 +5,8 @@ import com.subgraph.orchid.crypto.TorMessageDigest;
 import com.subgraph.orchid.exceptions.TorException;
 import org.bouncycastle.util.encoders.Base32;
 import org.bouncycastle.util.encoders.Base64;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.HexFormat;
@@ -29,11 +31,13 @@ import java.util.HexFormat;
 public class HexDigest {
     private static final HexFormat HEX = HexFormat.of().withLowerCase();
 
-    public static HexDigest createFromBase32String(String b32) {
+    @Contract("_ -> new")
+    public static @NotNull HexDigest createFromBase32String(String b32) {
         return new HexDigest(Base32.decode(b32));
     }
 
-    public static HexDigest createFromString(String fingerprint) {
+    @Contract("_ -> new")
+    public static @NotNull HexDigest createFromString(@NotNull String fingerprint) {
         try {
             String clean = fingerprint.replaceAll("\\s+", "");
             byte[] digestData = HEX.parseHex(clean);
@@ -43,11 +47,13 @@ public class HexDigest {
         }
     }
 
-    public static HexDigest createFromDigestBytes(byte[] data) {
+    @Contract("_ -> new")
+    public static @NotNull HexDigest createFromDigestBytes(byte[] data) {
         return new HexDigest(data);
     }
 
-    public static HexDigest createDigestForData(byte[] data) {
+    @Contract("_ -> new")
+    public static @NotNull HexDigest createDigestForData(byte[] data) {
         final TorMessageDigest digest = new TorMessageDigest();
         digest.update(data);
         return new HexDigest(digest.getDigestBytes());
@@ -56,7 +62,7 @@ public class HexDigest {
     private final byte[] digestBytes;
     private final boolean isDigest256;
 
-    private HexDigest(byte[] data) {
+    private HexDigest(byte @NotNull [] data) {
         if (data.length != TorMessageDigest.TOR_DIGEST_SIZE && data.length != TorMessageDigest.TOR_DIGEST256_SIZE) {
             throw new TorException("Digest data is not the correct length " + data.length + " != (" + TorMessageDigest.TOR_DIGEST_SIZE + " or " + TorMessageDigest.TOR_DIGEST256_SIZE + ")");
         }
@@ -103,7 +109,8 @@ public class HexDigest {
         }
     }
 
-    private static String stripTrailingEquals(String s) {
+    @Contract(pure = true)
+    private static @NotNull String stripTrailingEquals(@NotNull String s) {
         return s.replaceAll("=+$", "");
     }
 

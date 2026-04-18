@@ -1,5 +1,7 @@
 package com.subgraph.orchid.cells.enums;
 
+import org.jetbrains.annotations.NotNull;
+
 public enum CellCommand {
     /**
      * Command constant for a PADDING type cell.
@@ -79,7 +81,7 @@ public enum CellCommand {
      */
     AUTHORIZE(132);
 
-    public static CellCommand ofCommand(int comand) {
+    public static @NotNull CellCommand ofCommand(int comand) {
         for (CellCommand cmd : values()) {
             if (cmd.command == comand) {
                 return cmd;
@@ -89,15 +91,11 @@ public enum CellCommand {
     }
 
     public boolean isHandshakeCommand() {
-        return this == CREATE || this == CREATED ||
-                this == CREATE2 || this == CREATED2 ||
-                this == CREATE_FAST || this == CREATED_FAST;
+        return this == CREATE || this == CREATED || this == CREATE2 || this == CREATED2 || this == CREATE_FAST || this == CREATED_FAST;
     }
 
     public boolean isControlCommand() {
-        return this == VERSIONS || this == NETINFO ||
-                this == CERTS || this == AUTH_CHALLENGE ||
-                this == AUTHENTICATE;
+        return this == VERSIONS || this == NETINFO || this == CERTS || this == AUTH_CHALLENGE || this == AUTHENTICATE;
     }
 
     private final int command;

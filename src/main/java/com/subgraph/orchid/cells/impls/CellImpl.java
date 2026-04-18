@@ -21,7 +21,7 @@ public class CellImpl implements Cell {
     /**
      * Variable length cell constructor (ie: VERSIONS cells only)
      */
-    public CellImpl(int circuitId, CellCommand command, int payloadLength) {
+    public CellImpl(int circuitId, @NotNull CellCommand command, int payloadLength) {
         this.circuitId = circuitId;
         this.command = command;
         this.cellBuffer = ByteBuffer.wrap(new byte[CELL_VAR_HEADER_LEN + payloadLength]);
@@ -37,7 +37,7 @@ public class CellImpl implements Cell {
     /**
      * Fixed length cell constructor
      */
-    public CellImpl(int circuitId, CellCommand command) {
+    public CellImpl(int circuitId, @NotNull CellCommand command) {
         this.circuitId = circuitId;
         this.command = command;
         this.cellBuffer = ByteBuffer.wrap(new byte[DEFAULT_CELL_LEN]);

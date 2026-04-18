@@ -15,7 +15,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
+/**
  * This class contains the hardcoded 'bootstrap' directory authority
  * server information.
  */

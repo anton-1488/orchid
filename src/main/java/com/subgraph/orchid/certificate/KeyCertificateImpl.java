@@ -1,12 +1,12 @@
 package com.subgraph.orchid.certificate;
 
-import java.net.InetAddress;
-import java.nio.ByteBuffer;
-import java.time.Instant;
-
 import com.subgraph.orchid.Tor;
 import com.subgraph.orchid.crypto.TorPublicKey;
 import com.subgraph.orchid.data.HexDigest;
+
+import java.net.InetAddress;
+import java.nio.ByteBuffer;
+import java.time.Instant;
 
 public class KeyCertificateImpl implements KeyCertificate {
     private InetAddress directoryAddress;

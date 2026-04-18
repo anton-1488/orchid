@@ -3,6 +3,7 @@ package com.subgraph.orchid.circuits;
 import com.subgraph.orchid.Stream;
 import com.subgraph.orchid.cells.Cell;
 import com.subgraph.orchid.cells.RelayCell;
+import com.subgraph.orchid.cells.enums.RelayCellCommand;
 import com.subgraph.orchid.connections.Connection;
 import com.subgraph.orchid.directory.DirectoryCircuit;
 import com.subgraph.orchid.exceptions.PathSelectionFailedException;
@@ -190,7 +191,7 @@ public abstract class CircuitImpl implements Circuit {
     }
 
     @Override
-    public RelayCell createRelayCell(int relayCommand, int streamId, CircuitNode targetNode) {
+    public RelayCell createRelayCell(RelayCellCommand relayCommand, int streamId, CircuitNode targetNode) {
         return io.createRelayCell(relayCommand, streamId, targetNode);
     }
 

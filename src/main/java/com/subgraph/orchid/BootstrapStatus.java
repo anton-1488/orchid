@@ -18,16 +18,16 @@ public enum BootstrapStatus {
     CIRCUIT_CREATE(90, "Establishing a Tor circuit"),
     DONE(100, "Done");
 
-    private final int status;
+    private final int percent;
     private final String message;
 
     BootstrapStatus(int status, String message) {
-        this.status = status;
+        this.percent = status;
         this.message = message;
     }
 
-    public int getStatus() {
-        return status;
+    public int getPercent() {
+        return percent;
     }
 
     public String getMessage() {
@@ -36,6 +36,6 @@ public enum BootstrapStatus {
 
     @Override
     public @NotNull String toString() {
-        return String.format("[%d] - %s", status, message);
+        return String.format("[%d] - %s", percent, message);
     }
 }

@@ -5,6 +5,7 @@ import com.maxmind.geoip2.exception.AddressNotFoundException;
 import com.maxmind.geoip2.model.CountryResponse;
 import com.maxmind.geoip2.record.Country;
 import com.subgraph.orchid.exceptions.TorException;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -28,7 +29,7 @@ public class CountryCodeService {
         this.reader = loadDatabase();
     }
 
-    private DatabaseReader loadDatabase() {
+    private @NotNull DatabaseReader loadDatabase() {
         try (InputStream input = CountryCodeService.class.getResourceAsStream(DATABASE_FILENAME)) {
             Objects.requireNonNull(input);
             return new DatabaseReader.Builder(input).build();

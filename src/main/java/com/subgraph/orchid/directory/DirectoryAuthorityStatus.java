@@ -1,13 +1,13 @@
 package com.subgraph.orchid.directory;
 
+import com.subgraph.orchid.data.HexDigest;
+import com.subgraph.orchid.data.exitpolicy.ExitPorts;
+import com.subgraph.orchid.router.RouterStatus;
+
 import java.net.InetAddress;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
-
-import com.subgraph.orchid.router.RouterStatus;
-import com.subgraph.orchid.data.HexDigest;
-import com.subgraph.orchid.data.exitpolicy.ExitPorts;
 
 public class DirectoryAuthorityStatus implements RouterStatus {
     private String nickname;
@@ -17,7 +17,6 @@ public class DirectoryAuthorityStatus implements RouterStatus {
     private int directoryPort;
     private final Set<String> flags = new HashSet<>();
     private HexDigest v3Ident;
-
 
     public void setHiddenServiceAuthority() {
         addFlag("HSDir");

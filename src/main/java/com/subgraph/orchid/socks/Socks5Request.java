@@ -5,6 +5,8 @@ import com.subgraph.orchid.exceptions.SocksRequestException;
 import com.subgraph.orchid.socks.enums.SOCKS5AddressType;
 import com.subgraph.orchid.socks.enums.SOCKS5Command;
 import com.subgraph.orchid.socks.enums.SOCKS5Status;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.net.InetAddress;
 import java.net.Socket;
@@ -23,20 +25,21 @@ public class Socks5Request extends SocksRequest {
         super(config, socket);
     }
 
-    private String addressBytesToHostname() {
+    @Contract(" -> new")
+    private @NotNull String addressBytesToHostname() {
         if (addressType != SOCKS5AddressType.ADDRESS_HOSTNAME) {
             throw new IllegalStateException("Not a hostname request");
         }
         return new String(addressBytes, 1, addressBytes.length - 1, StandardCharsets.UTF_8);
     }
 
-    private byte[] readPortData() throws SocksRequestException {
+    private byte @NotNull [] readPortData() throws SocksRequestException {
         byte[] data = new byte[2];
         readAll(data);
         return data;
     }
 
-    private void setIPv4AddressData(byte[] data) throws SocksRequestException {
+    private void setIPv4AddressData(byte @NotNull [] data) throws SocksRequestException {
         if (data.length != 4) throw new SocksRequestException("Invalid IPv4 data");
         try {
             InetAddress addr = InetAddress.getByAddress(data);
@@ -46,13 +49,13 @@ public class Socks5Request extends SocksRequest {
         }
     }
 
-    private byte[] readIPv4AddressData() throws SocksRequestException {
+    private byte @NotNull [] readIPv4AddressData() throws SocksRequestException {
         byte[] data = new byte[4];
         readAll(data);
         return data;
     }
 
-    private byte[] readIPv6AddressData() throws SocksRequestException {
+    private byte @NotNull [] readIPv6AddressData() throws SocksRequestException {
         byte[] data = new byte[16];
         readAll(data);
         return data;
@@ -112,7 +115,7 @@ public class Socks5Request extends SocksRequest {
         sendResponse(SOCKS5Status.SUCCESS);
     }
 
-    private void sendResponse(SOCKS5Status status) throws SocksRequestException {
+    private void sendResponse(@NotNull SOCKS5Status status) throws SocksRequestException {
         int responseLength = 4 + addressBytes.length + portBytes.length;
         ByteBuffer response = ByteBuffer.allocate(responseLength);
 
@@ -147,8 +150,7 @@ public class Socks5Request extends SocksRequest {
         }
     }
 
-
-    private void sendAuthenticationResponse(SOCKS5Command method) throws SocksRequestException {
+    private void sendAuthenticationResponse(@NotNull SOCKS5Command method) throws SocksRequestException {
         byte[] response = new byte[2];
         response[0] = (byte) SOCKS5Command.VERSION.getCommand();
         response[1] = (byte) method.getCommand();
@@ -164,7 +166,7 @@ public class Socks5Request extends SocksRequest {
         };
     }
 
-    private byte[] readHostnameData() throws SocksRequestException {
+    private byte @NotNull [] readHostnameData() throws SocksRequestException {
         int length = readByte();
         byte[] addrData = new byte[length + 1];
 

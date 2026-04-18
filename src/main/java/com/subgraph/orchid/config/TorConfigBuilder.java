@@ -1,6 +1,7 @@
 package com.subgraph.orchid.config;
 
 import com.subgraph.orchid.data.HexDigest;
+import org.jetbrains.annotations.NotNull;
 
 import java.net.InetAddress;
 import java.nio.file.Path;
@@ -45,13 +46,13 @@ public class TorConfigBuilder implements Builder {
     }
 
     @Override
-    public Builder circuitBuildTimeout(long time, TimeUnit unit) {
+    public Builder circuitBuildTimeout(long time, @NotNull TimeUnit unit) {
         this.circuitBuildTimeoutMillis = unit.toMillis(time);
         return this;
     }
 
     @Override
-    public Builder circuitStreamTimeout(long time, TimeUnit unit) {
+    public Builder circuitStreamTimeout(long time, @NotNull TimeUnit unit) {
         this.circuitStreamTimeoutMillis = unit.toMillis(time);
         return this;
     }

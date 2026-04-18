@@ -93,7 +93,6 @@ public class NTorCircuitExtender {
         return processPayload(payload);
     }
 
-
     private CircuitNode processExtended2(@NotNull RelayCell cell) {
         CellReader reader = cell.getCellReader();
 

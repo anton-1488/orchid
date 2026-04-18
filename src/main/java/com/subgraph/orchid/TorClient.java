@@ -1,13 +1,13 @@
 package com.subgraph.orchid;
 
 import com.subgraph.orchid.circuits.CircuitManager;
-import com.subgraph.orchid.events.TorInitializationTracker;
 import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.connections.ConnectionCache;
 import com.subgraph.orchid.directory.Directory;
 import com.subgraph.orchid.directory.DirectoryStore;
 import com.subgraph.orchid.downloader.DirectoryDownloaderImpl;
 import com.subgraph.orchid.events.TorInitializationListener;
+import com.subgraph.orchid.events.TorInitializationTracker;
 import com.subgraph.orchid.exceptions.OpenFailedException;
 import com.subgraph.orchid.exceptions.TorException;
 import com.subgraph.orchid.sockets.OrchidSocketFactory;
@@ -48,7 +48,7 @@ public class TorClient {
     }
 
     public TorClient(DirectoryStore customDirectoryStore) {
-        config = new TorConfig();
+        config = TorConfig.builder().build();
         directory = Tor.createDirectory(config, customDirectoryStore);
         initializationTracker = new TorInitializationTracker();
         initializationTracker.addListener(createReadyFlagInitializationListener());
@@ -153,31 +153,13 @@ public class TorClient {
 
     @Contract(value = " -> new", pure = true)
     private @NotNull TorInitializationListener createReadyFlagInitializationListener() {
-        return new TorInitializationListener() {
-            @Override
-            public void initializationProgress(String message, int percent) {
-            }
-
-            @Override
-            public void initializationCompleted() {
-                readyLatch.countDown();
-            }
+        return (status) -> {
         };
     }
 
     @Contract(value = " -> new", pure = true)
     private static @NotNull TorInitializationListener createInitalizationListner() {
-        return new TorInitializationListener() {
-            @Override
-            public void initializationProgress(String message, int percent) {
-                System.out.printf("\r>>> Init Tor[ %s ]", percent);
-            }
-
-            @Override
-            public void initializationCompleted() {
-                log.info("Tor initiliazed successful");
-            }
-        };
+        return (status) -> System.out.printf("\r>>> Init Tor[ %s ]", status.getPercent());
     }
 
     private void verifyUnlimitedStrengthPolicyInstalled() {

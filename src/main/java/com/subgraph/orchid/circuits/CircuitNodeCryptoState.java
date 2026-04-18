@@ -93,7 +93,7 @@ public class CircuitNodeCryptoState {
         return true;
     }
 
-    private byte @NotNull [] extractRelayDigest(Cell cell) {
+    private byte @NotNull [] extractRelayDigest(@NotNull Cell cell) {
         CellWriter writer = cell.getCellWriter();
         byte[] digest = new byte[4];
         for (int i = 0; i < 4; i++) {

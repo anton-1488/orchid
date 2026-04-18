@@ -133,7 +133,7 @@ public class CircuitNodeChooser {
         return bwr.chooseRandomRouterByWeight();
     }
 
-    private void computeFinalWeights(BandwidthWeightedRouters bwr, WeightRule rule) {
+    private void computeFinalWeights(@NotNull BandwidthWeightedRouters bwr, WeightRule rule) {
         final double exitWeight = calculateWeight(rule == WeightRule.WEIGHT_FOR_EXIT,
                 bwr.getTotalExitBandwidth(), bwr.getTotalBandwidth());
         final double guardWeight = calculateWeight(rule == WeightRule.WEIGHT_FOR_GUARD,

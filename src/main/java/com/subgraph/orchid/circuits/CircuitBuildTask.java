@@ -32,7 +32,7 @@ public class CircuitBuildTask implements Runnable {
         this.connectionCache = connectionCache;
         this.initializationTracker = initializationTracker;
         this.circuit = request.getCircuit();
-        this.extender = new CircuitExtender(request.getCircuit(), ntorEnabled);
+        this.extender = new CircuitExtender(request.getCircuit());
     }
 
     @Override
@@ -89,7 +89,7 @@ public class CircuitBuildTask implements Runnable {
 
     private void buildCircuit(Router firstRouter) throws TorException {
         notifyInitialization();
-        CircuitNode firstNode = extender.createFastTo(firstRouter);
+        CircuitNode firstNode = extender.extendTo(firstRouter);
         creationRequest.nodeAdded(firstNode);
 
         for (int i = 1; i < creationRequest.getPathLength(); i++) {

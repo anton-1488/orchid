@@ -2,6 +2,7 @@ package com.subgraph.orchid.crypto;
 
 import com.subgraph.orchid.data.HexDigest;
 import com.subgraph.orchid.exceptions.TorException;
+import org.jetbrains.annotations.NotNull;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -117,7 +118,7 @@ public class TorMessageDigest {
      *
      * @param input A string to process.
      */
-    public void update(String input) {
+    public void update(@NotNull String input) {
         digestInstance.update(input.getBytes(StandardCharsets.ISO_8859_1));
     }
 }

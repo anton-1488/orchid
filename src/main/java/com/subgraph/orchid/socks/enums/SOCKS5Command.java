@@ -1,5 +1,7 @@
 package com.subgraph.orchid.socks.enums;
 
+import org.jetbrains.annotations.NotNull;
+
 public enum SOCKS5Command {
     VERSION(5),
     AUTH_NONE(0),
@@ -12,7 +14,7 @@ public enum SOCKS5Command {
         this.command = command;
     }
 
-    public static SOCKS5Command ofCommand(int cmd) {
+    public static @NotNull SOCKS5Command ofCommand(int cmd) {
         for (SOCKS5Command command : values()) {
             if (command.command == cmd) {
                 return command;

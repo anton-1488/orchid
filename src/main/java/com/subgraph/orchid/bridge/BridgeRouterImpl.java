@@ -1,14 +1,14 @@
 package com.subgraph.orchid.bridge;
 
+import com.subgraph.orchid.crypto.TorPublicKey;
+import com.subgraph.orchid.data.HexDigest;
+import com.subgraph.orchid.document.Descriptor;
+import com.subgraph.orchid.geoip.CountryCodeService;
+import com.subgraph.orchid.router.RouterDescriptor;
+
 import java.net.InetAddress;
 import java.util.Collections;
 import java.util.Set;
-
-import com.subgraph.orchid.document.Descriptor;
-import com.subgraph.orchid.router.RouterDescriptor;
-import com.subgraph.orchid.crypto.TorPublicKey;
-import com.subgraph.orchid.data.HexDigest;
-import com.subgraph.orchid.geoip.CountryCodeService;
 
 public class BridgeRouterImpl implements BridgeRouter {
     private final InetAddress address;

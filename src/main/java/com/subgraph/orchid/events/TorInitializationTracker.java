@@ -1,6 +1,7 @@
 package com.subgraph.orchid.events;
 
 import com.subgraph.orchid.BootstrapStatus;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +12,6 @@ public class TorInitializationTracker {
     private static final Logger log = LoggerFactory.getLogger(TorInitializationTracker.class);
     private final List<TorInitializationListener> listeners = new CopyOnWriteArrayList<>();
     private BootstrapStatus bootstrapState = BootstrapStatus.STARTING;
-
 
     public void addListener(TorInitializationListener listener) {
         listeners.add(listener);
@@ -30,9 +30,9 @@ public class TorInitializationTracker {
         notifyListeners(BootstrapStatus.STARTING);
     }
 
-    public void notifyEvent(BootstrapStatus status) {
-        if (status.getStatus() <= bootstrapState.getStatus() || status.getStatus() > 100) {
-            log.warn("Invalid status code {}", status.getStatus());
+    public void notifyEvent(@NotNull BootstrapStatus status) {
+        if (status.getPercent() <= bootstrapState.getPercent() || status.getPercent() > 100) {
+            log.warn("Invalid status code {}", status.getPercent());
             return;
         }
         bootstrapState = status;

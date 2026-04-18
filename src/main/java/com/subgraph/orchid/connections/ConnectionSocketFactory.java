@@ -1,10 +1,8 @@
 package com.subgraph.orchid.connections;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import org.jetbrains.annotations.NotNull;
+
+import javax.net.ssl.*;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -26,12 +24,10 @@ public class ConnectionSocketFactory {
 
                 @Override
                 public void checkClientTrusted(X509Certificate[] chain, String authType) {
-                    // Tor client не проверяет сертификаты клиента
                 }
 
                 @Override
                 public void checkServerTrusted(X509Certificate[] chain, String authType) {
-                    // Tor проверяет сертификат узла отдельно
                 }
 
                 @Override
@@ -44,10 +40,9 @@ public class ConnectionSocketFactory {
     private static final SSLSocketFactory socketFactory = createSSLContext().getSocketFactory();
 
     private ConnectionSocketFactory() {
-
     }
 
-    private static SSLContext createSSLContext() {
+    private static @NotNull SSLContext createSSLContext() {
         try {
             SSLContext sslContext = SSLContext.getInstance("TLSv1.3");
             sslContext.init(null, NULL_TRUST, null);
@@ -57,7 +52,7 @@ public class ConnectionSocketFactory {
         }
     }
 
-    public static SSLSocket createSocket() {
+    public static @NotNull SSLSocket createSocket() {
         try {
             SSLSocket socket = (SSLSocket) socketFactory.createSocket();
             socket.setEnabledCipherSuites(ENABLED_CIPHERS);

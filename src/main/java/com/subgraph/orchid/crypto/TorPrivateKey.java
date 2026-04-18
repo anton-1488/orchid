@@ -12,6 +12,7 @@ import java.security.interfaces.RSAPublicKey;
 
 public class TorPrivateKey {
     private static final SecureRandom RANDOM = new SecureRandom();
+
     @Contract(" -> new")
     public static @NotNull TorPrivateKey generateNewKeypair() {
         try {

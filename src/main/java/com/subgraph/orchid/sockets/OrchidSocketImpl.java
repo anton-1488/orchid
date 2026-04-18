@@ -49,7 +49,7 @@ public class OrchidSocketImpl extends SocketImpl {
     }
 
     @Override
-    protected void connect(InetAddress address, int port) throws IOException {
+    protected void connect(@NotNull InetAddress address, int port) throws IOException {
         SocketAddress endpoint = InetSocketAddress.createUnresolved(address.getHostAddress(), port);
         connect(endpoint, 0);
     }

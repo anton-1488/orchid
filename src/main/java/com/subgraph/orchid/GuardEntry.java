@@ -3,7 +3,6 @@ package com.subgraph.orchid;
 import com.subgraph.orchid.router.Router;
 
 import java.time.Instant;
-import java.util.Date;
 
 public interface GuardEntry {
     boolean isAdded();
@@ -15,6 +14,8 @@ public interface GuardEntry {
     String getNickname();
 
     String getIdentity();
+
+    String writeToString();
 
     String getVersion();
 

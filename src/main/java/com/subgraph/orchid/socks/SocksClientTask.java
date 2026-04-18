@@ -1,10 +1,11 @@
 package com.subgraph.orchid.socks;
 
-import com.subgraph.orchid.circuits.CircuitManager;
 import com.subgraph.orchid.Stream;
+import com.subgraph.orchid.circuits.CircuitManager;
 import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.exceptions.OpenFailedException;
 import com.subgraph.orchid.exceptions.SocksRequestException;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +43,7 @@ public class SocksClientTask implements Runnable {
         }
     }
 
-    private void processRequest(SocksRequest request) {
+    private void processRequest(@NotNull SocksRequest request) {
         try {
             request.readRequest();
 
@@ -75,7 +76,7 @@ public class SocksClientTask implements Runnable {
         }
     }
 
-    private Stream openConnectStream(SocksRequest request) throws InterruptedException, TimeoutException, OpenFailedException, SocksRequestException {
+    private Stream openConnectStream(@NotNull SocksRequest request) throws InterruptedException, TimeoutException, OpenFailedException, SocksRequestException {
         if (!request.hasHostname()) {
             throw new SocksRequestException("No hostname in SOCKS request");
         }

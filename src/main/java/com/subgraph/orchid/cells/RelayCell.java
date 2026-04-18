@@ -1,8 +1,8 @@
 package com.subgraph.orchid.cells;
 
-import com.subgraph.orchid.circuits.CircuitNode;
 import com.subgraph.orchid.cells.enums.CellCommand;
 import com.subgraph.orchid.cells.enums.RelayCellCommand;
+import com.subgraph.orchid.circuits.CircuitNode;
 
 import java.nio.ByteBuffer;
 

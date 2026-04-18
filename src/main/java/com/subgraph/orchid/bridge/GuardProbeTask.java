@@ -18,6 +18,7 @@ public class GuardProbeTask implements Runnable {
         this.entry = entry;
     }
 
+    @Override
     public void run() {
         Router router = entry.getRouterForEntry();
         if (router == null) {

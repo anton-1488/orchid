@@ -2,6 +2,7 @@ package com.subgraph.orchid.socks;
 
 import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.exceptions.SocksRequestException;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +20,7 @@ public abstract class SocksRequest {
     protected String hostname;
     protected int port;
 
-    protected SocksRequest(TorConfig config, Socket socket) {
+    protected SocksRequest(TorConfig config, @NotNull Socket socket) {
         this.config = config;
         this.socket = socket;
         this.channel = socket.getChannel();
@@ -53,7 +54,7 @@ public abstract class SocksRequest {
         return (hostname != null ? hostname : "[IP]") + ":" + port;
     }
 
-    protected void setPortData(byte[] data) throws SocksRequestException {
+    protected void setPortData(byte @NotNull [] data) throws SocksRequestException {
         if (data.length != 2) throw new SocksRequestException("Invalid port data");
         port = ((data[0] & 0xFF) << 8) | (data[1] & 0xFF);
     }

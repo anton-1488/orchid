@@ -1,8 +1,10 @@
 package com.subgraph.orchid.connections;
 
-import com.subgraph.orchid.events.TorInitializationTracker;
 import com.subgraph.orchid.config.TorConfig;
+import com.subgraph.orchid.events.TorInitializationTracker;
 import com.subgraph.orchid.router.Router;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +19,8 @@ public final class ConnectionTasksFactory {
         throw new UnsupportedOperationException();
     }
 
-    public static Callable<ConnectionImpl> getConnectionTask(TorConfig config, Router router, TorInitializationTracker initializationTracker, boolean isDirectoryConnection) {
+    @Contract(pure = true)
+    public static @NotNull Callable<ConnectionImpl> getConnectionTask(TorConfig config, Router router, TorInitializationTracker initializationTracker, boolean isDirectoryConnection) {
         return () -> {
             SSLSocket socket = ConnectionSocketFactory.createSocket();
             ConnectionImpl conn = new ConnectionImpl(config, socket, router, initializationTracker, isDirectoryConnection);
@@ -26,7 +29,8 @@ public final class ConnectionTasksFactory {
         };
     }
 
-    public static Runnable getCloseIdleConnectionCheckTask(Collection<ConnectionImpl> activeConnections) {
+    @Contract(pure = true)
+    public static @NotNull Runnable getCloseIdleConnectionCheckTask(Collection<ConnectionImpl> activeConnections) {
         return () -> {
             for (ConnectionImpl connection : activeConnections) {
                 connection.closeSocket();

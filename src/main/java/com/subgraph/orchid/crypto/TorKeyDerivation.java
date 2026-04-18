@@ -1,18 +1,19 @@
 package com.subgraph.orchid.crypto;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.nio.ByteBuffer;
 
 public class TorKeyDerivation {
-
     private final byte[] kdfBuffer;
     private int round;
 
-    public TorKeyDerivation(byte[] seed) {
+    public TorKeyDerivation(byte @NotNull [] seed) {
         this.kdfBuffer = new byte[seed.length + 1];
         System.arraycopy(seed, 0, kdfBuffer, 0, seed.length);
     }
 
-    public void deriveKeys(byte[] keyMaterialOut, byte[] verifyHashOut) {
+    public void deriveKeys(byte @NotNull [] keyMaterialOut, byte @NotNull [] verifyHashOut) {
         final ByteBuffer keyData = deriveKeys(keyMaterialOut.length + verifyHashOut.length);
         keyData.get(verifyHashOut);
         keyData.get(keyMaterialOut);

@@ -1,9 +1,10 @@
 package com.subgraph.orchid.connections;
 
-import com.subgraph.orchid.events.TorInitializationTracker;
 import com.subgraph.orchid.config.TorConfig;
-import com.subgraph.orchid.router.Router;
+import com.subgraph.orchid.events.TorInitializationTracker;
 import com.subgraph.orchid.exceptions.TorException;
+import com.subgraph.orchid.router.Router;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +60,7 @@ public class ConnectionCacheImpl implements ConnectionCache {
         }
     }
 
-    private ConnectionImpl createConnection(Router router, boolean isDirectoryConnection) {
+    private @NotNull ConnectionImpl createConnection(Router router, boolean isDirectoryConnection) {
         try {
             log.debug("Creating connection to {}", router.getAddress());
             ConnectionImpl conn = new ConnectionImpl(torConfig, ConnectionSocketFactory.createSocket(), router, initializationTracker, isDirectoryConnection);

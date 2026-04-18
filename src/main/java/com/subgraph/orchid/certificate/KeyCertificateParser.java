@@ -1,14 +1,11 @@
 package com.subgraph.orchid.certificate;
 
-import com.subgraph.orchid.exceptions.TorParsingException;
 import com.subgraph.orchid.crypto.TorPublicKey;
 import com.subgraph.orchid.crypto.TorSignature;
-import com.subgraph.orchid.parsing.BasicDocumentParsingResult;
-import com.subgraph.orchid.parsing.DocumentFieldParser;
-import com.subgraph.orchid.parsing.DocumentParser;
-import com.subgraph.orchid.parsing.DocumentParsingHandler;
-import com.subgraph.orchid.parsing.DocumentParsingResult;
-import com.subgraph.orchid.parsing.DocumentParsingResultHandler;
+import com.subgraph.orchid.exceptions.TorParsingException;
+import com.subgraph.orchid.parsing.*;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,12 +23,15 @@ public class KeyCertificateParser implements DocumentParser<KeyCertificate> {
         this.fieldParser.setHandler(createParsingHandler());
     }
 
-    private DocumentParsingHandler createParsingHandler() {
+    @Contract(value = " -> new", pure = true)
+    private @NotNull DocumentParsingHandler createParsingHandler() {
         return new DocumentParsingHandler() {
+            @Override
             public void parseKeywordLine() {
                 processKeywordLine();
             }
 
+            @Override
             public void endOfDocument() {
             }
         };
@@ -55,6 +55,7 @@ public class KeyCertificateParser implements DocumentParser<KeyCertificate> {
         currentCertificate = new KeyCertificateImpl();
     }
 
+    @Override
     public boolean parse(DocumentParsingResultHandler<KeyCertificate> resultHandler) {
         this.resultHandler = resultHandler;
         startNewCertificate();
@@ -67,13 +68,14 @@ public class KeyCertificateParser implements DocumentParser<KeyCertificate> {
         }
     }
 
+    @Override
     public DocumentParsingResult<KeyCertificate> parse() {
         BasicDocumentParsingResult<KeyCertificate> result = new BasicDocumentParsingResult<>();
         parse(result);
         return result;
     }
 
-    private void processKeyword(KeyCertificateKeyword keyword) {
+    private void processKeyword(@NotNull KeyCertificateKeyword keyword) {
         switch (keyword) {
             case DIR_KEY_CERTIFICATE_VERSION:
                 processCertificateVersion();

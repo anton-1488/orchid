@@ -2,15 +2,17 @@ package com.subgraph.orchid.connections;
 
 import com.subgraph.orchid.BootstrapStatus;
 import com.subgraph.orchid.Globals;
-import com.subgraph.orchid.circuits.Circuit;
-import com.subgraph.orchid.events.TorInitializationTracker;
 import com.subgraph.orchid.cells.Cell;
 import com.subgraph.orchid.cells.enums.CellCommand;
 import com.subgraph.orchid.cells.impls.CellImpl;
+import com.subgraph.orchid.circuits.Circuit;
 import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.crypto.TorRandom;
-import com.subgraph.orchid.router.Router;
+import com.subgraph.orchid.events.TorInitializationTracker;
 import com.subgraph.orchid.exceptions.*;
+import com.subgraph.orchid.router.Router;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -146,7 +148,7 @@ public class ConnectionImpl implements Connection {
         }
     }
 
-    private SocketAddress routerToSocketAddress(Router router) {
+    private @NotNull SocketAddress routerToSocketAddress(@NotNull Router router) {
         InetAddress address = router.getAddress();
         return new InetSocketAddress(address, router.getOnionPort());
     }
@@ -166,7 +168,8 @@ public class ConnectionImpl implements Connection {
         }
     }
 
-    private Cell recvCell() throws ConnectionIOException {
+    @Contract(" -> new")
+    private @NotNull Cell recvCell() throws ConnectionIOException {
         try {
             return new CellImpl(input.readAllBytes());
         } catch (EOFException e) {
@@ -192,7 +195,8 @@ public class ConnectionImpl implements Connection {
         }
     }
 
-    private Runnable createReadCellsRunnable() {
+    @Contract(pure = true)
+    private @NotNull Runnable createReadCellsRunnable() {
         return () -> {
             try {
                 readCellsLoop();
@@ -224,7 +228,7 @@ public class ConnectionImpl implements Connection {
         }
     }
 
-    private void processCell(Cell cell) {
+    private void processCell(@NotNull Cell cell) {
         updateLastActivity();
         CellCommand command = cell.getCommand();
 

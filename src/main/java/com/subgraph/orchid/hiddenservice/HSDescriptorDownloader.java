@@ -16,7 +16,7 @@ import com.subgraph.orchid.exceptions.TorException;
 import com.subgraph.orchid.circuits.CircuitManagerImpl;
 import com.subgraph.orchid.document.DocumentFieldParserImpl;
 import com.subgraph.orchid.exceptions.DirectoryRequestFailedException;
-import com.subgraph.orchid.downloader.HttpConnection;
+import com.subgraph.orchid.downloader.request.TorHttpClient;
 import com.subgraph.orchid.parsing.DocumentParsingResultHandler;
 
 public class HSDescriptorDownloader {
@@ -50,8 +50,8 @@ public class HSDescriptorDownloader {
 		Stream stream = null;
 		try {
 			stream = openHSDirectoryStream(dd.getDirectory());
-			HttpConnection http = new HttpConnection(stream);
-			http.sendGetRequest("/tor/rendezvous2/"+ dd.getDescriptorId().toBase32());
+			TorHttpClient http = new TorHttpClient(stream);
+			TorHttpClient.sendGetRequest("/tor/rendezvous2/"+ dd.getDescriptorId().toBase32());
 			http.readResponse();
 			if(http.getStatusCode() == 200) {
 				return readDocument(dd, http.getMessageBody());

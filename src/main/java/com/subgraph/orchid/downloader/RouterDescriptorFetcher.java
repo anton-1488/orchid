@@ -1,43 +1,45 @@
 package com.subgraph.orchid.downloader;
 
+import com.subgraph.orchid.data.HexDigest;
+import com.subgraph.orchid.downloader.request.TorRequest;
+import com.subgraph.orchid.parsing.DocumentParser;
+import com.subgraph.orchid.router.RouterDescriptor;
+import org.jetbrains.annotations.NotNull;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.subgraph.orchid.router.RouterDescriptor;
-import com.subgraph.orchid.data.HexDigest;
-import com.subgraph.orchid.parsing.DocumentParser;
+public class RouterDescriptorFetcher extends DocumentFetcher<RouterDescriptor> {
+    private final List<HexDigest> fingerprints;
 
-public class RouterDescriptorFetcher extends DocumentFetcher<RouterDescriptor>{
+    public RouterDescriptorFetcher(Collection<HexDigest> fingerprints) {
+        this.fingerprints = new ArrayList<>(fingerprints);
+    }
 
-	private final List<HexDigest> fingerprints;
-	
-	public RouterDescriptorFetcher(Collection<HexDigest> fingerprints) {
-		this.fingerprints = new ArrayList<HexDigest>(fingerprints);
-	}
+    @Override
+    TorRequest getRequest() {
+        return TorRequest.get("/tor/server/d/" + fingerprintsToRequestString());
+    }
 
-	@Override
-	String getRequestPath() {
-		return "/tor/server/d/"+ fingerprintsToRequestString();
-	}
+    private @NotNull String fingerprintsToRequestString() {
+        StringBuilder sb = new StringBuilder();
+        for (HexDigest fp : fingerprints) {
+            appendFingerprint(sb, fp);
+        }
+        return sb.toString();
+    }
 
-	private String fingerprintsToRequestString() {
-		final StringBuilder sb = new StringBuilder();
-		for(HexDigest fp: fingerprints) {
-			appendFingerprint(sb, fp);
-		}
-		return sb.toString();
-	}
-	private void appendFingerprint(StringBuilder sb, HexDigest fp) {
-		if(sb.length() > 0) {
-			sb.append("+");
-		}
-		sb.append(fp.toString());
-	}
-	
-	@Override
-	DocumentParser<RouterDescriptor> createParser(ByteBuffer response) {
-		return PARSER_FACTORY.createRouterDescriptorParser(response, true);
-	}
+    private void appendFingerprint(@NotNull StringBuilder sb, HexDigest fp) {
+        if (sb.isEmpty()) {
+            sb.append("+");
+        }
+        sb.append(fp.toString());
+    }
+
+    @Override
+    DocumentParser<RouterDescriptor> createParser(ByteBuffer response) {
+        return PARSER_FACTORY.createRouterDescriptorParser(response, true);
+    }
 }

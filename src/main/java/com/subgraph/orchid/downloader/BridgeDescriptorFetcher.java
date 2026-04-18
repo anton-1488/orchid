@@ -1,19 +1,19 @@
 package com.subgraph.orchid.downloader;
 
+import com.subgraph.orchid.downloader.request.TorRequest;
+import com.subgraph.orchid.parsing.DocumentParser;
+import com.subgraph.orchid.router.RouterDescriptor;
+
 import java.nio.ByteBuffer;
 
-import com.subgraph.orchid.router.RouterDescriptor;
-import com.subgraph.orchid.parsing.DocumentParser;
+public class BridgeDescriptorFetcher extends DocumentFetcher<RouterDescriptor> {
+    @Override
+    public TorRequest getRequest() {
+        return TorRequest.BRIDGE_DESCRIPTION;
+    }
 
-public class BridgeDescriptorFetcher extends DocumentFetcher<RouterDescriptor>{
-
-	@Override
-	String getRequestPath() {
-		return "/tor/server/authority";
-	}
-
-	@Override
-	DocumentParser<RouterDescriptor> createParser(ByteBuffer response) {
-		return PARSER_FACTORY.createRouterDescriptorParser(response, true);
-	}
+    @Override
+    DocumentParser<RouterDescriptor> createParser(ByteBuffer response) {
+        return PARSER_FACTORY.createRouterDescriptorParser(response, true);
+    }
 }

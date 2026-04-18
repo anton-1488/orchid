@@ -8,4 +8,3 @@ com.subgraph.orhid.hiddenservice
 
 # Сделать сейчас:
 com.subgraph.orhid.stream
-com.subgraph.orhid.circuits

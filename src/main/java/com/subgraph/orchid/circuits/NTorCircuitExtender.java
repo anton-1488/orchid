@@ -1,7 +1,7 @@
 package com.subgraph.orchid.circuits;
 
 import com.subgraph.orchid.cells.RelayCell;
-import com.subgraph.orchid.cells.enums.RelayCellStatus;
+import com.subgraph.orchid.cells.enums.RelayCellCommand;
 import com.subgraph.orchid.cells.io.CellReader;
 import com.subgraph.orchid.cells.io.CellWriter;
 import com.subgraph.orchid.crypto.TorMessageDigest;
@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 
 public class NTorCircuitExtender {
     private static final Logger log = LoggerFactory.getLogger(NTorCircuitExtender.class);
+    private static final int NTOR_REPLY_LEN = 64;
+
     private final CircuitExtender extender;
     private final Router router;
     private final TorNTorKeyAgreement kex;
@@ -27,7 +29,7 @@ public class NTorCircuitExtender {
 
     public CircuitNode extendTo() {
         byte[] onion = kex.createOnionSkin();
-        if (finalRouterSupportsExtend2()) {
+        if (targetRouterSupportsExtend2()) {
             log.debug("Extending circuit to {} with NTor inside RELAY_EXTEND2", router.getNickname());
             return extendWithExtend2(onion);
         } else {
@@ -39,23 +41,23 @@ public class NTorCircuitExtender {
     private CircuitNode extendWithExtend2(byte[] onion) {
         RelayCell cell = createExtend2Cell(onion);
         extender.sendRelayCell(cell);
-        RelayCell response = extender.receiveRelayResponse(RelayCellStatus.EXTENDED2, router);
+        RelayCell response = extender.receiveRelayResponse(RelayCellCommand.EXTENDED2, router);
         return processExtended2(response);
     }
 
     private CircuitNode extendWithTunneledExtend(byte[] onion) {
         RelayCell cell = createExtendCell(onion, kex.getNtorCreateMagic());
         extender.sendRelayCell(cell);
-        RelayCell response = extender.receiveRelayResponse(RelayCellStatus.EXTENDED, router);
+        RelayCell response = extender.receiveRelayResponse(RelayCellCommand.EXTENDED, router);
         return processExtended(response);
     }
 
-    private boolean finalRouterSupportsExtend2() {
-        return extender.getFinalRouter().getNTorOnionKey() != null;
+    private boolean targetRouterSupportsExtend2() {
+        return router.getNTorOnionKey() != null;
     }
 
     private @NotNull RelayCell createExtend2Cell(byte @NotNull [] ntorOnionskin) {
-        RelayCell cell = extender.createRelayCell(RelayCellStatus.EXTEND2);
+        RelayCell cell = extender.createRelayCell(RelayCellCommand.EXTEND2);
         CellWriter writer = cell.getCellWriter();
         writer.putByte((byte) 2);
 
@@ -74,24 +76,18 @@ public class NTorCircuitExtender {
         return cell;
     }
 
-    private @NotNull RelayCell createExtendCell(byte @NotNull [] ntorOnionskin, byte @NotNull [] ntorMagic) {
-        RelayCell cell = extender.createRelayCell(RelayCellStatus.EXTEND);
+    private @NotNull RelayCell createExtendCell(byte[] ntorOnionskin, byte[] ntorMagic) {
+        RelayCell cell = extender.createRelayCell(RelayCellCommand.EXTEND);
         CellWriter writer = cell.getCellWriter();
         writer.putByteArray(router.getAddress().getAddress());
         writer.putShort((short) router.getOnionPort());
-
-        int paddingLength = CircuitExtender.TAP_ONIONSKIN_LEN - (ntorOnionskin.length + ntorMagic.length);
-        byte[] padding = new byte[paddingLength];
-
-        writer.putByteArray(ntorMagic);
         writer.putByteArray(ntorOnionskin);
-        writer.putByteArray(padding);
         writer.putByteArray(router.getIdentityHash().getRawBytes());
         return cell;
     }
 
     private CircuitNode processExtended(@NotNull RelayCell cell) {
-        byte[] payload = new byte[CircuitExtender.TAP_ONIONSKIN_REPLY_LEN];
+        byte[] payload = new byte[NTOR_REPLY_LEN];
         cell.getCellReader().getByteArray(payload);
 
         return processPayload(payload);

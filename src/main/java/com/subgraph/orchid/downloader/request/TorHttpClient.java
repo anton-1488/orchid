@@ -8,6 +8,9 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.CookieManager;
+import java.net.InetSocketAddress;
+import java.net.ProxySelector;
+import java.net.Socket;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -18,15 +21,23 @@ import java.util.zip.Inflater;
 
 public final class TorHttpClient {
     private static final Logger log = LoggerFactory.getLogger(TorHttpClient.class);
-    private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
+    public static final int SOCKS_PORT = 9050;
+    private static final HttpClient.Builder HTTP_CLIENT_BUILDER = HttpClient.newBuilder()
             .cookieHandler(new CookieManager())
             .executor(Globals.VIRTUAL_EXECUTOR)
             .followRedirects(HttpClient.Redirect.NORMAL)
-            .version(HttpClient.Version.HTTP_2)
-            .build();
+            .version(HttpClient.Version.HTTP_2);
+
+    private static final HttpClient DIRECT_HTTP_CLIENT = HTTP_CLIENT_BUILDER.build();
+    private static final HttpClient TOR_HTTP_CLIENT = HTTP_CLIENT_BUILDER.proxy(ProxySelector.of(new InetSocketAddress("127.0.0.1", SOCKS_PORT))).build();
 
     private TorHttpClient() {
-        Globals.addShutdownHook(HTTP_CLIENT::close);
+        Globals.addShutdownHook(DIRECT_HTTP_CLIENT::close);
+        Globals.addShutdownHook(TOR_HTTP_CLIENT::close);
+    }
+
+    public static ByteBuffer sendGetRequest(TorRequest torRequest) {
+        return sendGetRequest(torRequest, !isTorRunning());
     }
 
     /**
@@ -35,10 +46,11 @@ public final class TorHttpClient {
      * @param torRequest get request
      * @return ByteBuffer response body
      */
-    public static ByteBuffer sendGetRequest(TorRequest torRequest) {
+    public static ByteBuffer sendGetRequest(TorRequest torRequest, boolean isDirect) {
         try {
+            HttpClient client = isDirect ? DIRECT_HTTP_CLIENT : TOR_HTTP_CLIENT;
             HttpRequest request = cofigureRequest(torRequest);
-            HttpResponse<byte[]> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofByteArray());
+            HttpResponse<byte[]> response = client.send(request, HttpResponse.BodyHandlers.ofByteArray());
             if (isSuccessfulResponse(response)) {
                 return ByteBuffer.wrap(response.body());
             }
@@ -53,10 +65,11 @@ public final class TorHttpClient {
      *
      * @param torRequest POST request
      */
-    public static void sendPostRequest(TorRequest torRequest) {
+    public static void sendPostRequest(TorRequest torRequest, boolean isDirect) {
         try {
+            HttpClient client = isDirect ? DIRECT_HTTP_CLIENT : TOR_HTTP_CLIENT;
             HttpRequest request = cofigureRequest(torRequest);
-            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (isSuccessfulResponse(response)) {
                 log.debug("Post result: {}", response.body());
             } else {
@@ -112,5 +125,13 @@ public final class TorHttpClient {
         }
 
         return requestBuilder.build();
+    }
+
+    public static boolean isTorRunning() {
+        try (Socket s = new Socket("127.0.0.1", SOCKS_PORT)) {
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
     }
 }

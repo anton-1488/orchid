@@ -14,11 +14,9 @@ public record TorRequest(URI path, String method, Map<String, String> headers, S
     public static final TorRequest BRIDGE_DESCRIPTION = TorRequest.get("/tor/server/authority");
 
     static {
-        DEFAULT_HEADERS.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36");
-        DEFAULT_HEADERS.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8");
-        DEFAULT_HEADERS.put("Accept-Language", "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7");
-        DEFAULT_HEADERS.put("upgrade-insecure-requests", "1");
-        DEFAULT_HEADERS.put("Cache-Control", "max-age=0");
+        DEFAULT_HEADERS.put("User-Agent", "Orchid/2.0");
+        DEFAULT_HEADERS.put("Accept", "*/*");
+        DEFAULT_HEADERS.put("Accept-Encodings", "gzip, deflate");
     }
 
     public TorRequest {

@@ -151,13 +151,13 @@ public class StreamExitRequest implements ExitTarget {
 		}
 	}
 	
-	synchronized boolean reserveRequest() {
+	public synchronized boolean reserveRequest() {
 		if(isReserved) return false;
 		isReserved = true;
 		return true;
 	}
 	
-	synchronized boolean isReserved() {
+	public synchronized boolean isReserved() {
 		return isReserved;
 	}
 	

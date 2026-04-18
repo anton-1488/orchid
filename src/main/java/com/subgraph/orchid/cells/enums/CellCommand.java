@@ -16,6 +16,9 @@ public enum CellCommand {
      */
     CREATED(2),
 
+    CREATE2(10),    // NTor handshake
+    CREATED2(11),   // NTor handshake response
+
     /**
      * Command constant for a RELAY type cell.
      */
@@ -83,6 +86,18 @@ public enum CellCommand {
             }
         }
         throw new IllegalArgumentException("Unknown cell command: " + comand);
+    }
+
+    public boolean isHandshakeCommand() {
+        return this == CREATE || this == CREATED ||
+                this == CREATE2 || this == CREATED2 ||
+                this == CREATE_FAST || this == CREATED_FAST;
+    }
+
+    public boolean isControlCommand() {
+        return this == VERSIONS || this == NETINFO ||
+                this == CERTS || this == AUTH_CHALLENGE ||
+                this == AUTHENTICATE;
     }
 
     private final int command;

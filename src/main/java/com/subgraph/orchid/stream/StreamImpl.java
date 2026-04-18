@@ -45,7 +45,7 @@ public class StreamImpl implements Stream, DashboardRenderable {
 
 	private String streamTarget = "";
 	
-	StreamImpl(CircuitImpl circuit, CircuitNode targetNode, int streamId, boolean autoclose) {
+	public StreamImpl(CircuitImpl circuit, CircuitNode targetNode, int streamId, boolean autoclose) {
 		this.circuit = circuit;
 		this.targetNode = targetNode;
 		this.streamId = streamId;
@@ -56,7 +56,7 @@ public class StreamImpl implements Stream, DashboardRenderable {
 		deliverWindow = STREAMWINDOW_START;
 	}
 
-	void addInputCell(RelayCell cell) {
+	public void addInputCell(RelayCell cell) {
 		if(isClosed)
 			return;
 		if(cell.getRelayCommand() == RelayCell.RELAY_END) {

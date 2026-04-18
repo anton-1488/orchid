@@ -1,290 +1,266 @@
 package com.subgraph.orchid.circuits;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import com.subgraph.orchid.Stream;
+import com.subgraph.orchid.cells.Cell;
+import com.subgraph.orchid.cells.RelayCell;
+import com.subgraph.orchid.connections.Connection;
+import com.subgraph.orchid.directory.DirectoryCircuit;
+import com.subgraph.orchid.exceptions.PathSelectionFailedException;
+import com.subgraph.orchid.exceptions.TorException;
+import com.subgraph.orchid.path.CircuitPathChooser;
+import com.subgraph.orchid.router.Router;
+import com.subgraph.orchid.stream.StreamImpl;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
-import java.util.logging.Logger;
-
-import com.subgraph.orchid.cells.Cell;
-import com.subgraph.orchid.connections.Connection;
-import com.subgraph.orchid.directory.DirectoryCircuit;
-import com.subgraph.orchid.cells.RelayCell;
-import com.subgraph.orchid.router.Router;
-import com.subgraph.orchid.Stream;
-import com.subgraph.orchid.exceptions.StreamConnectFailedException;
-import com.subgraph.orchid.exceptions.TorException;
-import com.subgraph.orchid.path.CircuitPathChooser;
-import com.subgraph.orchid.exceptions.PathSelectionFailedException;
-import com.subgraph.orchid.dashboard.DashboardRenderable;
-import com.subgraph.orchid.dashboard.DashboardRenderer;
-import com.subgraph.orchid.stream.StreamImpl;
 
 /**
  * This class represents an established circuit through the Tor network.
  *
  */
-public abstract class CircuitImpl implements Circuit, DashboardRenderable {
-	protected final static Logger logger = Logger.getLogger(CircuitImpl.class.getName());
-	
-	static ExitCircuit createExitCircuit(CircuitManagerImpl circuitManager, Router exitRouter) {
-		return new ExitCircuitImpl(circuitManager, exitRouter);
-	}
-	
-	static ExitCircuit createExitCircuitTo(CircuitManagerImpl circuitManager, List<Router> prechosenPath) {
-		return new ExitCircuitImpl(circuitManager, prechosenPath);
-	}
-	
-	static DirectoryCircuit createDirectoryCircuit(CircuitManagerImpl circuitManager) {
-		return new DirectoryCircuitImpl(circuitManager, null);
-	}
-	
-	static DirectoryCircuit createDirectoryCircuitTo(CircuitManagerImpl circuitManager, List<Router> prechosenPath) {
-		return new DirectoryCircuitImpl(circuitManager, prechosenPath);
-	}
-	
-	static InternalCircuit createInternalCircuitTo(CircuitManagerImpl circuitManager, List<Router> prechosenPath) {
-		return new InternalCircuitImpl(circuitManager, prechosenPath);
-	}
+public abstract class CircuitImpl implements Circuit {
+    @Contract("_, _ -> new")
+    public static @NotNull ExitCircuit createExitCircuit(CircuitManagerImpl circuitManager, Router exitRouter) {
+        return new ExitCircuitImpl(circuitManager, exitRouter);
+    }
 
-	private final CircuitManagerImpl circuitManager;
-	protected final List<Router> prechosenPath;
-	
-	private final List<CircuitNode> nodeList;
-	private final CircuitStatus status;
+    @Contract("_, _ -> new")
+    public static @NotNull ExitCircuit createExitCircuitTo(CircuitManagerImpl circuitManager, List<Router> prechosenPath) {
+        return new ExitCircuitImpl(circuitManager, prechosenPath);
+    }
 
-	private CircuitIO io;
+    @Contract("_ -> new")
+    public static @NotNull DirectoryCircuit createDirectoryCircuit(CircuitManagerImpl circuitManager) {
+        return new DirectoryCircuitImpl(circuitManager, null);
+    }
 
+    @Contract("_, _ -> new")
+    public static @NotNull DirectoryCircuit createDirectoryCircuitTo(CircuitManagerImpl circuitManager, List<Router> prechosenPath) {
+        return new DirectoryCircuitImpl(circuitManager, prechosenPath);
+    }
 
-	
-		
-	
-	
-	protected CircuitImpl(CircuitManagerImpl circuitManager) {
-		this(circuitManager, null);
-	}
-	
-	protected CircuitImpl(CircuitManagerImpl circuitManager, List<Router> prechosenPath) {
-		nodeList = new ArrayList<CircuitNode>();
-		this.circuitManager = circuitManager;
-		this.prechosenPath = prechosenPath;
-		status = new CircuitStatus();
-	}
+    @Contract("_, _ -> new")
+    public static @NotNull InternalCircuit createInternalCircuitTo(CircuitManagerImpl circuitManager, List<Router> prechosenPath) {
+        return new InternalCircuitImpl(circuitManager, prechosenPath);
+    }
 
-	List<Router> choosePath(CircuitPathChooser pathChooser) throws InterruptedException, PathSelectionFailedException {
-		if(prechosenPath != null) {
-			return new ArrayList<Router>(prechosenPath);
-		} else {
-			return choosePathForCircuit(pathChooser);
-		}
-	}
+    private final CircuitManagerImpl circuitManager;
+    protected final List<Router> prechosenPath;
+    private final List<CircuitNode> nodeList;
+    private final CircuitStatus status;
 
-	protected abstract List<Router> choosePathForCircuit(CircuitPathChooser pathChooser) throws InterruptedException, PathSelectionFailedException;
+    private CircuitIO io;
 
-	void bindToConnection(Connection connection) {
-		if(io != null) {
-			throw new IllegalStateException("Circuit already bound to a connection");
-		}
-		final int id = connection.bindCircuit(this);
-		io = new CircuitIO(this, connection, id);
-	}
+    protected CircuitImpl(CircuitManagerImpl circuitManager) {
+        this(circuitManager, null);
+    }
 
-	public void markForClose() {
-		if(io != null) {
-			io.markForClose();
-		}
-	}
+    protected CircuitImpl(CircuitManagerImpl circuitManager, List<Router> prechosenPath) {
+        nodeList = new ArrayList<>();
+        this.circuitManager = circuitManager;
+        this.prechosenPath = prechosenPath;
+        status = new CircuitStatus();
+    }
 
-	public boolean isMarkedForClose() {
-		if(io == null) {
-			return false;
-		} else {
-			return io.isMarkedForClose();
-		}
-	}
-	
-	CircuitStatus getStatus() {
-		return status;
-	}
-	
-	public boolean isConnected() {
-		return status.isConnected();
-	}
+    List<Router> choosePath(CircuitPathChooser pathChooser) throws InterruptedException, PathSelectionFailedException {
+        if (prechosenPath != null) {
+            return new ArrayList<>(prechosenPath);
+        } else {
+            return choosePathForCircuit(pathChooser);
+        }
+    }
 
-	public boolean isPending() {
-		return status.isBuilding();
-	}
-	
-	public boolean isClean() {
-		return !status.isDirty();
-	}
-	
-	public int getSecondsDirty() {
-		return (int) (status.getMillisecondsDirty() / 1000);
-	}
+    protected abstract List<Router> choosePathForCircuit(CircuitPathChooser pathChooser) throws InterruptedException, PathSelectionFailedException;
 
-	void notifyCircuitBuildStart() {
-		if(!status.isUnconnected()) {
-			throw new IllegalStateException("Can only connect UNCONNECTED circuits");
-		}
-		status.updateCreatedTimestamp();
-		status.setStateBuilding();
-		circuitManager.addActiveCircuit(this);
-	}
-	
-	void notifyCircuitBuildFailed() {
-		status.setStateFailed();
-		circuitManager.removeActiveCircuit(this);
-	}
-	
-	void notifyCircuitBuildCompleted() {
-		status.setStateOpen();
-		status.updateCreatedTimestamp();
-	}
-	
-	public Connection getConnection() {
-		if(!isConnected())
-			throw new TorException("Circuit is not connected.");
-		return io.getConnection();
-	}
+    public void bindToConnection(Connection connection) {
+        if (io != null) {
+            throw new IllegalStateException("Circuit already bound to a connection");
+        }
+        int id = connection.bindCircuit(this);
+        io = new CircuitIO(this, connection, id);
+    }
 
-	public int getCircuitId() {
-		if(io == null) {
-			return 0;
-		} else {
-			return io.getCircuitId();
-		}
-	}
+    @Override
+    public void markForClose() {
+        if (io != null) {
+            io.markForClose();
+        }
+    }
 
-	public void sendRelayCell(RelayCell cell) {
-		io.sendRelayCellTo(cell, cell.getCircuitNode());
-	}
+    @Override
+    public boolean isMarkedForClose() {
+        if (io == null) {
+            return false;
+        } else {
+            return io.isMarkedForClose();
+        }
+    }
 
-	public void sendRelayCellToFinalNode(RelayCell cell) {
-		io.sendRelayCellTo(cell, getFinalCircuitNode());
-	}
+    public CircuitStatus getStatus() {
+        return status;
+    }
 
-	public void appendNode(CircuitNode node) {
-		nodeList.add(node);
-	}
+    @Override
+    public boolean isConnected() {
+        return status.isConnected();
+    }
 
-	List<CircuitNode> getNodeList() {
-		return nodeList;
-	}
+    @Override
+    public boolean isPending() {
+        return status.isBuilding();
+    }
 
-	int getCircuitLength() {
-		return nodeList.size();
-	}
+    @Override
+    public boolean isClean() {
+        return !status.isDirty();
+    }
 
-	public CircuitNode getFinalCircuitNode() {
-		if(nodeList.isEmpty())
-			throw new TorException("getFinalCircuitNode() called on empty circuit");
-		return nodeList.get( getCircuitLength() - 1);
-	}
+    @Override
+    public int getSecondsDirty() {
+        return (int) (status.getMillisecondsDirty() / 1000);
+    }
 
-	public RelayCell createRelayCell(int relayCommand, int streamId, CircuitNode targetNode) {
-		return io.createRelayCell(relayCommand, streamId, targetNode);
-	}
+    public void notifyCircuitBuildStart() {
+        if (!status.isUnconnected()) {
+            throw new IllegalStateException("Can only connect UNCONNECTED circuits");
+        }
+        status.updateCreatedTimestamp();
+        status.setStateBuilding();
+        circuitManager.addActiveCircuit(this);
+    }
 
-	public RelayCell receiveRelayCell() {
-		return io.dequeueRelayResponseCell();
-	}
+    public void notifyCircuitBuildFailed() {
+        status.setStateFailed();
+        circuitManager.removeActiveCircuit(this);
+    }
 
-	void sendCell(Cell cell) {
-		io.sendCell(cell);
-	}
-	
-	Cell receiveControlCellResponse() {
-		return io.receiveControlCellResponse();
-	}
+    public void notifyCircuitBuildCompleted() {
+        status.setStateOpen();
+        status.updateCreatedTimestamp();
+    }
 
-	/*
-	 * This is called by the cell reading thread in ConnectionImpl to deliver control cells 
-	 * associated with this circuit (CREATED or CREATED_FAST).
-	 */
-	public void deliverControlCell(Cell cell) {
-		io.deliverControlCell(cell);
-	}
+    @Override
+    public Connection getConnection() {
+        if (!isConnected()) {
+            throw new TorException("Circuit is not connected.");
+        }
+        return io.getConnection();
+    }
 
-	/* This is called by the cell reading thread in ConnectionImpl to deliver RELAY cells. */
-	public void deliverRelayCell(Cell cell) {
-		io.deliverRelayCell(cell);
-	}
+    @Override
+    public int getCircuitId() {
+        if (io == null) {
+            return 0;
+        } else {
+            return io.getCircuitId();
+        }
+    }
 
-	protected StreamImpl createNewStream(boolean autoclose) {
-		return io.createNewStream(autoclose);
-	}
-	protected StreamImpl createNewStream() {
-		return createNewStream(false);
-	}
+    @Override
+    public void sendRelayCell(RelayCell cell) {
+        io.sendRelayCellTo(cell, cell.getCircuitNode());
+    }
 
-	void setStateDestroyed() {
-		status.setStateDestroyed();
-		circuitManager.removeActiveCircuit(this);
-	}
+    public void sendRelayCellToFinalNode(RelayCell cell) {
+        io.sendRelayCellTo(cell, getFinalCircuitNode());
+    }
 
-	public void destroyCircuit() {
-		// We might not have bound this circuit yet
-		if (io != null) {
-			io.destroyCircuit();
-		}
-		circuitManager.removeActiveCircuit(this);
-	}
+    @Override
+    public void appendNode(CircuitNode node) {
+        nodeList.add(node);
+    }
 
+    public List<CircuitNode> getNodeList() {
+        return nodeList;
+    }
 
-	public void removeStream(StreamImpl stream) {
-		io.removeStream(stream);
-	}
+    public int getCircuitLength() {
+        return nodeList.size();
+    }
 
-	protected Stream processStreamOpenException(Exception e) throws InterruptedException, TimeoutException, StreamConnectFailedException {
-		if(e instanceof InterruptedException) {
-			throw (InterruptedException) e;
-		} else if(e instanceof TimeoutException) {
-			throw(TimeoutException) e;
-		} else if(e instanceof StreamConnectFailedException) {
-			throw(StreamConnectFailedException) e;
-		} else {
-			throw new IllegalStateException();
-		}
-	}
-	
-	protected String pathToString() {
-		final StringBuilder sb = new StringBuilder();
-		sb.append("[");
-		for(CircuitNode node: nodeList) {
-			if(sb.length() > 1)
-				sb.append(",");
-			sb.append(node.toString());
-		}
-		sb.append("]");
-		return sb.toString();
-	}
+    @Override
+    public CircuitNode getFinalCircuitNode() {
+        if (nodeList.isEmpty()) {
+            throw new TorException("getFinalCircuitNode() called on empty circuit");
+        }
+        return nodeList.get(getCircuitLength() - 1);
+    }
 
-	public List<Stream> getActiveStreams() {
-		if(io == null) {
-			return Collections.emptyList();
-		} else {
-			return io.getActiveStreams();
-		}
-	}
+    @Override
+    public RelayCell createRelayCell(int relayCommand, int streamId, CircuitNode targetNode) {
+        return io.createRelayCell(relayCommand, streamId, targetNode);
+    }
 
-	public void dashboardRender(DashboardRenderer renderer, PrintWriter writer, int flags) throws IOException {
-		if(io != null) {
-			writer.println(toString());
-			renderer.renderComponent(writer, flags, io);
-		}
-	}
+    @Override
+    public RelayCell receiveRelayCell() {
+        return io.dequeueRelayResponseCell();
+    }
 
-	@Override
-	public String toString() {
-		return "CircuitImpl{" +
-				"circuitManager=" + circuitManager +
-				", prechosenPath=" + prechosenPath +
-				", nodeList=" + nodeList +
-				", status=" + status +
-				", io=" + io +
-				'}';
-	}
+    public void sendCell(Cell cell) {
+        io.sendCell(cell);
+    }
+
+    public Cell receiveControlCellResponse() {
+        return io.receiveControlCellResponse();
+    }
+
+    /**
+     * This is called by the cell reading thread in ConnectionImpl to deliver control cells
+     * associated with this circuit (CREATED or CREATED_FAST).
+     */
+    @Override
+    public void deliverControlCell(Cell cell) {
+        io.deliverControlCell(cell);
+    }
+
+    /**
+     * This is called by the cell reading thread in ConnectionImpl to deliver RELAY cells.
+     */
+    @Override
+    public void deliverRelayCell(Cell cell) {
+        io.deliverRelayCell(cell);
+    }
+
+    protected StreamImpl createNewStream(boolean autoclose) {
+        return io.createNewStream(autoclose);
+    }
+
+    protected StreamImpl createNewStream() {
+        return createNewStream(false);
+    }
+
+    public void setStateDestroyed() {
+        status.setStateDestroyed();
+        circuitManager.removeActiveCircuit(this);
+    }
+
+    @Override
+    public void destroyCircuit() {
+        // We might not have bound this circuit yet
+        if (io != null) {
+            io.destroyCircuit();
+        }
+        circuitManager.removeActiveCircuit(this);
+    }
+
+    public void removeStream(StreamImpl stream) {
+        io.removeStream(stream);
+    }
+
+    @Override
+    public List<Stream> getActiveStreams() {
+        if (io == null) {
+            return Collections.emptyList();
+        } else {
+            return io.getActiveStreams();
+        }
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Circuit[id=%d, nodes=%d]", getCircuitId(), nodeList.size());
+    }
 }

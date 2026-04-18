@@ -1,5 +1,6 @@
 package com.subgraph.orchid.circuits;
 
+import com.subgraph.orchid.BootstrapStatus;
 import com.subgraph.orchid.Stream;
 import com.subgraph.orchid.directory.DirectoryCircuit;
 import com.subgraph.orchid.exceptions.OpenFailedException;
@@ -11,6 +12,18 @@ import java.util.concurrent.TimeoutException;
 
 
 public interface CircuitManager {
+    int DIRECTORY_PURPOSE_CONSENSUS = 1;
+    int DIRECTORY_PURPOSE_CERTIFICATES = 2;
+    int DIRECTORY_PURPOSE_DESCRIPTORS = 3;
+
+    static BootstrapStatus purposeToBootstrapStatus(int purpose, boolean getLoadingEvent) {
+        return switch (purpose) {
+            case DIRECTORY_PURPOSE_CONSENSUS -> getLoadingEvent ? BootstrapStatus.LOADING_STATUS : BootstrapStatus.REQUESTING_STATUS;
+            case DIRECTORY_PURPOSE_CERTIFICATES -> getLoadingEvent ? BootstrapStatus.LOADING_KEYS : BootstrapStatus.REQUESTING_KEYS;
+            case DIRECTORY_PURPOSE_DESCRIPTORS -> getLoadingEvent ? BootstrapStatus.LOADING_DESCRIPTORS : BootstrapStatus.REQUESTING_DESCRIPTORS;
+            default -> throw new IllegalStateException("Unexpected value: " + purpose);
+        };
+    }
     /**
      * Begin automatically building new circuits in the background.
      */

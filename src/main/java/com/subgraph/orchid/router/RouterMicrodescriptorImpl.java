@@ -1,156 +1,194 @@
 package com.subgraph.orchid.router;
 
+import com.subgraph.orchid.Tor;
+import com.subgraph.orchid.crypto.TorPublicKey;
+import com.subgraph.orchid.data.HexDigest;
+import com.subgraph.orchid.data.InetAddressUtils;
+import com.subgraph.orchid.data.exitpolicy.ExitPorts;
+
+import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.subgraph.orchid.Tor;
-import com.subgraph.orchid.crypto.TorPublicKey;
-import com.subgraph.orchid.data.HexDigest;
-import com.subgraph.orchid.data.IPv4Address;
-import com.subgraph.orchid.data.exitpolicy.ExitPorts;
-
 public class RouterMicrodescriptorImpl implements RouterMicrodescriptor {
-	
-	private IPv4Address address;
-	private int routerPort;
-	private TorPublicKey onionKey;
-	private byte[] ntorOnionKey;
-	private Set<String> familyMembers = Collections.emptySet();
-	private ExitPorts acceptPorts;
-	private ExitPorts rejectPorts;
-	private String rawDocumentData;
-	private HexDigest descriptorDigest;
-	private long lastListed;
-	private CacheLocation cacheLocation = CacheLocation.NOT_CACHED;
-	
-	public void setAddress(IPv4Address address) {
-		this.address = address;
-	}
+    private InetAddress address;
+    private int routerPort;
+    private TorPublicKey onionKey;
+    private byte[] ntorOnionKey;
+    private Set<String> familyMembers = Collections.emptySet();
+    private ExitPorts acceptPorts;
+    private ExitPorts rejectPorts;
+    private String rawDocumentData;
+    private HexDigest descriptorDigest;
+    private long lastListed;
+    private CacheLocation cacheLocation = CacheLocation.NOT_CACHED;
 
-	public void setRouterPort(int port) {
-		this.routerPort = port;
-	}
+    public void setAddress(InetAddress address) {
+        this.address = address;
+    }
 
-	public void setOnionKey(TorPublicKey onionKey) {
-		this.onionKey = onionKey;
-	}
+    public void setRouterPort(int port) {
+        this.routerPort = port;
+    }
 
-	public void setNtorOnionKey(byte[] ntorOnionKey) {
-		this.ntorOnionKey = ntorOnionKey;
-	}
+    public void setOnionKey(TorPublicKey onionKey) {
+        this.onionKey = onionKey;
+    }
 
-	public void addFamilyMember(String familyMember) {
-		if(familyMembers.isEmpty()) {
-			familyMembers = new HashSet<String>();
-		}
-		familyMembers.add(familyMember);
-	}
+    public void setNtorOnionKey(byte[] ntorOnionKey) {
+        this.ntorOnionKey = ntorOnionKey;
+    }
 
-	public void addAcceptPorts(String portlist) {
-		acceptPorts = ExitPorts.createAcceptExitPorts(portlist);
-	}
-	
-	public void addRejectPorts(String portlist) {
-		rejectPorts = ExitPorts.createRejectExitPorts(portlist);
-	}
-	
-	public void setRawDocumentData(String rawData) {
-		this.rawDocumentData = rawData;
-	}
+    public void addFamilyMember(String familyMember) {
+        if (familyMembers.isEmpty()) {
+            familyMembers = new HashSet<>();
+        }
+        familyMembers.add(familyMember);
+    }
 
-	public void setDescriptorDigest(HexDigest descriptorDigest) {
-		this.descriptorDigest = descriptorDigest;
-	}
+    public void addAcceptPorts(String portlist) {
+        acceptPorts = ExitPorts.createAcceptExitPorts(portlist);
+    }
 
-	public void setLastListed(long ts) {
-		this.lastListed = ts;
-	}
+    public void addRejectPorts(String portlist) {
+        rejectPorts = ExitPorts.createRejectExitPorts(portlist);
+    }
 
-	public boolean isValidDocument() {
-		return (descriptorDigest != null) && (onionKey != null);
-	}
-	
-	public String getRawDocumentData() {
-		return rawDocumentData;
-	}
+    public void setRawDocumentData(String rawData) {
+        this.rawDocumentData = rawData;
+    }
 
-	public TorPublicKey getOnionKey() {
-		return onionKey;
-	}
+    public void setDescriptorDigest(HexDigest descriptorDigest) {
+        this.descriptorDigest = descriptorDigest;
+    }
 
-	public byte[] getNTorOnionKey() {
-		return ntorOnionKey;
-	}
+    @Override
+    public void setLastListed(long ts) {
+        this.lastListed = ts;
+    }
 
-	public IPv4Address getAddress() {
-		return address;
-	}
+    @Override
+    public boolean isValidDocument() {
+        return (descriptorDigest != null) && (onionKey != null);
+    }
 
-	public int getRouterPort() {
-		return routerPort;
-	}
+    @Override
+    public String getRawDocumentData() {
+        return rawDocumentData;
+    }
 
-	public Set<String> getFamilyMembers() {
-		return familyMembers;
-	}
+    @Override
+    public TorPublicKey getOnionKey() {
+        return onionKey;
+    }
 
-	public boolean exitPolicyAccepts(IPv4Address address, int port) {
-		return exitPolicyAccepts(port);
-	}
+    @Override
+    public byte[] getNTorOnionKey() {
+        return ntorOnionKey;
+    }
 
-	public boolean exitPolicyAccepts(int port) {
-		if(acceptPorts == null) {
-			return false;
-		}
-		if(rejectPorts != null && !rejectPorts.acceptsPort(port)) {
-			return false;
-		}
-		return acceptPorts.acceptsPort(port);
-	}
+    @Override
+    public InetAddress getAddress() {
+        return address;
+    }
 
-	public HexDigest getDescriptorDigest() {
-		return descriptorDigest;
-	}
-	
-	public boolean equals(Object o) {
-		if(!(o instanceof RouterMicrodescriptorImpl)) 
-			return false;
-		final RouterMicrodescriptorImpl other = (RouterMicrodescriptorImpl) o;
-		if(other.getDescriptorDigest() == null || descriptorDigest == null)
-			return false;
+    @Override
+    public int getRouterPort() {
+        return routerPort;
+    }
 
-		return other.getDescriptorDigest().equals(descriptorDigest);
-	}
+    public Set<String> getFamilyMembers() {
+        return new HashSet<>(familyMembers);
+    }
 
-	public int hashCode() {
-		if(descriptorDigest == null)
-			return 0;
-		return descriptorDigest.hashCode();
-	}
+    @Override
+    public boolean exitPolicyAccepts(InetAddressUtils address, int port) {
+        return exitPolicyAccepts(port);
+    }
 
-	public long getLastListed() {
-		return lastListed;
-	}
+    @Override
+    public boolean exitPolicyAccepts(int port) {
+        if (acceptPorts == null) {
+            return false;
+        }
+        if (rejectPorts != null && !rejectPorts.acceptsPort(port)) {
+            return false;
+        }
+        return acceptPorts.acceptsPort(port);
+    }
 
-	public void setCacheLocation(CacheLocation location) {
-		this.cacheLocation = location;
-	}
+    @Override
+    public HexDigest getDescriptorDigest() {
+        return descriptorDigest;
+    }
 
-	public CacheLocation getCacheLocation() {
-		return cacheLocation;
-	}
+    @Override
+    public long getLastListed() {
+        return lastListed;
+    }
 
-	public int getBodyLength() {
-		return rawDocumentData.length();
-	}
+    @Override
+    public void setCacheLocation(CacheLocation location) {
+        this.cacheLocation = location;
+    }
 
-	public ByteBuffer getRawDocumentBytes() {
-		if(getRawDocumentData() == null) {
-			return ByteBuffer.allocate(0);
-		} else {
-			return ByteBuffer.wrap(getRawDocumentData().getBytes(Tor.getDefaultCharset()));
-		}
-	}
+    @Override
+    public CacheLocation getCacheLocation() {
+        return cacheLocation;
+    }
+
+    @Override
+    public int getBodyLength() {
+        return rawDocumentData.length();
+    }
+
+    @Override
+    public String getVersion() {
+        //FIXME: What version?
+        return "3";
+    }
+
+    @Override
+    public ByteBuffer getRawDocumentBytes() {
+        if (getRawDocumentData() == null) {
+            return ByteBuffer.allocate(0);
+        } else {
+            return ByteBuffer.wrap(getRawDocumentData().getBytes(Tor.getDefaultCharset()));
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof RouterMicrodescriptorImpl other)) {
+            return false;
+        }
+        if (other.getDescriptorDigest() == null || descriptorDigest == null) {
+            return false;
+        }
+
+        return other.getDescriptorDigest().equals(descriptorDigest);
+    }
+
+    @Override
+    public int hashCode() {
+        if (descriptorDigest == null) {
+            return 0;
+        }
+        return descriptorDigest.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "RouterMicrodescriptorImpl{" +
+                "address=" + address +
+                ", routerPort=" + routerPort +
+                ", familyMembers=" + familyMembers +
+                ", acceptPorts=" + acceptPorts +
+                ", rejectPorts=" + rejectPorts +
+                ", descriptorDigest=" + descriptorDigest +
+                ", lastListed=" + lastListed +
+                '}';
+    }
 }

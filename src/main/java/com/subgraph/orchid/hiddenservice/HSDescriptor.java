@@ -1,5 +1,6 @@
 package com.subgraph.orchid.hiddenservice;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,7 +68,7 @@ public class HSDescriptor {
 		return secretIdPart;
 	}
 	
-	Timestamp getPublicationTime() {
+	InetAddress getPublicationTime() {
 		return publicationTime;
 	}
 	

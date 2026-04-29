@@ -1,220 +1,179 @@
 package com.subgraph.orchid.stream;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.util.concurrent.TimeoutException;
-import java.util.logging.Logger;
-
+import com.subgraph.orchid.Stream;
+import com.subgraph.orchid.cells.RelayCell;
+import com.subgraph.orchid.cells.enums.RelayCellCommand;
+import com.subgraph.orchid.cells.enums.RelayCellReason;
+import com.subgraph.orchid.cells.impls.RelayCellImpl;
+import com.subgraph.orchid.cells.io.CellReader;
 import com.subgraph.orchid.circuits.Circuit;
 import com.subgraph.orchid.circuits.CircuitImpl;
 import com.subgraph.orchid.circuits.CircuitNode;
-import com.subgraph.orchid.cells.RelayCell;
-import com.subgraph.orchid.Stream;
 import com.subgraph.orchid.exceptions.StreamConnectFailedException;
 import com.subgraph.orchid.exceptions.TorException;
-import com.subgraph.orchid.cells.impls.RelayCellImpl;
-import com.subgraph.orchid.dashboard.DashboardRenderable;
-import com.subgraph.orchid.dashboard.DashboardRenderer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class StreamImpl implements Stream, DashboardRenderable {
-	private final static Logger logger = Logger.getLogger(StreamImpl.class.getName());
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
-	private final static int STREAMWINDOW_START = 500;
-	private final static int STREAMWINDOW_INCREMENT = 50;
-	private final static int STREAMWINDOW_MAX_UNFLUSHED = 10;
-	
-	private final CircuitImpl circuit;
-	
-	private final int streamId;
-	private final boolean autoclose;
-	
-	private final CircuitNode targetNode;
-	private final TorInputStream inputStream;
-	private final TorOutputStream outputStream;
-	
-	private boolean isClosed;
-	private boolean relayEndReceived;
-	private int relayEndReason;
-	private boolean relayConnectedReceived;
-	private final Object waitConnectLock = new Object();
-	private final Object windowLock = new Object();
-	private int packageWindow;
-	private int deliverWindow;
+public class StreamImpl implements Stream {
+    private static final Logger log = LoggerFactory.getLogger(StreamImpl.class);
 
-	private String streamTarget = "";
-	
-	public StreamImpl(CircuitImpl circuit, CircuitNode targetNode, int streamId, boolean autoclose) {
-		this.circuit = circuit;
-		this.targetNode = targetNode;
-		this.streamId = streamId;
-		this.autoclose = autoclose;
-		this.inputStream = new TorInputStream(this);
-		this.outputStream = new TorOutputStream(this);
-		packageWindow = STREAMWINDOW_START;
-		deliverWindow = STREAMWINDOW_START;
-	}
+    private final static int STREAMWINDOW_START = 500;
+    private final static int STREAMWINDOW_INCREMENT = 50;
+    private final static int STREAMWINDOW_MAX_UNFLUSHED = 10;
 
-	public void addInputCell(RelayCell cell) {
-		if(isClosed)
-			return;
-		if(cell.getRelayCommand() == RelayCell.RELAY_END) {
-			synchronized(waitConnectLock) {
-				relayEndReason = cell.getByte();
-				relayEndReceived = true;
-				inputStream.addEndCell(cell);
-				waitConnectLock.notifyAll();
-			}
-		} else if(cell.getRelayCommand() == RelayCell.RELAY_CONNECTED) {
-			synchronized(waitConnectLock) {
-				relayConnectedReceived = true;
-				waitConnectLock.notifyAll();
-			}
-		} else if(cell.getRelayCommand() == RelayCell.RELAY_SENDME) {
-			synchronized(windowLock) {
-				packageWindow += STREAMWINDOW_INCREMENT;
-				windowLock.notifyAll();
-			}
-		}
-		else {
-			inputStream.addInputCell(cell);
-			synchronized(windowLock) { 
-				deliverWindow--;
-				if(deliverWindow < 0)
-					throw new TorException("Stream has negative delivery window");
-			}
-			considerSendingSendme();
-		}
-	}
+    private final int streamId;
+    private final boolean autoclose;
 
-	private void considerSendingSendme() {
-		synchronized(windowLock) {
-			if(deliverWindow > (STREAMWINDOW_START - STREAMWINDOW_INCREMENT))
-				return;
+    private final CircuitImpl circuit;
+    private final CircuitNode targetNode;
+    private final TorInputStream inputStream;
+    private final TorOutputStream outputStream;
 
-			if(inputStream.unflushedCellCount() >= STREAMWINDOW_MAX_UNFLUSHED)
-				return;
+    private final Semaphore packageWindowSemaphore = new Semaphore(STREAMWINDOW_START);
+    private final CompletableFuture<Void> connectFuture = new CompletableFuture<>();
 
-			final RelayCell sendme = circuit.createRelayCell(RelayCell.RELAY_SENDME, streamId, targetNode);
-			circuit.sendRelayCell(sendme);
-			deliverWindow += STREAMWINDOW_INCREMENT;
-		}
-	}
+    private final AtomicBoolean isClosed = new AtomicBoolean(false);
+    private final AtomicInteger packageWindow = new AtomicInteger(STREAMWINDOW_START);
+    private final AtomicInteger deliverWindow = new AtomicInteger(STREAMWINDOW_START);
+    private final AtomicBoolean relayConnectedReceived = new AtomicBoolean(false);
 
-	public int getStreamId() {
-		return streamId;
-	}
+    public StreamImpl(CircuitImpl circuit, CircuitNode targetNode, int streamId, boolean autoclose) {
+        this.circuit = circuit;
+        this.targetNode = targetNode;
+        this.streamId = streamId;
+        this.autoclose = autoclose;
+        this.inputStream = new TorInputStream(this);
+        this.outputStream = new TorOutputStream(this);
+    }
 
-	public Circuit getCircuit() {
-		return circuit;
-	}
+    public void addInputCell(RelayCell cell) {
+        if (isClosed.get()) {
+            return;
+        }
+        CellReader reader = cell.getCellReader();
+        switch (cell.getRelayCommand()) {
+            case END -> {
+                int reason = reader.getByte();
+                connectFuture.completeExceptionally(new StreamConnectFailedException("Stream connect failed", reason));
+                inputStream.addEndCell(cell);
+            }
+            case CONNECTED -> {
+                if (relayConnectedReceived.compareAndSet(false, true)) {
+                    connectFuture.complete(null);
+                }
+            }
+            case SENDME -> {
+                int newVal = packageWindow.addAndGet(STREAMWINDOW_INCREMENT);
+                if (newVal > STREAMWINDOW_START) {
+                    throw new TorException("Protocol violation: package window exceeded max");
+                }
+                packageWindowSemaphore.release(STREAMWINDOW_INCREMENT);
+            }
+            default -> {
+                inputStream.addInputCell(cell);
+                int remaining = deliverWindow.decrementAndGet();
+                if (remaining < 0) {
+                    throw new TorException("Stream has negative delivery window");
+                }
+                considerSendingSendme();
+            }
+        }
+    }
 
-	public CircuitNode getTargetNode() {
-		return targetNode;
-	}
+    private void waitForConnect(long timeout) throws InterruptedException, TimeoutException, StreamConnectFailedException {
+        try {
+            connectFuture.get(timeout, TimeUnit.MILLISECONDS);
+        } catch (ExecutionException e) {
+            throw new TorException(e);
+        }
+    }
 
-	public void close() {
-		if(isClosed)
-			return;
-		
-		logger.fine("Closing stream "+ this);
-		
-		isClosed = true;
-		inputStream.close();
-		outputStream.close();
-		circuit.removeStream(this);
-		if(autoclose) {
-			circuit.markForClose();
-		}
-		
-		if(!relayEndReceived) {
-			final RelayCell cell = new RelayCellImpl(circuit.getFinalCircuitNode(), circuit.getCircuitId(), streamId, RelayCell.RELAY_END);
-			cell.putByte(RelayCell.REASON_DONE);
-			circuit.sendRelayCellToFinalNode(cell);
-		}
-	}
+    private void considerSendingSendme() {
+        int current = deliverWindow.get();
 
-	public void openDirectory(long timeout) throws InterruptedException, TimeoutException, StreamConnectFailedException {
-		streamTarget = "[Directory]";
-		final RelayCell cell = new RelayCellImpl(circuit.getFinalCircuitNode(), circuit.getCircuitId(), streamId, RelayCell.RELAY_BEGIN_DIR);
-		circuit.sendRelayCellToFinalNode(cell);
-		waitForRelayConnected(timeout);
-	}
+        if (current > (STREAMWINDOW_START - STREAMWINDOW_INCREMENT)) {
+            return;
+        }
+        if (inputStream.unflushedCellCount() >= STREAMWINDOW_MAX_UNFLUSHED) {
+            return;
+        }
+        if (deliverWindow.compareAndSet(current, current + STREAMWINDOW_INCREMENT)) {
+            RelayCell sendme = circuit.createRelayCell(RelayCellCommand.SENDME, streamId, targetNode);
+            circuit.sendRelayCell(sendme);
+        }
+    }
 
-	public void openExit(String target, int port, long timeout) throws InterruptedException, TimeoutException, StreamConnectFailedException {
-		streamTarget = target + ":"+ port;
-		final RelayCell cell = new RelayCellImpl(circuit.getFinalCircuitNode(), circuit.getCircuitId(), streamId, RelayCell.RELAY_BEGIN);
-		cell.putString(target + ":"+ port);
-		circuit.sendRelayCellToFinalNode(cell);
-		waitForRelayConnected(timeout);
-	}
-	
-	private void waitForRelayConnected(long timeout) throws InterruptedException, TimeoutException, StreamConnectFailedException {
-		final long start = System.currentTimeMillis();
-		long elapsed = 0;
-		synchronized(waitConnectLock) {
-			while(!relayConnectedReceived) {
+    public Semaphore getPackageWindowSemaphore() {
+        return packageWindowSemaphore;
+    }
 
-				if(relayEndReceived) {
-					throw new StreamConnectFailedException(relayEndReason);
-				}
+    @Override
+    public int getStreamId() {
+        return streamId;
+    }
 
-				if(elapsed >= timeout) {
-					throw new TimeoutException();
-				}
+    @Override
+    public Circuit getCircuit() {
+        return circuit;
+    }
 
-				waitConnectLock.wait(timeout - elapsed);
-				
-				elapsed = System.currentTimeMillis() - start;
-			}
-		}
-	}
+    @Override
+    public CircuitNode getTargetNode() {
+        return targetNode;
+    }
 
-	public InputStream getInputStream() {
-		return inputStream;
-	}
+    @Override
+    public InputStream getInputStream() {
+        return inputStream;
+    }
 
-	public OutputStream getOutputStream() {
-		return outputStream;
-	}
+    @Override
+    public OutputStream getOutputStream() {
+        return outputStream;
+    }
 
-	public void waitForSendWindowAndDecrement() {
-		waitForSendWindow(true);
-	}
+    public void openDirectory(long timeout) throws InterruptedException, TimeoutException, StreamConnectFailedException {
+        RelayCell cell = new RelayCellImpl(circuit.getFinalCircuitNode(), circuit.getCircuitId(), streamId, RelayCellCommand.BEGIN_DIR);
+        circuit.sendRelayCellToFinalNode(cell);
+        waitForConnect(timeout);
+    }
 
-	public void waitForSendWindow() {
-		waitForSendWindow(false);
-	}
+    public void openExit(String target, int port, long timeout) throws InterruptedException, TimeoutException, StreamConnectFailedException {
+        RelayCell cell = new RelayCellImpl(circuit.getFinalCircuitNode(), circuit.getCircuitId(), streamId, RelayCellCommand.BEGIN);
+        cell.getCellWriter().putString(target + ":" + port);
+        circuit.sendRelayCellToFinalNode(cell);
+        waitForConnect(timeout);
+    }
 
-	public void waitForSendWindow(boolean decrement) {
-		synchronized(windowLock) {
-			while(packageWindow == 0) {
-				try {
-					windowLock.wait();
-				} catch (InterruptedException e) {
-					throw new TorException("Thread interrupted while waiting for stream package window");
-				}
-			}
-			if(decrement)
-				packageWindow--;
-		}
-		targetNode.waitForSendWindow();
-	}
+    @Override
+    public void close() throws IOException {
+        if (!isClosed.compareAndSet(false, true)) {
+            return;
+        }
+        log.debug("Closing stream");
 
-	public String toString() {
-		return "[Stream stream_id="+ streamId + " circuit="+ circuit +" target="+ streamTarget +"]";
-	}
+        inputStream.close();
+        outputStream.close();
+        circuit.removeStream(this);
 
-	public void dashboardRender(DashboardRenderer renderer, PrintWriter writer, int flags) throws IOException {
-		writer.print("     ");
-		writer.print("[Stream stream_id="+ streamId + " cid="+ circuit.getCircuitId());
-		if(relayConnectedReceived) {
-			writer.print(" sent="+outputStream.getBytesSent() + " recv="+ inputStream.getBytesReceived());
-		} else {
-			writer.print(" (waiting connect)");
-		}
-		writer.print(" target="+ streamTarget);
-		writer.println("]");
-	}
+        if (autoclose) {
+            circuit.markForClose();
+        }
+
+        RelayCell cell = new RelayCellImpl(circuit.getFinalCircuitNode(), circuit.getCircuitId(), streamId, RelayCellCommand.END);
+        cell.getCellWriter().putByte((byte) RelayCellReason.DONE.getReason());
+        circuit.sendRelayCellToFinalNode(cell);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("[Stream stream_id=%d, circuit=%s]", streamId, circuit.toString());
+    }
 }

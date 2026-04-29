@@ -12,6 +12,7 @@ public enum RelayCellCommand {
     INTRO_ESTABLISHED(38),
     RENDEZVOUS_ESTABLISHED(39),
     INTRODUCE_ACK(40),
+    PADDING(0),
     BEGIN(1),
     DATA(2),
     END(3),

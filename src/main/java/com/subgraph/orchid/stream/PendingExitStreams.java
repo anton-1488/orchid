@@ -1,77 +1,71 @@
 package com.subgraph.orchid.stream;
 
 import com.subgraph.orchid.Stream;
-import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.exceptions.OpenFailedException;
 import com.subgraph.orchid.exceptions.StreamConnectFailedException;
+import org.jetbrains.annotations.NotNull;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public class PendingExitStreams {
-	
-	private final Set<StreamExitRequest> pendingRequests;
-	private final Object lock = new Object();
-	private final TorConfig config;
+    private final Set<StreamExitRequest> pendingRequests = new CopyOnWriteArraySet<>();
 
-	public PendingExitStreams(TorConfig config) {
-		this.config = config;
-		pendingRequests = new HashSet<StreamExitRequest>();
-	}
-	
-	public Stream openExitStream(InetAddress address, int port) throws InterruptedException, OpenFailedException {
-		final StreamExitRequest request = new StreamExitRequest(lock, address, port);
-		return openExitStreamByRequest(request);
-	}
-	
-	public Stream openExitStream(String hostname, int port) throws InterruptedException, OpenFailedException {
-		final StreamExitRequest request =  new StreamExitRequest(lock, hostname, port);
-		return openExitStreamByRequest(request);
-	}
-	
-	private Stream openExitStreamByRequest(StreamExitRequest request) throws InterruptedException, OpenFailedException {
-		if(config.getCircuitStreamTimeout() != 0) {
-			request.setStreamTimeout(config.getCircuitStreamTimeout());
-		}
-		
-		synchronized(lock) {
-			pendingRequests.add(request);
-			try {
-				return handleRequest(request);
-			} finally {
-				pendingRequests.remove(request);
-			}
-		}
-	}
-	
-	private Stream handleRequest(StreamExitRequest request) throws InterruptedException, OpenFailedException {
-		while(true) {
-			while(!request.isCompleted()) {
-				lock.wait();
-			}
-			try {
-				return request.getStream();
-			} catch (TimeoutException e) {
-				request.resetForRetry();
-			} catch (StreamConnectFailedException e) {
-				request.resetForRetry();
-			}
-		}
-	}
-	
-	public List<StreamExitRequest> getUnreservedPendingRequests() {
-		final List<StreamExitRequest> result = new ArrayList<StreamExitRequest>();
-		synchronized (lock) {
-			for(StreamExitRequest request: pendingRequests) {
-				if(!request.isReserved()) {
-					result.add(request);
-				}
-			}
-		}
-		return result;
-	}
+    public PendingExitStreams() {
+    }
+
+    public Stream openExitStream(InetAddress address, int port) throws InterruptedException, OpenFailedException {
+        StreamExitRequest request = new StreamExitRequest(address, port);
+        return openExitStreamByRequest(request);
+    }
+
+    public Stream openExitStream(String hostname, int port) throws InterruptedException, OpenFailedException {
+        StreamExitRequest request = new StreamExitRequest(hostname, port);
+        return openExitStreamByRequest(request);
+    }
+
+    private Stream openExitStreamByRequest(@NotNull StreamExitRequest request) throws InterruptedException, OpenFailedException {
+        pendingRequests.add(request);
+        try {
+            return handleRequest(request);
+        } finally {
+            pendingRequests.remove(request);
+        }
+    }
+
+    private Stream handleRequest(@NotNull StreamExitRequest request) throws InterruptedException, OpenFailedException {
+        while (true) {
+            try {
+                return request.getFuture().get(request.getStreamTimeout(), TimeUnit.MILLISECONDS);
+            } catch (ExecutionException e) {
+                Throwable cause = e.getCause();
+                if (!(cause instanceof TimeoutException || cause instanceof StreamConnectFailedException)) {
+                    throw new OpenFailedException("Stream open failed", cause);
+                }
+                if (request.getRetryCount() > 5) {
+                    throw new OpenFailedException("Too many retries", cause);
+                }
+                request.resetForRetry();
+            } catch (TimeoutException e) {
+                request.resetForRetry();
+            }
+        }
+    }
+
+
+    public synchronized List<StreamExitRequest> getUnreservedPendingRequests() {
+        List<StreamExitRequest> result = new ArrayList<>();
+        for (StreamExitRequest request : pendingRequests) {
+            if (!request.isReserved()) {
+                result.add(request);
+            }
+        }
+        return result;
+    }
 }

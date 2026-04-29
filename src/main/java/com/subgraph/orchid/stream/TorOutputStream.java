@@ -1,85 +1,106 @@
 package com.subgraph.orchid.stream;
 
+import com.subgraph.orchid.cells.RelayCell;
+import com.subgraph.orchid.cells.enums.RelayCellCommand;
+import com.subgraph.orchid.cells.impls.RelayCellImpl;
+import com.subgraph.orchid.cells.io.CellWriter;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.io.OutputStream;
-
-import com.subgraph.orchid.cells.RelayCell;
-import com.subgraph.orchid.cells.impls.RelayCellImpl;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TorOutputStream extends OutputStream {
+    private final AtomicBoolean isClosed = new AtomicBoolean(false);
+    private final StreamImpl stream;
+    private RelayCell currentOutputCell;
+    private long bytesSent;
+    private CellWriter writer;
 
-	private final StreamImpl stream;
-	private RelayCell currentOutputCell;
-	private volatile boolean isClosed;
-	private long bytesSent;
+    public TorOutputStream(@NotNull StreamImpl stream) {
+        this.stream = stream;
+        this.bytesSent = 0;
+        currentOutputCell = new RelayCellImpl(stream.getTargetNode(), stream.getCircuit().getCircuitId(), stream.getStreamId(), RelayCellCommand.DATA);
+        writer = currentOutputCell.getCellWriter();
+    }
 
-	TorOutputStream(StreamImpl stream) {
-		this.stream = stream;
-		this.bytesSent = 0;
-	}
+    private synchronized void flushCurrentOutputCell() throws IOException {
+        if (currentOutputCell != null && writer.getPosition() > RelayCell.HEADER_SIZE) {
+            try {
+                stream.getPackageWindowSemaphore().acquire();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new IOException("Thread interrupted while waiting for send window");
+            }
 
-	private void flushCurrentOutputCell() {
-		if(currentOutputCell != null && currentOutputCell.cellBytesConsumed() > RelayCell.HEADER_SIZE) {
-			stream.waitForSendWindowAndDecrement();
-			stream.getCircuit().sendRelayCell(currentOutputCell);
-			bytesSent += (currentOutputCell.cellBytesConsumed() - RelayCell.HEADER_SIZE);
-		}
+            stream.getCircuit().sendRelayCell(currentOutputCell);
+            bytesSent += (writer.getPosition() - RelayCell.HEADER_SIZE);
+        }
 
-		currentOutputCell = new RelayCellImpl(stream.getTargetNode(), stream.getCircuit().getCircuitId(),
-				stream.getStreamId(), RelayCell.RELAY_DATA);
-	}
+        currentOutputCell = new RelayCellImpl(stream.getTargetNode(), stream.getCircuit().getCircuitId(), stream.getStreamId(), RelayCellCommand.DATA);
+        writer = currentOutputCell.getCellWriter();
+    }
 
-	long getBytesSent() {
-		return bytesSent;
-	}
+    public long getBytesSent() {
+        return bytesSent;
+    }
 
-	@Override
-	public synchronized void write(int b) throws IOException {
-		checkOpen();
-		if(currentOutputCell == null || currentOutputCell.cellBytesRemaining() == 0)
-			flushCurrentOutputCell();
-		currentOutputCell.putByte(b);		
-	}
+    @Override
+    public synchronized void write(int b) throws IOException {
+        checkOpen();
+        if (currentOutputCell == null || writer.remaining() == 0) {
+            flushCurrentOutputCell();
+        }
+        writer.putByte((byte) b);
+    }
 
-	public synchronized void write(byte[] data, int offset, int length) throws IOException {
-		checkOpen();
-		if(currentOutputCell == null || currentOutputCell.cellBytesRemaining() == 0)
-			flushCurrentOutputCell();
+    @Override
+    public synchronized void write(byte @NotNull [] data, int offset, int length) throws IOException {
+        checkOpen();
+        if (currentOutputCell == null || writer.remaining() == 0) {
+            flushCurrentOutputCell();
+        }
 
-		while(length > 0) {
-			if(length < currentOutputCell.cellBytesRemaining()) {
-				currentOutputCell.putByteArray(data, offset, length);
-				return;
-			}
-			final int writeCount = currentOutputCell.cellBytesRemaining();
-			currentOutputCell.putByteArray(data, offset, writeCount);
-			flushCurrentOutputCell();
-			offset += writeCount;
-			length -= writeCount;
-		}
-	}
+        while (length > 0) {
+            if (length < writer.remaining()) {
+                writer.putByteArray(data, offset, length);
+                return;
+            }
+            int writeCount = writer.remaining();
+            writer.putByteArray(data, offset, writeCount);
+            flushCurrentOutputCell();
+            offset += writeCount;
+            length -= writeCount;
+        }
+    }
 
-	private void checkOpen() throws IOException {
-		if(isClosed)
-			throw new IOException("Output stream is closed");
-	}
+    @Override
+    public void flush() throws IOException {
+        if (isClosed.get()) {
+            return;
+        }
+        flushCurrentOutputCell();
+    }
 
-	public synchronized void flush() {
-		if(isClosed)
-			return;
-		flushCurrentOutputCell();
-	}
+    private void checkOpen() throws IOException {
+        if (isClosed.get()) {
+            throw new IOException("Output stream is closed");
+        }
+    }
 
-	public synchronized void close() {
-		if(isClosed)
-			return;
-		flush();
-		isClosed = true;
-		currentOutputCell = null;
-		stream.close();
-	}
+    @Override
+    public synchronized void close() throws IOException {
+        if (isClosed.get()) {
+            return;
+        }
+        flush();
+        currentOutputCell = null;
+        stream.close();
+        isClosed.set(true);
+    }
 
-	public String toString() {
-		return "TorOutputStream stream="+ stream.getStreamId() +" node="+ stream.getTargetNode();
-	}
+    @Override
+    public String toString() {
+        return String.format("TorOutputStream stream=%d node=%s", stream.getStreamId(), stream.getTargetNode());
+    }
 }

@@ -56,7 +56,7 @@ public class CircuitManagerImpl implements CircuitManager {
         if (config.useEntryGuards() || config.useBridges()) {
             this.pathChooser.enableEntryGuards(new EntryGuards(config, connectionCache, directoryDownloader, directory));
         }
-        this.pendingExitStreams = new PendingExitStreams(config);
+        this.pendingExitStreams = new PendingExitStreams();
         this.circuitCreationTask = new CircuitCreationTask(directory, connectionCache, pathChooser, this, initializationTracker);
         this.initializationTracker = initializationTracker;
         this.hiddenServiceManager = new HiddenServiceManager(config, directory, this);

@@ -3,12 +3,13 @@ package com.subgraph.orchid.stream;
 import com.subgraph.orchid.Stream;
 import com.subgraph.orchid.circuits.ExitCircuit;
 import com.subgraph.orchid.exceptions.StreamConnectFailedException;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeoutException;
 
 public class OpenExitStreamTask implements Runnable {
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(OpenExitStreamTask.class);
+    private static final Logger log = LoggerFactory.getLogger(OpenExitStreamTask.class);
     private final ExitCircuit circuit;
     private final StreamExitRequest exitRequest;
 
@@ -19,7 +20,7 @@ public class OpenExitStreamTask implements Runnable {
 
     @Override
     public void run() {
-        log.debug("Attempting to open stream to " + exitRequest);
+        log.debug("Attempting to open stream to {}", exitRequest);
         try {
             exitRequest.setCompletedSuccessfully(tryOpenExitStream());
         } catch (InterruptedException e) {
@@ -29,14 +30,8 @@ public class OpenExitStreamTask implements Runnable {
             circuit.markForClose();
             exitRequest.setCompletedTimeout();
         } catch (StreamConnectFailedException e) {
-            if (!e.isReasonRetryable()) {
-                exitRequest.setExitFailed();
-                circuit.recordFailedExitTarget(exitRequest);
-            } else {
-                circuit.markForClose();
-                exitRequest.setStreamOpenFailure(e.getReason());
-            }
-
+            circuit.markForClose();
+            exitRequest.setStreamOpenFailure(e.getReason());
         }
     }
 
@@ -47,5 +42,4 @@ public class OpenExitStreamTask implements Runnable {
             return circuit.openExitStream(exitRequest.getHostname(), exitRequest.port(), exitRequest.getStreamTimeout());
         }
     }
-
 }

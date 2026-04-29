@@ -1,228 +1,223 @@
 package com.subgraph.orchid.stream;
 
+import com.subgraph.orchid.Stream;
+import com.subgraph.orchid.cells.RelayCell;
+import com.subgraph.orchid.cells.enums.RelayCellCommand;
+import com.subgraph.orchid.cells.impls.RelayCellImpl;
+import com.subgraph.orchid.cells.io.CellReader;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
-import com.subgraph.orchid.cells.RelayCell;
-import com.subgraph.orchid.Stream;
-import com.subgraph.orchid.cells.impls.RelayCellImpl;
-import com.subgraph.orchid.misc.GuardedBy;
-import com.subgraph.orchid.misc.ThreadSafe;
-
-@ThreadSafe
 public class TorInputStream extends InputStream {
+    private final static RelayCell CLOSE_SENTINEL = new RelayCellImpl(null, 0, 0, RelayCellCommand.PADDING);
+    private final static ByteBuffer EMPTY_BUFFER = ByteBuffer.allocate(0);
+    private static final Logger log = LoggerFactory.getLogger(TorInputStream.class);
 
-	private final static RelayCell CLOSE_SENTINEL = new RelayCellImpl(null, 0, 0, 0);
-	private final static ByteBuffer EMPTY_BUFFER  = ByteBuffer.allocate(0);
-	
-	private final Stream stream;
-	
-	private final Object lock = new Object();
-	
-	/** Queue of RelayCells that have been received on this stream */
-	@GuardedBy("lock") private final Queue<RelayCell> incomingCells;
-	
-	/** Number of unread data bytes in current buffer and in RELAY_DATA cells on queue */
-	@GuardedBy("lock") private int availableBytes;
-	
-	/** Total number of data bytes received in RELAY_DATA cells on this stream */
-	@GuardedBy("lock") private long bytesReceived;
-	
-	/** Bytes of data from the RELAY_DATA cell currently being consumed */
-	@GuardedBy("lock") private ByteBuffer currentBuffer;
-	
-	/** Set when a RELAY_END cell is received */
-	@GuardedBy("lock") private boolean isEOF;
-	
-	/** Set when close() is called on this stream */
-	@GuardedBy("lock") private boolean isClosed;
-	
-	TorInputStream(Stream stream) {
-		this.stream = stream;
-		this.incomingCells = new LinkedList<RelayCell>();
-		this.currentBuffer = EMPTY_BUFFER;
-	}
+    private final Stream stream;
 
-	long getBytesReceived() {
-		synchronized (lock) {
-			return bytesReceived;
-		}
-	}
+    /**
+     * Queue of RelayCells that have been received on this stream
+     */
+    private final Queue<RelayCell> incomingCells = new LinkedList<>();
 
-	@Override
-	public int read() throws IOException {
-		synchronized (lock) {
-			if(isClosed) {
-				throw new IOException("Stream closed");
-			}
-			refillBufferIfNeeded();
-			if(isEOF) {
-				return -1;
-			}
-			availableBytes -= 1;
-			return currentBuffer.get() & 0xFF;
-		}
-	}
+    /**
+     * Number of unread data bytes in current buffer and in RELAY_DATA cells on queue
+     */
+    private final AtomicInteger availableBytes = new AtomicInteger();
 
-	
-	public int read(byte[] b) throws IOException {
-		return read(b, 0, b.length);
-	}
+    /**
+     * Total number of data bytes received in RELAY_DATA cells on this stream
+     */
+    private final AtomicLong bytesReceived = new AtomicLong();
 
-	public synchronized int read(byte[] b, int off, int len) throws IOException {
-		synchronized (lock) {
-			if(isClosed) {
-				throw new IOException("Stream closed");
-			}
+    /**
+     * Bytes of data from the RELAY_DATA cell currently being consumed
+     */
+    private ByteBuffer currentBuffer;
 
-			checkReadArguments(b, off, len);
+    /**
+     * Set when a RELAY_END cell is received
+     */
+    private final AtomicBoolean isEOF = new AtomicBoolean();
 
-			if(len == 0) {
-				return 0;
-			}
-			
-			refillBufferIfNeeded();
-			if(isEOF) {
-				return -1;
-			}
-			
-			int bytesRead = 0;
-			int bytesRemaining = len;
-			
-			while(bytesRemaining > 0 && !isEOF) {
-				refillBufferIfNeeded();
-				bytesRead += readFromCurrentBuffer(b, off + bytesRead, len - bytesRead);
-				bytesRemaining = len - bytesRead;
-				if(availableBytes == 0) {
-					return bytesRead;
-				}
-			}
-			return bytesRead;
-		}
-	}
-	
-	@GuardedBy("lock")
-	private int readFromCurrentBuffer(byte[] b, int off, int len) {
-		final int readLength = (currentBuffer.remaining() >= len) ? (len) : (currentBuffer.remaining());
-		currentBuffer.get(b, off, readLength);
-		availableBytes -= readLength;
-		return readLength;
-	}
+    /**
+     * Set when close() is called on this stream
+     */
+    private final AtomicBoolean isClosed = new AtomicBoolean();
 
-	private void checkReadArguments(byte[] b, int off, int len) {
-		if(b == null) {
-			throw new NullPointerException();
-		}
-		if( (off < 0) || (off >= b.length) || (len < 0) ||
-				((off + len) > b.length) || ((off + len) < 0)) {
-			throw new IndexOutOfBoundsException();
-		}
-	}
+    public TorInputStream(Stream stream) {
+        this.stream = stream;
+        this.currentBuffer = EMPTY_BUFFER;
+    }
 
-	public int available() {
-		synchronized(lock) {
-			return availableBytes;
-		}
-	}
+    public long getBytesReceived() {
+        return bytesReceived.get();
+    }
 
-	public void close() {
-		synchronized (lock) {
-			if(isClosed) {
-				return;
-			}
-			isClosed = true;
-			
-			incomingCells.add(CLOSE_SENTINEL);
-			lock.notifyAll();
-		}
-		stream.close();
-	}
+    @Override
+    public synchronized int read() throws IOException {
+        checkIsOpened();
+        refillBufferIfNeeded();
+        if (isEOF.get()) {
+            return -1;
+        }
+        availableBytes.decrementAndGet();
+        return currentBuffer.get() & 0xFF;
+    }
 
-	void addEndCell(RelayCell cell) {
-		synchronized (lock) {
-			if(isClosed) {
-				return;
-			}
-			incomingCells.add(cell);
-			lock.notifyAll();
-		}
-	}
+    @Override
+    public int read(byte @NotNull [] b) throws IOException {
+        return read(b, 0, b.length);
+    }
 
-	void addInputCell(RelayCell cell) {
-		synchronized (lock) {
-			if(isClosed) {
-				return;
-			}
-			incomingCells.add(cell);
-			bytesReceived += cell.cellBytesRemaining();
-			availableBytes += cell.cellBytesRemaining();
-			lock.notifyAll();
-		}
-	}
+    @Override
+    public synchronized int read(byte @NotNull [] b, int off, int len) throws IOException {
+        checkIsOpened();
+        checkReadArguments(b, off, len);
 
-	@GuardedBy("lock")
-	// When this method (or fillBuffer()) returns either isEOF is set or currentBuffer has at least one byte to read
-	private void refillBufferIfNeeded() throws IOException {
-		if(!isEOF) {
-			if(currentBuffer.hasRemaining()) {
-				return;
-			}
-			fillBuffer();
-		}
-	}
+        if (len == 0) {
+            return 0;
+        }
 
-	@GuardedBy("lock")
-	private void fillBuffer() throws IOException {
-		while(true) {
-			processIncomingCell(getNextCell());
-			if(isEOF || currentBuffer.hasRemaining()) {
-				return;
-			}
-		}
-	}
+        refillBufferIfNeeded();
+        if (isEOF.get()) {
+            return -1;
+        }
 
-	@GuardedBy("lock")
-	private void processIncomingCell(RelayCell nextCell) throws IOException {
-		if(isClosed || nextCell == CLOSE_SENTINEL) {
-			throw new IOException("Input stream closed");
-		}
-		
-		switch(nextCell.getRelayCommand()) {
-		case RelayCell.RELAY_DATA:
-			currentBuffer = nextCell.getPayloadBuffer();
-			break;
-		case RelayCell.RELAY_END:
-			currentBuffer = EMPTY_BUFFER;
-			isEOF = true;
-			break;
-		default:
-			throw new IOException("Unexpected RelayCell command type in TorInputStream queue: "+ nextCell.getRelayCommand());
-		}
-	}
-	
-	@GuardedBy("lock")
-	private RelayCell getNextCell() throws IOException {
-		try {
-			while(incomingCells.isEmpty()) {
-				lock.wait();
-			}
-			return incomingCells.remove();
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new IOException("Read interrupted");
-		}
-	}
-	
-	int unflushedCellCount() {
-		synchronized (lock) {
-			return incomingCells.size();
-		}
-	}
+        int bytesRead = 0;
+        int bytesRemaining = len;
 
-	public String toString() {
-			return "TorInputStream stream="+ stream.getStreamId() +" node="+ stream.getTargetNode();
-	}
+        while (bytesRemaining > 0 && !isEOF.get()) {
+            refillBufferIfNeeded();
+            bytesRead += readFromCurrentBuffer(b, off + bytesRead, len - bytesRead);
+            bytesRemaining = len - bytesRead;
+            if (availableBytes.get() == 0) {
+                return bytesRead;
+            }
+        }
+        return bytesRead;
+    }
+
+    private int readFromCurrentBuffer(byte[] b, int off, int len) {
+        int readLength = Math.min(currentBuffer.remaining(), len);
+        currentBuffer.get(b, off, readLength);
+        availableBytes.set(availableBytes.get() - readLength);
+        return readLength;
+    }
+
+    private void checkReadArguments(byte[] b, int off, int len) {
+        if (b == null) {
+            throw new IllegalArgumentException("buffer can't be null");
+        }
+
+        if ((off < 0) || (off >= b.length) || (len < 0) || ((off + len) > b.length) || ((off + len) < 0)) {
+            throw new IndexOutOfBoundsException();
+        }
+    }
+
+    @Override
+    public int available() {
+        return availableBytes.get();
+    }
+
+    @Override
+    public synchronized void close() {
+        if (isClosed.get()) {
+            return;
+        }
+        incomingCells.add(CLOSE_SENTINEL);
+        try {
+            stream.close();
+        } catch (Exception e) {
+            log.error("Error to close stream: ", e);
+        }
+        isClosed.set(true);
+    }
+
+    public void addEndCell(RelayCell cell) {
+        if (isClosed.get()) {
+            return;
+        }
+        incomingCells.add(cell);
+    }
+
+    public void addInputCell(RelayCell cell) {
+        if (isClosed.get()) {
+            return;
+        }
+        incomingCells.add(cell);
+        CellReader reader = cell.getCellReader();
+        bytesReceived.addAndGet(reader.remaining());
+        availableBytes.addAndGet(reader.remaining());
+    }
+
+    /**
+     * When this method (or fillBuffer()) returns either isEOF is set or currentBuffer has at least one byte to read
+     *
+     * @throws IOException if io operations faul
+     */
+    private void refillBufferIfNeeded() throws IOException {
+        if (!isEOF.get()) {
+            if (currentBuffer.hasRemaining()) {
+                return;
+            }
+            fillBuffer();
+        }
+    }
+
+    private void fillBuffer() throws IOException {
+        while (true) {
+            processIncomingCell(getNextCell());
+            if (isEOF.get() || currentBuffer.hasRemaining()) {
+                return;
+            }
+        }
+    }
+
+    private void processIncomingCell(RelayCell nextCell) throws IOException {
+        if (isClosed.get() || nextCell == CLOSE_SENTINEL) {
+            throw new IOException("Input stream closed");
+        }
+
+        switch (nextCell.getRelayCommand()) {
+            case RelayCellCommand.DATA:
+                currentBuffer = nextCell.getPayloadBuffer();
+                break;
+            case RelayCellCommand.END:
+                currentBuffer = EMPTY_BUFFER;
+                isEOF.set(true);
+                break;
+            default:
+                throw new IOException("Unexpected RelayCell command type in TorInputStream queue: " + nextCell.getRelayCommand());
+        }
+    }
+
+    private synchronized RelayCell getNextCell() throws IOException {
+        return incomingCells.remove();
+    }
+
+    public int unflushedCellCount() {
+        return incomingCells.size();
+    }
+
+    private void checkIsOpened() throws IOException {
+        if (isClosed.get()) {
+            throw new IOException("Stream closed");
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "TorInputStream stream=" + stream.getStreamId() + " node=" + stream.getTargetNode();
+    }
 }

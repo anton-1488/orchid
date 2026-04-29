@@ -1,170 +1,159 @@
 package com.subgraph.orchid.stream;
- 
-import java.util.concurrent.TimeoutException;
 
-import com.subgraph.orchid.exceptions.OpenFailedException;
 import com.subgraph.orchid.Stream;
-import com.subgraph.orchid.exceptions.StreamConnectFailedException;
-import com.subgraph.orchid.data.IPv4Address;
 import com.subgraph.orchid.data.exitpolicy.ExitTarget;
-import com.subgraph.orchid.misc.GuardedBy;
+import com.subgraph.orchid.exceptions.OpenFailedException;
+import com.subgraph.orchid.exceptions.StreamConnectFailedException;
+
+import java.net.InetAddress;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class StreamExitRequest implements ExitTarget {
-	
-	private enum CompletionStatus {NOT_COMPLETED, SUCCESS, TIMEOUT, STREAM_OPEN_FAILURE, EXIT_FAILURE, INTERRUPTED};
-	
-	private final boolean isAddress;
-	private final IPv4Address address;
-	private final String hostname;
-	private final int port;
-	private final Object requestCompletionLock;
-	
-	@GuardedBy("requestCompletionLock") private CompletionStatus completionStatus;	
-	@GuardedBy("requestCompletionLock") private Stream stream;
-	@GuardedBy("requestCompletionLock") private int streamOpenFailReason;
-	
-	@GuardedBy("this") private boolean isReserved;
-	@GuardedBy("this") private int retryCount;
-	@GuardedBy("this") private long specificTimeout;
 
-	StreamExitRequest(Object requestCompletionLock, IPv4Address address, int port) {
-		this(requestCompletionLock, true, "", address, port);
-	}
+    private enum CompletionStatus {NOT_COMPLETED, SUCCESS, TIMEOUT, STREAM_OPEN_FAILURE, EXIT_FAILURE, INTERRUPTED}
 
-	StreamExitRequest(Object requestCompletionLock, String hostname, int port) {
-		this(requestCompletionLock, false, hostname, null, port);
-	}
-	
-	private StreamExitRequest(Object requestCompletionLock, boolean isAddress, String hostname, IPv4Address address, int port) {
-		this.requestCompletionLock = requestCompletionLock;
-		this.isAddress = isAddress;
-		this.hostname = hostname;
-		this.address = address;
-		this.port = port;
-		this.completionStatus = CompletionStatus.NOT_COMPLETED;
-	}
+    private final boolean isAddress;
+    private final InetAddress address;
+    private final String hostname;
+    private final int port;
+    private volatile CompletableFuture<Stream> future = new CompletableFuture<>();
 
-	public boolean isAddressTarget() {
-		return isAddress;
-	}
+    private CompletionStatus completionStatus;
+    private Stream stream;
+    private final AtomicInteger streamOpenFailReason = new AtomicInteger();
+    private final AtomicBoolean isReserved = new AtomicBoolean();
+    private final AtomicInteger retryCount = new AtomicInteger();
+    private final AtomicLong specificTimeout = new AtomicLong();
 
-	public IPv4Address getAddress() {
-		return address;
-	}
+    public StreamExitRequest(InetAddress address, int port) {
+        this(true, "", address, port);
+    }
 
-	public String getHostname() {
-		return hostname;
-	}
+    public StreamExitRequest(String hostname, int port) {
+        this(false, hostname, null, port);
+    }
 
-	public int port() {
-		return port;
-	}
+    private StreamExitRequest(boolean isAddress, String hostname, InetAddress address, int port) {
+        this.isAddress = isAddress;
+        this.hostname = hostname;
+        this.address = address;
+        this.port = port;
+        this.completionStatus = CompletionStatus.NOT_COMPLETED;
+    }
 
-	public synchronized void setStreamTimeout(long timeout) {
-		specificTimeout = timeout;
-	}
-	
-	public synchronized long getStreamTimeout() {
-		if(specificTimeout > 0) {
-			return specificTimeout;
-		} else if(retryCount < 2) {
-			return 10 * 1000;
-		} else {
-			return 15 * 1000;
-		}
-	}
+    @Override
+    public boolean isAddressTarget() {
+        return isAddress;
+    }
 
-	void setCompletedTimeout() {
-		synchronized (requestCompletionLock) {
-			newStatus(CompletionStatus.TIMEOUT);
-		}
-	}
-	
-	void setExitFailed() {
-		synchronized (requestCompletionLock) {
-			newStatus(CompletionStatus.EXIT_FAILURE);
-		}
-	}
-	
-	void setStreamOpenFailure(int reason) {
-		synchronized (requestCompletionLock) {
-			streamOpenFailReason = reason;
-			newStatus(CompletionStatus.STREAM_OPEN_FAILURE);
-		}
-	}
-	
-	void setCompletedSuccessfully(Stream stream) {
-		synchronized (requestCompletionLock) {
-			this.stream = stream;
-			newStatus(CompletionStatus.SUCCESS);
-		}
-	}
-	
-	void setInterrupted() {
-		synchronized (requestCompletionLock) {
-			newStatus(CompletionStatus.INTERRUPTED);	
-		}
-	}
+    @Override
+    public InetAddress getAddress() {
+        return address;
+    }
 
-	private void newStatus(CompletionStatus newStatus) {
-		if(completionStatus != CompletionStatus.NOT_COMPLETED) {
-			throw new IllegalStateException("Attempt to set completion state to " + newStatus +" while status is "+ completionStatus);
-		}
-		completionStatus = newStatus;
-		requestCompletionLock.notifyAll();
-	}
+    @Override
+    public String getHostname() {
+        return hostname;
+    }
 
-	
-	Stream getStream() throws OpenFailedException, TimeoutException, StreamConnectFailedException, InterruptedException {
-		synchronized(requestCompletionLock) {
-			switch(completionStatus) {
-			case NOT_COMPLETED:
-				throw new IllegalStateException("Request not completed");
-			case EXIT_FAILURE:
-				throw new OpenFailedException("Failure at exit node");
-			case TIMEOUT:
-				throw new TimeoutException();
-			case STREAM_OPEN_FAILURE:
-				throw new StreamConnectFailedException(streamOpenFailReason);
-			case INTERRUPTED:
-				throw new InterruptedException();
-			case SUCCESS:
-				return stream;
-			default:
-				throw new IllegalStateException("Unknown completion status");
-			}
-		}
-	}
+    @Override
+    public int port() {
+        return port;
+    }
 
-	synchronized void resetForRetry() {
-		synchronized (requestCompletionLock) {
-			streamOpenFailReason = 0;
-			completionStatus = CompletionStatus.NOT_COMPLETED;
-		}
-		retryCount += 1;
-		isReserved = false;
-	}
+    public void setStreamTimeout(long timeout) {
+        specificTimeout.set(timeout);
+    }
 
-	boolean isCompleted() {
-		synchronized (requestCompletionLock) {
-			return completionStatus != CompletionStatus.NOT_COMPLETED;
-		}
-	}
-	
-	public synchronized boolean reserveRequest() {
-		if(isReserved) return false;
-		isReserved = true;
-		return true;
-	}
-	
-	public synchronized boolean isReserved() {
-		return isReserved;
-	}
-	
-	public String toString() {
-		if(isAddress)
-			return address + ":"+ port;
-		else
-			return hostname + ":"+ port;
-	}
+    public synchronized long getStreamTimeout() {
+        if (specificTimeout.get() > 0) {
+            return specificTimeout.get();
+        } else if (retryCount.get() < 2) {
+            return 10 * 1000;
+        } else {
+            return 15 * 1000;
+        }
+    }
+
+    public void setCompletedTimeout() {
+        newStatus(CompletionStatus.TIMEOUT);
+    }
+
+    public void setExitFailed() {
+        newStatus(CompletionStatus.EXIT_FAILURE);
+    }
+
+    public void setStreamOpenFailure(int reason) {
+        streamOpenFailReason.set(reason);
+        newStatus(CompletionStatus.STREAM_OPEN_FAILURE);
+    }
+
+    public void setCompletedSuccessfully(Stream stream) {
+        this.stream = stream;
+        newStatus(CompletionStatus.SUCCESS);
+    }
+
+    public void setInterrupted() {
+        newStatus(CompletionStatus.INTERRUPTED);
+    }
+
+    private synchronized void newStatus(CompletionStatus newStatus) {
+        if (completionStatus != CompletionStatus.NOT_COMPLETED) {
+            throw new IllegalStateException("Attempt to set completion state to " + newStatus + " while status is " + completionStatus);
+        }
+        completionStatus = newStatus;
+        switch (newStatus) {
+            case SUCCESS -> future.complete(stream);
+            case TIMEOUT -> future.completeExceptionally(new TimeoutException());
+            case EXIT_FAILURE -> future.completeExceptionally(new OpenFailedException("Failure at exit node"));
+            case STREAM_OPEN_FAILURE ->
+                    future.completeExceptionally(new StreamConnectFailedException("Connection failed", streamOpenFailReason.get()));
+            case INTERRUPTED -> future.completeExceptionally(new InterruptedException());
+        }
+    }
+
+    public synchronized void resetForRetry() {
+        streamOpenFailReason.set(0);
+        completionStatus = CompletionStatus.NOT_COMPLETED;
+        retryCount.incrementAndGet();
+        isReserved.set(false);
+        future = new CompletableFuture<>();
+    }
+
+    public boolean isCompleted() {
+        return completionStatus != CompletionStatus.NOT_COMPLETED;
+    }
+
+    public synchronized boolean reserveRequest() {
+        if (isReserved.get()) {
+            return false;
+        }
+        isReserved.set(true);
+        return true;
+    }
+
+    public CompletableFuture<Stream> getFuture() {
+        return future;
+    }
+
+    public int getRetryCount() {
+        return retryCount.get();
+    }
+
+    public boolean isReserved() {
+        return isReserved.get();
+    }
+
+    @Override
+    public String toString() {
+        if (isAddress) {
+            return address + ":" + port;
+        } else {
+            return hostname + ":" + port;
+        }
+    }
 }

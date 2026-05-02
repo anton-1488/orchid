@@ -3,7 +3,6 @@ package com.subgraph.orchid.router;
 import com.subgraph.orchid.Tor;
 import com.subgraph.orchid.crypto.TorPublicKey;
 import com.subgraph.orchid.data.HexDigest;
-import com.subgraph.orchid.data.InetAddressUtils;
 import com.subgraph.orchid.data.exitpolicy.ExitPorts;
 
 import java.net.InetAddress;
@@ -104,7 +103,7 @@ public class RouterMicrodescriptorImpl implements RouterMicrodescriptor {
     }
 
     @Override
-    public boolean exitPolicyAccepts(InetAddressUtils address, int port) {
+    public boolean exitPolicyAccepts(InetAddress address, int port) {
         return exitPolicyAccepts(port);
     }
 

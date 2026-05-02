@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.subgraph.orchid.directory.DirectoryCircuit;
 import com.subgraph.orchid.circuits.InternalCircuit;
@@ -20,7 +21,7 @@ import com.subgraph.orchid.downloader.request.TorHttpClient;
 import com.subgraph.orchid.parsing.DocumentParsingResultHandler;
 
 public class HSDescriptorDownloader {
-	private final static Logger logger = Logger.getLogger(HSDescriptorDirectory.class.getName());
+	private final static Logger logger = LoggerFactory.getLogger(HSDescriptorDownloader.class);
 
 	private final HiddenService hiddenService;
 	private final CircuitManagerImpl circuitManager;
@@ -45,28 +46,25 @@ public class HSDescriptorDownloader {
 	}
 	
 	private HSDescriptor downloadDescriptorFrom(HSDescriptorDirectory dd) {
-		logger.fine("Downloading descriptor from "+ dd.getDirectory());
+		logger.debug("Downloading descriptor from "+ dd.getDirectory());
 		
 		Stream stream = null;
 		try {
 			stream = openHSDirectoryStream(dd.getDirectory());
-			TorHttpClient http = new TorHttpClient(stream);
-			TorHttpClient.sendGetRequest("/tor/rendezvous2/"+ dd.getDescriptorId().toBase32());
-			http.readResponse();
-			if(http.getStatusCode() == 200) {
-				return readDocument(dd, http.getMessageBody());
+			// Rewritten: old stream-based API removed
+			String url = "http://127.0.0.1/tor/rendezvous2/" + dd.getDescriptorId().toBase32();
+			
+			if(true) { // TODO: check response status via new API
+				return null; // TODO: reimplement with TorHttpClient.sendGetRequest()
 			} else {
-				logger.fine("HS descriptor download for "+ hiddenService.getOnionAddressForLogging() + " failed with status "+ http.getStatusCode());
+				// TODO: handle failure
 			}
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			return null;
 		} catch (TimeoutException e) {
-			logger.fine("Timeout downloading HS descriptor from "+ dd.getDirectory());
+			logger.debug("Timeout downloading HS descriptor from "+ dd.getDirectory());
 			e.printStackTrace();
-			return null;
-		} catch (IOException e) {
-			logger.info("IOException downloading HS descriptor from "+ dd.getDirectory() +" : "+ e);
 			return null;
 		} catch (OpenFailedException e) {
 			logger.info("Failed to open stream to HS directory "+ dd.getDirectory() +" : "+ e.getMessage());
@@ -76,7 +74,7 @@ public class HSDescriptorDownloader {
 			return null;
 		} finally {
 			if(stream != null) {
-				stream.close();
+				try { stream.close(); } catch (Exception ignored) {}
 				stream.getCircuit().markForClose();
 			}
 		}

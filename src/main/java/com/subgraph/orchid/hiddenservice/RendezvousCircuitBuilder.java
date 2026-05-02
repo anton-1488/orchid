@@ -1,4 +1,5 @@
 package com.subgraph.orchid.hiddenservice;
+import com.subgraph.orchid.crypto.TorTapKeyAgreement;
 
 import java.util.concurrent.Callable;
 import java.util.logging.Logger;
@@ -10,7 +11,7 @@ import com.subgraph.orchid.circuits.InternalCircuit;
 import com.subgraph.orchid.router.Router;
 import com.subgraph.orchid.exceptions.TorException;
 import com.subgraph.orchid.circuits.CircuitManagerImpl;
-import com.subgraph.orchid.crypto.TorTapKeyAgreement;
+
 
 public class RendezvousCircuitBuilder implements Callable<HiddenServiceCircuit>{
 	private final Logger logger = Logger.getLogger(RendezvousCircuitBuilder.class.getName());

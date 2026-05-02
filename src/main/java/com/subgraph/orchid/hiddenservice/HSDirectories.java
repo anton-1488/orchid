@@ -14,14 +14,13 @@ import com.subgraph.orchid.data.HexDigest;
 public class HSDirectories {
 	private final static int DIR_CLUSTER_SZ = 3;
 	private final Directory directory;
-	private final TorRandom random;
 	private ConsensusDocument currentConsensus;
 	private List<Router> hsDirectories;
 	
 	HSDirectories(Directory directory) {
 		this.directory = directory;
 		this.hsDirectories = new ArrayList<Router>();
-		this.random = new TorRandom();
+		// TorRandom is now static - no instance needed
 	}
 	
 	List<HSDescriptorDirectory> getDirectoriesForHiddenService(HiddenService hs) {
@@ -101,7 +100,7 @@ public class HSDirectories {
 	
 	private void randomShuffle(List<Router> dirs) {
 		for(int i = 0; i < dirs.size(); i++) {
-			swap(dirs, i, random.nextInt(dirs.size()));
+			swap(dirs, i, TorRandom.nextInt(dirs.size()));
 		}
 	}
 	

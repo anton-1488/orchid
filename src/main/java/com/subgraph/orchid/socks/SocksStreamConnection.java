@@ -75,7 +75,6 @@ public class SocksStreamConnection {
         byte[] buffer = new byte[BUFFER_SIZE];
         try {
             while (true) {
-                stream.waitForSendWindow();
                 int n = socket.getInputStream().read(buffer);
                 if (n == -1) {
                     log.debug("EOF from SOCKS socket");

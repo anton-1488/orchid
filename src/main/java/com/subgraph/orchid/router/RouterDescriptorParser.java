@@ -1,9 +1,11 @@
 package com.subgraph.orchid.router;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.subgraph.orchid.exceptions.TorParsingException;
 import com.subgraph.orchid.crypto.TorSignature;
 import com.subgraph.orchid.data.BandwidthHistory;
-import com.subgraph.orchid.data.Timestamp;
+import java.time.Instant;
 import com.subgraph.orchid.parsing.BasicDocumentParsingResult;
 import com.subgraph.orchid.parsing.DocumentFieldParser;
 import com.subgraph.orchid.parsing.DocumentParser;
@@ -12,6 +14,7 @@ import com.subgraph.orchid.parsing.DocumentParsingResult;
 import com.subgraph.orchid.parsing.DocumentParsingResultHandler;
 
 public class RouterDescriptorParser implements DocumentParser<RouterDescriptor> {
+    private static final Logger logger = LoggerFactory.getLogger(RouterDescriptorParser.class);
 	private final DocumentFieldParser fieldParser;
 	private final boolean verifySignatures;
 	
@@ -90,7 +93,7 @@ public class RouterDescriptorParser implements DocumentParser<RouterDescriptor> 
 			currentDescriptor.setFingerprint(fieldParser.parseFingerprint());
 			break;
 		case HIBERNATING:
-			currentDescriptor.setHibernating(fieldParser.parseBoolean());
+			currentDescriptor.setHibernating(fieldParser.parseString().equals("1"));
 			break;
 		case UPTIME:
 			currentDescriptor.setUptime(fieldParser.parseInteger());
@@ -121,7 +124,7 @@ public class RouterDescriptorParser implements DocumentParser<RouterDescriptor> 
 				currentDescriptor.addFamilyMember(fieldParser.parseString());
 			break;
 		case EVENTDNS:
-			if(fieldParser.parseBoolean())
+			if(fieldParser.parseString().equals("1"))
 				currentDescriptor.setEventDNS();
 			break;		
 		case PROTOCOLS:
@@ -151,7 +154,7 @@ public class RouterDescriptorParser implements DocumentParser<RouterDescriptor> 
 	}
 	
 	private BandwidthHistory parseHistory() {
-		final Timestamp ts = fieldParser.parseTimestamp();
+		final Instant ts = fieldParser.parseTimestamp();
 		final String nsec = fieldParser.parseString();
 		fieldParser.parseString();
 		final int interval = fieldParser.parseInteger(nsec.substring(1));
@@ -166,7 +169,7 @@ public class RouterDescriptorParser implements DocumentParser<RouterDescriptor> 
 	
 	private void processRouter() {
 		currentDescriptor.setNickname(fieldParser.parseNickname());
-		currentDescriptor.setAddress(fieldParser.parseAddress());
+		try { currentDescriptor.setAddress(fieldParser.parseAddress()); } catch (java.net.UnknownHostException e) { throw new RuntimeException(e); }
 		currentDescriptor.setRouterPort(fieldParser.parsePort());
 		/* 2.1 SOCKSPort is deprecated and should always be 0 */
 		fieldParser.parsePort();
@@ -176,13 +179,13 @@ public class RouterDescriptorParser implements DocumentParser<RouterDescriptor> 
 	private boolean verifyCurrentDescriptor(TorSignature signature) {
 		if(verifySignatures && !fieldParser.verifySignedEntity(currentDescriptor.getIdentityKey(), signature)) {
 			resultHandler.documentInvalid(currentDescriptor, "Signature failed.");
-			fieldParser.logWarn("Signature failed for router: " + currentDescriptor.getNickname());
+			logger.warn("Signature failed for router: " + currentDescriptor.getNickname());
 			return false;
 		}
 		currentDescriptor.setValidSignature();
 		if(!currentDescriptor.isValidDocument()) {
 			resultHandler.documentInvalid(currentDescriptor, "Router data invalid");
-			fieldParser.logWarn("Router data invalid for router: " + currentDescriptor.getNickname());
+			logger.warn("Router data invalid for router: " + currentDescriptor.getNickname());
 		}
 		return currentDescriptor.isValidDocument();
 	}

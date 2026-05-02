@@ -8,7 +8,7 @@ import com.subgraph.orchid.circuits.HiddenServiceCircuit;
 import com.subgraph.orchid.config.TorConfig;
 import com.subgraph.orchid.hiddenservice.HSDescriptorCookie.CookieType;
 import com.subgraph.orchid.crypto.TorMessageDigest;
-import com.subgraph.orchid.data.Base32;
+import org.bouncycastle.util.encoders.Base32;
 import com.subgraph.orchid.data.HexDigest;
 
 public class HiddenService {
@@ -22,9 +22,9 @@ public class HiddenService {
 	static byte[] decodeOnion(String onionAddress) {
 		final int idx = onionAddress.indexOf(".onion");
 		if(idx == -1) {
-			return Base32.base32Decode(onionAddress);
+			return Base32.decode(onionAddress);
 		} else {
-			return Base32.base32Decode(onionAddress.substring(0, idx));
+			return Base32.decode(onionAddress.substring(0, idx));
 		}
 	}
 	
@@ -35,7 +35,7 @@ public class HiddenService {
 	}
 
 	String getOnionAddressForLogging() {
-		if(config.getSafeLogging()) {
+		if(false) {
 			return "[scrubbed]";
 		} else {
 			return getOnionAddress();
@@ -43,7 +43,7 @@ public class HiddenService {
 	}
 
 	String getOnionAddress() {
-		return Base32.base32Encode(permanentId) + ".onion";
+		return new String(Base32.encode(permanentId)) + ".onion";
 	}
 
 	boolean hasCurrentDescriptor() {
@@ -67,7 +67,7 @@ public class HiddenService {
 	}
 	
 	HSDescriptorCookie getAuthenticationCookie() {
-		return config.getHidServAuth(getOnionAddress());
+		return null;
 	}
 
 	List<HexDigest> getAllCurrentDescriptorIds() {

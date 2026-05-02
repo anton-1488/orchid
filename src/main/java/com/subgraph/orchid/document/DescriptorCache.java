@@ -30,7 +30,7 @@ public abstract class DescriptorCache<T extends Descriptor> {
     private int cacheLength;
     private boolean initiallyLoaded;
 
-    DescriptorCache(DirectoryStore store, CacheFile cacheFile, CacheFile journalFile) {
+    public DescriptorCache(DirectoryStore store, CacheFile cacheFile, CacheFile journalFile) {
         this.data = new DescriptorCacheData<>();
         this.store = store;
         this.cacheFile = cacheFile;

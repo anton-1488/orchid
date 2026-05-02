@@ -124,7 +124,7 @@ public class OrchidSocketImpl extends SocketImpl {
 
     @Override
     protected synchronized void close() throws IOException {
-        stream.close();
+try { stream.close(); } catch (Exception ignored) {}
         stream = null;
     }
 

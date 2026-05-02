@@ -9,13 +9,13 @@ import com.subgraph.orchid.Tor;
 import com.subgraph.orchid.crypto.TorPublicKey;
 import com.subgraph.orchid.data.BandwidthHistory;
 import com.subgraph.orchid.data.HexDigest;
-import com.subgraph.orchid.data.IPv4Address;
-import com.subgraph.orchid.data.Timestamp;
+import java.net.InetAddress;
+import java.time.Instant;
 import com.subgraph.orchid.data.exitpolicy.ExitPolicy;
 
 public class RouterDescriptorImpl implements RouterDescriptor {
 	private String nickname;
-	private IPv4Address address;
+	private InetAddress address;
 	private int routerPort;
 	private int directoryPort;
 
@@ -25,7 +25,7 @@ public class RouterDescriptorImpl implements RouterDescriptor {
 
 	private String platform;
 
-	private Timestamp published;
+	private Instant published;
 
 	private HexDigest fingerprint;
 
@@ -60,11 +60,11 @@ public class RouterDescriptorImpl implements RouterDescriptor {
 	private CacheLocation cacheLocation = CacheLocation.NOT_CACHED;
 	
 	public void setNickname(String nickname) { this.nickname = nickname; }
-	public void setAddress(IPv4Address address) { this.address = address; }
+	public void setAddress(InetAddress address) { this.address = address; }
 	public void setRouterPort(int port) { this.routerPort = port; }
 	void setDirectoryPort(int port) { this.directoryPort = port; }
 	void setPlatform(String platform) { this.platform = platform; }
-	void setPublished(Timestamp published) { this.published = published; }
+	void setPublished(Instant published) { this.published = published; }
 	void setFingerprint(HexDigest fingerprint) { this.fingerprint = fingerprint; }
 	void setHibernating(boolean flag) { this.hibernating = flag; }
 	void setUptime(int uptime) { this.uptime = uptime; }
@@ -128,7 +128,7 @@ public class RouterDescriptorImpl implements RouterDescriptor {
 		return nickname;
 	}
 
-	public IPv4Address getAddress() {
+	public InetAddress getAddress() {
 		return address;
 	}
 
@@ -192,7 +192,7 @@ public class RouterDescriptorImpl implements RouterDescriptor {
 		return allowSingleHopExits;
 	}
 
-	public Timestamp getPublishedTime() {
+	public Instant getPublishedTime() {
 		return published;
 	}
 
@@ -209,7 +209,7 @@ public class RouterDescriptorImpl implements RouterDescriptor {
 		builder.append(" platform=");
 		builder.append(platform);
 		builder.append(" published=");
-		builder.append(published.getDate());
+		builder.append(published.toString());
 		builder.append(")");
 		return builder.toString();
 	}
@@ -224,7 +224,7 @@ public class RouterDescriptorImpl implements RouterDescriptor {
 		if(contact != null)
 			System.out.println("Contact: "+ contact);
 	}
-	public boolean exitPolicyAccepts(IPv4Address address, int port) {
+	public boolean exitPolicyAccepts(InetAddress address, int port) {
 		return exitPolicy.acceptsDestination(address, port);
 	}
 
@@ -313,4 +313,8 @@ public class RouterDescriptorImpl implements RouterDescriptor {
 	public int getBodyLength() {
 		return rawDocumentData.length();
 	}
+    @Override
+    public String getVersion() {
+        return null;
+    }
 }

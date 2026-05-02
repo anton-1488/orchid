@@ -1,4 +1,6 @@
 package com.subgraph.orchid.consensus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.subgraph.orchid.document.ConsensusDocument;
 import com.subgraph.orchid.exceptions.TorParsingException;
@@ -10,6 +12,7 @@ import com.subgraph.orchid.parsing.DocumentParsingResult;
 import com.subgraph.orchid.parsing.DocumentParsingResultHandler;
 
 public class ConsensusDocumentParser implements DocumentParser<ConsensusDocument> {
+    private static final Logger logger = LoggerFactory.getLogger(ConsensusDocumentParser.class);
 	public enum DocumentSection { NO_SECTION, PREAMBLE, AUTHORITY, ROUTER_STATUS, FOOTER };
 
 	// dir-spec.txt 3.2 
@@ -69,7 +72,7 @@ public class ConsensusDocumentParser implements DocumentParser<ConsensusDocument
 			public void endOfDocument() {
 				document.setRawDocumentData(fieldParser.getRawDocument());
 				resultHandler.documentParsed(document);
-				fieldParser.logDebug("Finished parsing status document.");				
+				logger.debug("Finished parsing status document.");				
 			}
 			public void parseKeywordLine() {
 				processKeywordLine();	

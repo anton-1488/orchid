@@ -1,4 +1,6 @@
 package com.subgraph.orchid.hiddenservice;
+import com.subgraph.orchid.crypto.HybridEncryption;
+import com.subgraph.orchid.cells.enums.RelayCellCommand;
 
 import java.nio.ByteBuffer;
 import java.util.logging.Logger;
@@ -7,7 +9,7 @@ import com.subgraph.orchid.cells.Cell;
 import com.subgraph.orchid.circuits.Circuit;
 import com.subgraph.orchid.cells.RelayCell;
 import com.subgraph.orchid.router.Router;
-import com.subgraph.orchid.crypto.HybridEncryption;
+
 import com.subgraph.orchid.crypto.TorPublicKey;
 
 public class IntroductionProcessor {
@@ -29,25 +31,25 @@ public class IntroductionProcessor {
 	}
 	
 	boolean sendIntroduce(TorPublicKey permanentKey, byte[] publicKeyBytes, byte[] rendezvousCookie, Router rendezvousRouter) {
-		final RelayCell introduceCell = introductionCircuit.createRelayCell(RelayCell.RELAY_COMMAND_INTRODUCE1, 0, introductionCircuit.getFinalCircuitNode());
+		final RelayCell introduceCell = introductionCircuit.createRelayCell(RelayCellCommand.INTRODUCE1, 0, introductionCircuit.getFinalCircuitNode());
 
 		final byte[] payload = createIntroductionPayload(rendezvousRouter, publicKeyBytes, rendezvousCookie, permanentKey);
 		final TorPublicKey serviceKey = introductionPoint.getServiceKey();
-		introduceCell.putByteArray(serviceKey.getFingerprint().getRawBytes());
-		introduceCell.putByteArray(payload);
+		introduceCell.getCellWriter().putByteArray(serviceKey.getFingerprint().getRawBytes());
+		introduceCell.getCellWriter().putByteArray(payload);
 		introductionCircuit.sendRelayCell(introduceCell);
 		
 		final RelayCell response = introductionCircuit.receiveRelayCell();
 		if(response == null) {
 			logger.fine("Timeout waiting for response to INTRODUCE1 cell");
 			return false;
-		} else if(response.getRelayCommand() != RelayCell.RELAY_COMMAND_INTRODUCE_ACK) {
+		} else if(response.getRelayCommand() != RelayCellCommand.INTRODUCE_ACK) {
 			logger.info("Unexpected relay cell type received waiting for response to INTRODUCE1 cell: "+ response.getRelayCommand());
 			return false;
-		} else if(response.cellBytesRemaining() == 0) {
+		} else if(response.getCellReader().remaining() == 0) {
 			return true;
 		} else {
-			logger.info("INTRODUCE_ACK indicates that introduction was not forwarded: "+ response.getByte());
+			logger.info("INTRODUCE_ACK indicates that introduction was not forwarded: "+ response.getCellReader().getByte());
 			return false;
 		} 
 	}
@@ -62,8 +64,8 @@ public class IntroductionProcessor {
 	}
 	
 	private ByteBuffer createIntroductionBuffer(int timestamp, Router rr, byte[] cookie, byte[] dhPublic) {
-		final ByteBuffer buffer = ByteBuffer.allocate(Cell.CELL_LEN);
-		final byte[] rpAddress = rr.getAddress().getAddressDataBytes();
+		final ByteBuffer buffer = ByteBuffer.allocate(Cell.DEFAULT_CELL_LEN);
+		final byte[] rpAddress = rr.getAddress().getAddress();
 		final short rpPort = (short) rr.getOnionPort();
 		final byte[] rpIdentity = rr.getIdentityHash().getRawBytes();
 		final byte[] rpOnionKey = rr.getOnionKey().getRawBytes();

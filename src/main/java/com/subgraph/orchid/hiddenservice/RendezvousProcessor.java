@@ -1,4 +1,6 @@
 package com.subgraph.orchid.hiddenservice;
+import com.subgraph.orchid.crypto.TorTapKeyAgreement;
+import com.subgraph.orchid.cells.enums.RelayCellCommand;
 
 import java.math.BigInteger;
 import java.util.logging.Logger;
@@ -12,32 +14,32 @@ import com.subgraph.orchid.circuits.CircuitNodeCryptoState;
 import com.subgraph.orchid.circuits.CircuitNodeImpl;
 import com.subgraph.orchid.crypto.TorMessageDigest;
 import com.subgraph.orchid.crypto.TorRandom;
-import com.subgraph.orchid.crypto.TorTapKeyAgreement;
+
 import com.subgraph.orchid.data.HexDigest;
 
 public class RendezvousProcessor {
 	private final static Logger logger = Logger.getLogger(RendezvousProcessor.class.getName());
 	
 	private final static int RENDEZVOUS_COOKIE_LEN = 20;
-	private final static TorRandom random = new TorRandom();
+	// TorRandom is now static - no instance needed
 	
 	private final InternalCircuit circuit;
 	private final byte[] cookie;
 	
 	protected RendezvousProcessor(InternalCircuit circuit) {
 		this.circuit = circuit;
-		this.cookie = random.getBytes(RENDEZVOUS_COOKIE_LEN);
+		this.cookie = TorRandom.getBytes(RENDEZVOUS_COOKIE_LEN);
 	}
 	
 	boolean establishRendezvous() {
-		final RelayCell cell = circuit.createRelayCell(RelayCell.RELAY_COMMAND_ESTABLISH_RENDEZVOUS, 0, circuit.getFinalCircuitNode());
-		cell.putByteArray(cookie);
+		final RelayCell cell = circuit.createRelayCell(RelayCellCommand.ESTABLISH_RENDEZVOUS, 0, circuit.getFinalCircuitNode());
+		cell.getCellWriter().putByteArray(cookie);
 		circuit.sendRelayCell(cell);
 		final RelayCell response = circuit.receiveRelayCell();
 		if(response == null) {
 			logger.info("Timeout waiting for Rendezvous establish response");
 			return false;
-		} else if(response.getRelayCommand() != RelayCell.RELAY_COMMAND_RENDEZVOUS_ESTABLISHED) {
+		} else if(response.getRelayCommand() != RelayCellCommand.RENDEZVOUS_ESTABLISHED) {
 			logger.info("Response received from Rendezvous establish was not expected acknowledgement, Relay Command: "+ response.getRelayCommand());
 			return false;
 		} else {
@@ -50,7 +52,7 @@ public class RendezvousProcessor {
 		if(cell == null) {
 			logger.info("Timeout waiting for RENDEZVOUS2");
 			return null;
-		} else if (cell.getRelayCommand() != RelayCell.RELAY_COMMAND_RENDEZVOUS2) {
+		} else if (cell.getRelayCommand() != RelayCellCommand.RENDEZVOUS2) {
 			logger.info("Unexpected Relay cell type received while waiting for RENDEZVOUS2: "+ cell.getRelayCommand());
 			return null;
 		}
@@ -70,7 +72,7 @@ public class RendezvousProcessor {
 	
 	private BigInteger readPeerPublic(Cell cell) {
 		final byte[] dhPublic = new byte[TorTapKeyAgreement.DH_LEN];
-		cell.getByteArray(dhPublic);
+		cell.getCellReader().getByteArray(dhPublic);
 		final BigInteger peerPublic = new BigInteger(1, dhPublic);
 		if(!TorTapKeyAgreement.isValidPublicValue(peerPublic)) {
 			logger.warning("Illegal DH public value received: "+ peerPublic);
@@ -81,7 +83,7 @@ public class RendezvousProcessor {
 	
 	HexDigest readHandshakeDigest(Cell cell) {
 		final byte[] digestBytes = new byte[TorMessageDigest.TOR_DIGEST_SIZE];
-		cell.getByteArray(digestBytes);
+		cell.getCellReader().getByteArray(digestBytes);
 		return HexDigest.createFromDigestBytes(digestBytes);
 	}
 	

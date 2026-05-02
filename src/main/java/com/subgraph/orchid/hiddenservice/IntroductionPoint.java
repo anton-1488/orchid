@@ -2,12 +2,12 @@ package com.subgraph.orchid.hiddenservice;
 
 import com.subgraph.orchid.crypto.TorPublicKey;
 import com.subgraph.orchid.data.HexDigest;
-import com.subgraph.orchid.data.IPv4Address;
+import java.net.InetAddress;
 
 public class IntroductionPoint {
 
 	private HexDigest identity;
-	private IPv4Address address;
+	private InetAddress address;
 	private int onionPort;
 	private TorPublicKey onionKey;
 	private TorPublicKey serviceKey;
@@ -16,7 +16,7 @@ public class IntroductionPoint {
 		this.identity = identity;
 	}
 
-	void setAddress(IPv4Address address) {
+	void setAddress(InetAddress address) {
 		this.address = address;
 	}
 	
@@ -40,7 +40,7 @@ public class IntroductionPoint {
 		return identity;
 	}
 	
-	public IPv4Address getAddress() {
+	public InetAddress getAddress() {
 		return address;
 	}
 	

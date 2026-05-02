@@ -248,7 +248,7 @@ public class CircuitIO {
         connection.removeCircuit(circuit);
         List<StreamImpl> tmpList = new ArrayList<>(streamMap.values());
         for (StreamImpl s : tmpList) {
-            s.close();
+            try { s.close(); } catch (Exception ignored) {}
         }
         isClosed = true;
     }

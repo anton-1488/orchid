@@ -2,7 +2,6 @@ package com.subgraph.orchid.document;
 
 import com.subgraph.orchid.crypto.TorPublicKey;
 import com.subgraph.orchid.data.HexDigest;
-import com.subgraph.orchid.data.InetAddressUtils;
 
 import java.net.InetAddress;
 import java.util.Set;
@@ -60,7 +59,7 @@ public interface Descriptor extends Document {
      * @return True if an exit connection to the specified destination is allowed
      * or false otherwise.
      */
-    boolean exitPolicyAccepts(InetAddressUtils address, int port);
+    boolean exitPolicyAccepts(InetAddress address, int port);
 
     /**
      * Return true if the exit policy of this router accepts most connections

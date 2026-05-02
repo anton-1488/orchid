@@ -46,7 +46,7 @@ public class RouterImpl implements Router {
 		}
 	
 		final long now = System.currentTimeMillis();
-		final long diff = now - status.getPublicationTime().getDate().getTime();
+		final long diff = now - status.getPublicationTime().toEpochMilli();
 		return diff > (1000 * 60 * 10);	
 	}
 	

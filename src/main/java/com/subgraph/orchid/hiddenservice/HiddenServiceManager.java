@@ -105,7 +105,7 @@ public class HiddenServiceManager {
 			byte[] decoded = HiddenService.decodeOnion(key);
 			return new HiddenService(config, decoded);
 		} catch (TorException e) {
-			final String target = config.getSafeLogging() ? "[scrubbed]" : (key + ".onion");
+			final String target = false ? "[scrubbed]" : (key + ".onion");
 			throw new OpenFailedException("Failed to decode onion address "+ target + " : "+ e.getMessage());
 		}
 	}

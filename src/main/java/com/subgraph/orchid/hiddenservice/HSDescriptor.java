@@ -7,13 +7,13 @@ import java.util.List;
 import com.subgraph.orchid.crypto.TorPublicKey;
 import com.subgraph.orchid.crypto.TorRandom;
 import com.subgraph.orchid.data.HexDigest;
-import com.subgraph.orchid.data.Timestamp;
+import java.time.Instant;
 
 public class HSDescriptor {
 	private final static long MS_24_HOURS = (24 * 60 * 60 * 1000);
 	private final HiddenService hiddenService;
 	private HexDigest descriptorId;
-	private Timestamp publicationTime;
+	private Instant publicationTime;
 	private HexDigest secretIdPart;
 	private TorPublicKey permanentKey;
 	private int[] protocolVersions;
@@ -28,7 +28,7 @@ public class HSDescriptor {
 		return hiddenService;
 	}
 
-	void setPublicationTime(Timestamp ts) {
+	void setPublicationTime(Instant ts) {
 		this.publicationTime = ts;
 	}
 	
@@ -68,7 +68,7 @@ public class HSDescriptor {
 		return secretIdPart;
 	}
 	
-	InetAddress getPublicationTime() {
+	Instant getPublicationTime() {
 		return publicationTime;
 	}
 	
@@ -78,7 +78,7 @@ public class HSDescriptor {
 	
 	boolean isExpired() {
 		final long now = System.currentTimeMillis();
-		final long then = publicationTime.getTime();
+		final long then = publicationTime.toEpochMilli();
 		return (now - then) > MS_24_HOURS;
 	}
 
@@ -91,10 +91,10 @@ public class HSDescriptor {
 	}
 	
 	private List<IntroductionPoint> shuffle(List<IntroductionPoint> list) {
-		final TorRandom r = new TorRandom();
+		final int r_dummy = 0; // TorRandom is static
 		final int sz = list.size();
 		for(int i = 0; i < sz; i++) {
-			swap(list, i, r.nextInt(sz));
+			swap(list, i, TorRandom.nextInt(sz));
 		}
 		return list;
 	}

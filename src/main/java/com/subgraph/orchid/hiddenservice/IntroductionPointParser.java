@@ -86,7 +86,7 @@ public class IntroductionPointParser implements DocumentParser<IntroductionPoint
 			
 		case IP_ADDRESS:
 			if(currentIntroductionPoint != null) {
-				currentIntroductionPoint.setAddress(fieldParser.parseAddress());
+				try { currentIntroductionPoint.setAddress(fieldParser.parseAddress()); } catch (java.net.UnknownHostException e) { throw new RuntimeException(e); }
 			}
 			break;
 			

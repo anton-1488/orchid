@@ -1,7 +1,8 @@
 package com.subgraph.orchid.hiddenservice;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
-import java.util.logging.Logger;
 
 import com.subgraph.orchid.exceptions.HSAuthenticationException;
 import com.subgraph.orchid.exceptions.TorParsingException;
@@ -14,10 +15,10 @@ import com.subgraph.orchid.parsing.DocumentParser;
 import com.subgraph.orchid.parsing.DocumentParsingHandler;
 import com.subgraph.orchid.parsing.DocumentParsingResult;
 import com.subgraph.orchid.parsing.DocumentParsingResultHandler;
-import com.subgraph.orchid.encoders.Base64;
+import java.util.Base64;
 
 public class HSDescriptorParser implements DocumentParser<HSDescriptor>{
-	private static final Logger logger = Logger.getLogger(HSDescriptor.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(HSDescriptorParser.class);
 	
 	private final DocumentFieldParser fieldParser;
 	private final HSDescriptor descriptor;
@@ -120,7 +121,7 @@ public class HSDescriptorParser implements DocumentParser<HSDescriptor>{
 		parser.parse(new DocumentParsingResultHandler<IntroductionPoint>() {
 
 			public void documentParsed(IntroductionPoint document) {
-				logger.fine("adding intro point "+ document.getIdentity());
+				logger.debug("adding intro point "+ document.getIdentity());
 				descriptor.addIntroductionPoint(document);
 			}
 
@@ -135,7 +136,7 @@ public class HSDescriptorParser implements DocumentParser<HSDescriptor>{
 	}
 
 	private ByteBuffer createIntroductionPointBuffer(DocumentObject ob) {
-		final byte[] content = Base64.decode(ob.getContent(false));
+		final byte[] content = Base64.getDecoder().decode(ob.getContent(false));
 		if(content[0] == 'i') {
 			return ByteBuffer.wrap(content);
 		} else {
@@ -153,7 +154,7 @@ public class HSDescriptorParser implements DocumentParser<HSDescriptor>{
 		final TorSignature signature = fieldParser.parseSignature();
 		if(!fieldParser.verifySignedEntity(descriptor.getPermanentKey(), signature)) {
 			resultHandler.documentInvalid(descriptor, "Signature verification failed");
-			fieldParser.logWarn("Signature failed for descriptor: "+ descriptor.getDescriptorId().toBase32());
+			logger.warn("Signature failed for descriptor: "+ descriptor.getDescriptorId().toBase32());
 			return;
 		}
 		resultHandler.documentParsed(descriptor);
